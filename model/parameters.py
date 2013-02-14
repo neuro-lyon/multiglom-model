@@ -8,11 +8,11 @@ class Mitral:
     """Parameters for the mitral cell population."""
     def __init__(self):
         """Define parameter values here."""
-        self.C_m       = 0.01*farad*meter**-2
+        self.C_m       = 0.1*farad*meter**-2
         self.g_L       = 0.87*siemens*meter**-2
         self.E_L       = -64.5*mvolt
-        self.V_r       = self.E_L
-        self.V_t       = -45*mvolt
+        self.V_r       = -69.8*mvolt
+        self.V_t       = -58*mvolt
         self.t_refract = 1*msecond
 
 class Granule:
