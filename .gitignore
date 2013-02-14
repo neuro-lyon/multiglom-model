@@ -1,2 +1,6 @@
 # Python specifics
 *.py[cod]
+
+# Temporary files
+*.swp
+
