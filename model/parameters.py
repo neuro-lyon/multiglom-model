@@ -15,7 +15,7 @@ class Mitral:
         # self.V_t       = -58*mvolt # from tests to match F. model
         self.V_r       = -74*mvolt
         self.V_t       = -62*mvolt
-        self.t_refract = 1*msecond
+        self.t_refract = 0.20000001*msecond # pour éviter le bug effet de bord
 
 class Granule:
     """Parameters for the granule cell population."""
@@ -40,7 +40,7 @@ class Synapse:
         g_E_high     = 3.5*siemens*meter**-2
         self.g_E     = g_E_high
         self.sigma_E = 0.01*mvolt
-        self.alpha_E = 1*msecond**-1
+        self.alpha_E = 10*msecond**-1
         self.beta_E  = 1./3*msecond**-1
 
         self.V_I      = -70*mvolt
