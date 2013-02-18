@@ -25,18 +25,22 @@ class Granule:
         self.g_DS = 300*siemens*meter**-2
 
 class Input:
+    """Input parameters."""
     def __init__(self):
         self.tau_Ein   = 3*msecond
-        self.g_Ein0    = 0.5*siemens*meter**-2
-        self.sigma_Ein = .1*siemens*meter**-2*second**(-1./2)
+        self.g_Ein0    = 0.6*siemens*meter**-2
+        sigma_Ein_low = .05*siemens*meter**-2*second**(-1./2)
+        sigma_Ein_high = 5.*sigma_Ein_low
+        self.sigma_Ein = sigma_Ein_low
 
 class Synapse:
+    """Synapse parameters."""
     def __init__(self):
         self.V_E     = 0*mvolt
         self.V_act_E = 0*mvolt
         g_E_low      = 0.7*siemens*meter**-2
         g_E_high     = 3.5*siemens*meter**-2
-        self.g_E     = g_E_low
+        self.g_E     = g_E_high
         self.sigma_E = 0.01*mvolt
         self.alpha_E = 10*msecond**-1
         self.beta_E  = 1./3*msecond**-1
