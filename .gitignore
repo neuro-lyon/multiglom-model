@@ -3,6 +3,3 @@
 
 # Temporary files
 *.swp
-
-# Random tests
-tests/

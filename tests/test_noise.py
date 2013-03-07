@@ -13,7 +13,7 @@ g_Ein  = 1.*siemens*meter**(-2)
 eqs="""
 dV/dt   = 0*volt/second: volt
 dg/dt   = (-g + g0 + sigma * xi)/tg : siemens*meter**(-2)
-I_input = g*volt: amp*meter**(-2)
+I_input = g*V: amp*meter**(-2)
 """
 
 # NeuronGroup initialisation
@@ -22,12 +22,12 @@ nn.g = g0
 nn.V = 1
 
 # Monitoring
+defaultclock.dt = 0.01*ms
+print 'NeuronGroup dt=', nn.clock.dt,
 monit = StateMonitor(nn, 'g', record=True)
 
 # Running simulation
-defaultclock.dt = 0.001*msecond
-print 'dt =', defaultclock.dt
+print 'defaultclock dt=', defaultclock.dt,
+run(200*msecond)
 
-run(1000*msecond, report='text')
-
-print "g SD noise :", monit[0].std()
+print 'g noise SD =', monit[0].std()
