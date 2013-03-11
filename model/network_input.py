@@ -7,7 +7,7 @@ from brian.stdunits import *
 from parameters import Input as InputParameters
 
 class NetworkInput:
-    """Input for the.network of mitral and granule cells."""
+    """Input for the network of mitral and granule cells."""
 
     # Parameters are global so Brian can put them into the equations.
     # You can change their values in parameters.py
