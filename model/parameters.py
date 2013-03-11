@@ -51,4 +51,3 @@ class Synapse:
         self.sigma_I  = 0.4*mvolt
         self.alpha_I  = 5*msecond**-1
         self.beta_I   = 1./10*msecond**-1
-
