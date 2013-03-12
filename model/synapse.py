@@ -6,6 +6,21 @@ from brian.units import *
 from brian.stdunits import *
 from parameters import Synapse as SynapseParameters
 
+pssyn = SynapseParameters()
+V_E      = pssyn.V_E 
+V_act_E  = pssyn.V_act_E
+g_E      = pssyn.g_E
+sigma_E  = pssyn.sigma_E
+alpha_E  = pssyn.alpha_E
+beta_E   = pssyn.beta_E
+
+V_I      = pssyn.V_I
+V_act_I  = pssyn.V_act_I
+g_I      = pssyn.g_I
+sigma_I  = pssyn.sigma_I
+alpha_I  = pssyn.alpha_I
+beta_I   = pssyn.beta_I
+
 class Synapse:
     """Synapse, from mitral cells to granule cells."""
 
@@ -16,21 +31,6 @@ class Synapse:
             self.is_exc = False
         self.is_inhib = not self.is_exc
         self.eqs_model = Equations()
-    
-        pssyn = SynapseParameters()
-        self.V_E      = pssyn.V_E 
-        self.V_act_E  = pssyn.V_act_E
-        self.g_E      = pssyn.g_E
-        self.sigma_E  = pssyn.sigma_E
-        self.alpha_E  = pssyn.alpha_E
-        self.beta_E   = pssyn.beta_E
-
-        self.V_I      = pssyn.V_I
-        self.V_act_I  = pssyn.V_act_I
-        self.g_I      = pssyn.g_I
-        self.sigma_I  = pssyn.sigma_I
-        self.alpha_I  = pssyn.alpha_I
-        self.beta_I   = pssyn.beta_I
 
     def get_eqs_model(self):
         """Get the model of equations"""
