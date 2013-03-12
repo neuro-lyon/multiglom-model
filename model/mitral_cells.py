@@ -4,7 +4,7 @@
 from brian import Equations, NeuronGroup
 from brian.units import *
 from brian.stdunits import *
-from parameters import Mitral as MitralParameters, Synapse as SynapseParameters
+from parameters import Mitral as MitralParameters
 
 psmt = MitralParameters()
 V_t = psmt.V_t

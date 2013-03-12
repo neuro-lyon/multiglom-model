@@ -7,7 +7,7 @@ from brian.stdunits import *
 from parameters import Synapse as SynapseParameters
 
 pssyn = SynapseParameters()
-V_E      = pssyn.V_E 
+V_E      = pssyn.V_E
 V_act_E  = pssyn.V_act_E
 g_E      = pssyn.g_E
 sigma_E  = pssyn.sigma_E
