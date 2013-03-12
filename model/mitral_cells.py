@@ -4,27 +4,23 @@
 from brian import Equations, NeuronGroup
 from brian.units import *
 from brian.stdunits import *
-from parameters import Mitral as MitralParameters
+from parameters import Mitral as MitralParameters, Synapse as SynapseParameters
 
 class MitralCells:
     """Population of mitral cells."""
-
-    # Parameters are global so Brian can put them into the equations.
-    # You can change their values in parameters.py
-    global N, V_t, V_r, t_refract
-    global C_m, g_L, E_L
-    psmt = MitralParameters()
-    V_t = psmt.V_t
-    V_r = psmt.V_r
-    t_refract = psmt.t_refract
-    C_m  = psmt.C_m
-    g_L = psmt.g_L
-    E_L = psmt.E_L
 
     def __init__(self):
         """Create an empty population of mitral cells."""
         self.eqs_model = Equations()
         self.pop = None
+        
+        psmt = MitralParameters()
+        self.V_t = psmt.V_t
+        self.V_r = psmt.V_r
+        self.t_refract = psmt.t_refract
+        self.C_m  = psmt.C_m
+        self.g_L = psmt.g_L
+        self.E_L = psmt.E_L
 
     def add_eqs(self, supp_eqs=None):
         """Add the standard equation of the LIF model.
@@ -50,4 +46,5 @@ class MitralCells:
         This must be called after all the other construction methods.
         """
         self.pop = NeuronGroup(N, model=self.eqs_model, order=1,
-                               threshold=V_t, reset=V_r, refractory=t_refract)
+                               threshold=self.V_t, reset=self.V_r,
+                               refractory=self.t_refract)

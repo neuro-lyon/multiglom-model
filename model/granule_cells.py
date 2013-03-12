@@ -9,20 +9,17 @@ from parameters import Granule as GranuleParameters
 class GranuleCells:
     """Population of granule cells."""
 
-    # Parameters are global so Brian can put them into the equations.
-    # You can change their values in parameters.py
-    global C_m, g_L, E_L, g_SD, g_DS
-    psgr = GranuleParameters()
-    C_m  = psgr.C_m
-    g_L  = psgr.g_L
-    E_L  = psgr.E_L
-    g_SD = psgr.g_SD
-    g_DS = psgr.g_DS
-
     def __init__(self):
         """Create an empty population of granule cells."""
         self.eqs_model = Equations()
         self.pop = None
+
+        psgr = GranuleParameters()
+        self.C_m  = psgr.C_m
+        self.g_L  = psgr.g_L
+        self.E_L  = psgr.E_L
+        self.g_SD = psgr.g_SD
+        self.g_DS = psgr.g_DS
 
     def add_eqs(self, supp_eqs=None):
         """Add the standard equations of granule model.

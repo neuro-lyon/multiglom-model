@@ -9,17 +9,14 @@ from parameters import Input as InputParameters
 class NetworkInput:
     """Input for the network of mitral and granule cells."""
 
-    # Parameters are global so Brian can put them into the equations.
-    # You can change their values in parameters.py
-    global tau_Ein, g_Ein0, sigma_Ein
-    psin = InputParameters()
-    tau_Ein   = psin.tau_Ein
-    g_Ein0    = psin.g_Ein0
-    sigma_Ein = psin.sigma_Ein
-
     def __init__(self):
         """Create an empty model of equations defining the network input"""
         self.eqs_model = Equations()
+
+        psin = InputParameters()
+        self.tau_Ein   = psin.tau_Ein
+        self.g_Ein0    = psin.g_Ein0
+        self.sigma_Ein = psin.sigma_Ein
 
     def get_eqs_model(self):
         """Get the model of equations"""
