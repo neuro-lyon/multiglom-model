@@ -45,5 +45,5 @@ class MitralCells:
 
         This must be called after all the other construction methods.
         """
-        self.pop = NeuronGroup(N, model=self.eqs_model, order=1,
+        self.pop = NeuronGroup(N, model=self.eqs_model,
                                threshold=V_t, reset=V_r, refractory=t_refract)

@@ -45,5 +45,5 @@ class GranuleCells:
 
         This must be called after all the other construction methods.
         """
-        self.pop = NeuronGroup(N, model=self.eqs_model, order=1, implicit=True)
+        self.pop = NeuronGroup(N, model=self.eqs_model, implicit=True)
 
