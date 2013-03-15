@@ -4,6 +4,15 @@
 from brian.units import *
 from brian.stdunits import *
 
+class Glomerule:
+    """Parameters for the glomeruli."""
+    def __init__(self):
+        self.tau = 3*msecond
+        self.f = 5*Hz
+        self.A = 90*second**-.5
+        self.B = 10000*second**-1
+        self.C = 1
+
 class Mitral:
     """Parameters for the mitral cell population."""
     def __init__(self):
