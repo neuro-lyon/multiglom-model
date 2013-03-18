@@ -30,7 +30,7 @@ class Mitral:
         self.E_L       = -64.5*mvolt
         self.V_r       = -74*mvolt
         self.V_t       = -62*mvolt
-        self.t_refract = 0.20000001*msecond # pour éviter le bug effet de bord
+        self.t_refract = 0.2*msecond
 
 class Granule:
     """Parameters for the granule cell population."""
