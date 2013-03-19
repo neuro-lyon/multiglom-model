@@ -31,3 +31,20 @@ class Glomerule:
 
     def make_pop(self, N):
         self.pop = NeuronGroup(N, model=self.eqs_model)
+
+if __name__ == '__main__':
+    clear(erase=True, all=True)
+    defaultclock.reinit()
+
+    g = Glomerule()
+    nglom = 3
+    g.add_eqs()
+    g.make_pop(nglom)
+
+    m = StateMonitor(g.pop, 'g', record=True)
+    netw = Network(g.pop, m)
+    netw.run(500*msecond)
+
+    for i in xrange(nglom):
+        plot(m.times/msecond, m[i]/(siemens*meter**-2))
+    show()
