@@ -11,6 +11,10 @@ from model.synapse import Synapse
 from model.granule_cells import GranuleCells
 import model.parameters as ps
 
+# Reset old stuff from Brian memory
+clear(erase=True, all=True)
+defaultclock.reinit()
+
 # Parameters
 psgm     = ps.Glomerule()
 psmt     = ps.Mitral()
@@ -30,7 +34,7 @@ simu_length     = pscommon.simu_length
 
 # Glomeruli
 glom = Glomerule()
-glom.add_eqs()
+glom.add_eqs(oscillation=False)
 glom.make_pop(N_glomerule*N_mitral_per_subpop)
 
 # Synapses (granule -- mitral)
@@ -52,11 +56,6 @@ mt.add_eqs(supp_eqs=mt_supp_eqs)
 mt.make_pop(N_mitral)
 mt.pop.V = (psmt.E_L - psmt.V_r)*np.random.random_sample(np.shape(mt.pop.V)) \
            + psmt.V_r
-
-# Mitral sub-populations
-#mtsubpop = []
-#for subpop in xrange(N_subpop):
-    #mtsubpop += [mt.pop.subgroup(N_mitral/N_subpop)]
 
 # Granule Cells
 gr = GranuleCells()
@@ -125,7 +124,7 @@ netw.run(simu_length, report="text")
 figure()
 for n in recn:
     plot(monit_glom['g'].times/msecond,
-         monit_glom['g'][n]/mvolt, label="glom neur #"+str(n))
+         monit_glom['g'][n]/(siemens*meter**-2), label="glom neur #"+str(n))
 legend()
 xlabel('time (ms)')
 ylabel('g of glomeruli (siemens*amp*meter**-2)')

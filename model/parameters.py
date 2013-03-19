@@ -9,16 +9,16 @@ class Common:
     def __init__(self):
         self.simu_dt     = 0.05*msecond
         self.simu_length = 2000*msecond
-        self.N_subpop    = 4
+        self.N_subpop    = 1
         self.N_mitral    = 100
 
 class Glomerule:
     """Parameters for the glomeruli."""
     def __init__(self):
         self.tau = 3*msecond
-        self.f   = 5*Hz
-        self.A   = 90*second**-.5
-        self.B   = 10000*second**-1
+        self.f   = 2*Hz
+        self.A   = .1*second**-.5
+        self.B   = 10*second**-1
         self.C   = 1
 
 class Mitral:
