@@ -12,7 +12,7 @@ B    = psgm.B
 C    = psgm.C
 
 class Glomerule:
-    """One glomerular unit."""
+    """Ensemble of glomeruli, driving input to mitral cells."""
 
     def __init__(self):
         """Create an empty glomerule."""
