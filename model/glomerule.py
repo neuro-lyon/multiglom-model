@@ -25,8 +25,8 @@ class Glomerule:
         self.eqs_model = Equations()
         self.pop = None
     
-    def add_eqs(self, oscillation=True):
-        if oscillation:
+    def add_eqs(self, oscillating=True):
+        if oscillating:
             std_eqs = Equations('''
                 dn/dt = -(n + xi)/tau : second**-.5
                 sigma = A*tau**.5*sqrt(1 + C*cos(2*pi*f*t)) : siemens*meter**-2
@@ -36,7 +36,7 @@ class Glomerule:
                 ''')
         else:
             std_eqs = Equations('''
-                dg/dt = (g_Ein0 - g)/tau_Ein + sigma_Ein * xi : siemens*meter**-2
+                dg/dt = (g_Ein0 - g)/tau_Ein + sigma_Ein*xi : siemens*meter**-2
                 ''')
         self.eqs_model += std_eqs
 

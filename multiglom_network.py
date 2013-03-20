@@ -34,7 +34,7 @@ simu_length     = pscommon.simu_length
 
 # Glomeruli
 glom = Glomerule()
-glom.add_eqs(oscillation=False)
+glom.add_eqs(oscillating=False)
 glom.make_pop(N_glomerule*N_mitral_per_subpop)
 
 # Synapses (granule -- mitral)
@@ -103,7 +103,7 @@ monit_gr   = {}
 recn = [0, N_mitral/2, N_mitral-1]
 glom_pm = ('g')
 mt_pm   = ('s', 's_syn', 'V', 'T')
-gr_pm   = ('V_D', 's_syn', 's', 'T')
+gr_pm   = ('V_D', 's_syn', 's', 'T', 'I_syn')
 for pname in glom_pm:
     monit_glom[pname] = StateMonitor(glom.pop, pname, record=recn)
 for pname in mt_pm:
@@ -124,7 +124,7 @@ netw.run(simu_length, report="text")
 figure()
 for n in recn:
     plot(monit_glom['g'].times/msecond,
-         monit_glom['g'][n]/(siemens*meter**-2), label="glom neur #"+str(n))
+         monit_glom['g'][n]/(siemens*meter**-2), label="glom neur #" + str(n))
 legend()
 xlabel('time (ms)')
 ylabel('g of glomeruli (siemens*amp*meter**-2)')
@@ -132,10 +132,18 @@ ylabel('g of glomeruli (siemens*amp*meter**-2)')
 figure()
 for n in recn:
     plot(monit_mt['V'].times/msecond,
-         monit_mt['V'][n]/mvolt, label="mitral #"+str(n))
+         monit_mt['V'][n]/mvolt, label="mitral #" + str(n))
 legend()
 xlabel('time (ms)')
 ylabel('membrane potential of mitral : V (mvolt)')
+
+figure()
+for n in xrange(N_subpop):
+    plot(monit_gr['I_syn'].times/msecond,
+         monit_gr['I_syn'][n]/(amp*meter**-2), label="granule #" + str(n))
+legend()
+xlabel('time (ms)')
+ylabel('I_syn (amp meter**-2))')
 
 figure()
 plot(monit_mt['s'].times/msecond,
