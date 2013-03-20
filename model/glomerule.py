@@ -29,10 +29,10 @@ class Glomerule:
         if oscillation:
             std_eqs = Equations('''
                 dn/dt = -(n + xi)/tau : second**-.5
-                sigma = A*tau**.5*sqrt(1 + C*cos(2*pi*f*t)) : 1
-                m0 = B*tau*(1 + C*cos(2*pi*f*t)) : 1
-                dm/dt = (m0 - m)/tau : 1
-                g = m + sigma*tau**.5*n : 1
+                sigma = A*tau**.5*sqrt(1 + C*cos(2*pi*f*t)) : siemens*meter**-2
+                m0 = B*tau*(1 + C*cos(2*pi*f*t)) : siemens*meter**-2
+                dm/dt = (m0 - m)/tau : siemens*meter**-2
+                g = m + sigma*n*tau**.5 : siemens*meter**-2
                 ''')
         else:
             std_eqs = Equations('''

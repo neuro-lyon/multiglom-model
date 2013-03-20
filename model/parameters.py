@@ -17,8 +17,8 @@ class Glomerule:
     def __init__(self):
         self.tau = 3*msecond
         self.f   = 2*Hz
-        self.A   = .1*second**-.5
-        self.B   = 10*second**-1
+        self.A   = .1*second**-.5*siemens*meter**-2
+        self.B   = 10*second**-1*siemens*meter**-2
         self.C   = 1
 
 class Mitral:
