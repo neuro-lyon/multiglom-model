@@ -62,7 +62,7 @@ class Synapse:
         self.alpha_E  = 10*msecond**-1
         self.beta_E   = 1./3*msecond**-1
 
-        self.V_I      = -70*mvolt
+        self.V_I      = -80*mvolt
         self.V_act_I  = -66.4*mvolt
         self.g_I      = 10*siemens*meter**-2
         self.sigma_I  = 0.4*mvolt
