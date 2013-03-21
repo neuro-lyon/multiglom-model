@@ -5,6 +5,10 @@ from brian import Equations
 from brian.units import *
 from brian.stdunits import *
 from parameters import Synapse as SynapseParameters
+from parameters import Common as CommonParameters
+
+pscomm = CommonParameters()
+N_subpop = pscomm.N_subpop
 
 pssyn = SynapseParameters()
 V_E      = pssyn.V_E
@@ -44,8 +48,10 @@ class Synapse:
             self.eqs_model = eqs
         else:
             if self.is_inhib:
+                # N_subpop multiply the whole thing in order to normalize
+                # the output for different number of subpopulation.
                 self.eqs_model = Equations('''
-                    I_syn = g_E * s_syn * (V_D - V_E) : amp*meter**-2
+                    I_syn = N_subpop*g_E * s_syn * (V_D - V_E) : amp*meter**-2
                     ds/dt = alpha_I * (1 - s) * T - beta_I * s : 1
                     T = 1/(1 + exp(-1*(V_D - V_act_I)/sigma_I)) : 1
                     s_syn : 1
