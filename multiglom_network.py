@@ -4,12 +4,15 @@
 from brian import *
 import numpy as np
 
+# One must import the 'parameters' module before any other modem.* import.
+import model.parameters as ps
+
 from model.glomerule import Glomerule
 from model.network_input import NetworkInput
 from model.mitral_cells import MitralCells
 from model.synapse import Synapse
 from model.granule_cells import GranuleCells
-import model.parameters as ps
+
 
 # Reset old stuff from Brian memory
 clear(erase=True, all=True)
