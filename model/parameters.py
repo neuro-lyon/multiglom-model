@@ -2,31 +2,40 @@
 # -*- coding:utf-8 -*-
 
 from sys import modules
-from os import chdir
+from os import chdir, getcwd
 
 
 # Set the parameter file here (path relative to python call)
 PARAMETER_FILE = 'paramsets/std.py'
 
 
-class Empty():
-    pass
+class MakeupClass():
+    def __init__(self):
+        pass
+
+    def __call__(self):
+        return self
+
+    def add_attr(self, name, value):
+        setattr(self, name, value)
 
 
 def set_params(filepath=PARAMETER_FILE, dic='parameters'):
+    fromdir = getcwd()
     # Import the set of parameters
     pathsplit = filepath.split('/')
     directory = '/'.join(pathsplit[:-1])
     modname = pathsplit[-1][:-3]
     chdir(directory)
     mod = __import__(modname)
+    chdir(fromdir)
     paramset = getattr(mod, dic)
     # Build the parameter classes and attributes accordingly
     for classname in paramset:
-        setattr(modules[__name__], classname, Empty)
+        curclass = MakeupClass()
+        setattr(modules[__name__], classname, curclass)
         for parname in paramset[classname]:
-            curclass = getattr(modules[__name__], classname)
-            setattr(curclass, parname, paramset[classname][parname])
+            curclass.add_attr(parname, paramset[classname][parname])
 
 
 set_params()
