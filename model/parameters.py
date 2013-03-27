@@ -6,7 +6,7 @@ from os import chdir, getcwd
 
 
 # Set the parameter file here (path relative to python call)
-PARAMETER_FILE = 'paramsets/std_beta.py'
+PARAMETER_FILE = 'paramsets/std_gamma.py'
 
 
 class MakeupClass():
