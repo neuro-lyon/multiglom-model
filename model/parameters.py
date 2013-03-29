@@ -6,7 +6,7 @@ from os import chdir, getcwd
 
 
 # Set the parameter file here (path relative to python call)
-PARAMETER_FILE = 'paramsets/std_gamma.py'
+PARAMETER_FILE = 'paramsets/std_beta.py'
 
 
 class MakeupClass():
@@ -36,6 +36,6 @@ def set_params(filepath=PARAMETER_FILE, dic='parameters'):
         setattr(modules[__name__], classname, curclass)
         for parname in paramset[classname]:
             curclass.add_attr(parname, paramset[classname][parname])
-
+    setattr(modules[__name__], 'PARAMETER_FILE', PARAMETER_FILE)
 
 set_params()
