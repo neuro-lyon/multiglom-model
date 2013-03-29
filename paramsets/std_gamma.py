@@ -1,12 +1,14 @@
 from brian.stdunits import *
 from brian.units import *
 
+F = 1
+
 parameters = {
 'Common':
     {'simu_dt'    : 0.05*msecond,
     'simu_length' : 2000*msecond,
     'N_subpop'    : 1,
-    'N_mitral'    : 100
+    'N_mitral'    : 100*F
     },
 'Glomerule':
     {'tau' : 3*msecond,
@@ -38,7 +40,7 @@ parameters = {
 'Synapse':
     {'V_E'     : 0*mvolt,
     'V_act_E'  : 0*mvolt,
-    'g_E'      : 3.5*siemens*meter**-2,
+    'g_E'      : 3.5*siemens*meter**-2/F,
     'sigma_E'  : 0.01*mvolt,
     'alpha_E'  : 10*msecond**-1,
     'beta_E'   : 1./3*msecond**-1,
