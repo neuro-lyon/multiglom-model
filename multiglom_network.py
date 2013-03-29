@@ -23,7 +23,8 @@ Script Overview
   - mitral cells and granule cells
 5. Set some monitors on the simulation
 6. Run the simulation
-7. Plots
+7. Output simulation information and indexes.
+8. Plots
 
 """
 
@@ -33,6 +34,7 @@ from scipy.fftpack import fft, fftfreq
 
 # One must import the 'parameters' module before any other modem.* import.
 import model.parameters as ps
+import analysis
 
 from model.glomerule import Glomerule
 from model.mitral_cells import MitralCells
@@ -165,7 +167,8 @@ monit_glom = {}
 monit_mt   = {}
 monit_gr   = {}
 
-recn = [0, N_mitral/2, N_mitral-1]
+# recn = [0, N_mitral/2, N_mitral-1]
+recn = range(N_mitral)
 glom_pm = ('g')
 mt_pm   = ('s', 's_syn', 'V')
 gr_pm   = ('V_D', 's_syn', 's')
@@ -196,9 +199,26 @@ netw.run(simu_length, report="text")
 
 
 """
+Information Output
+------------------
+
+"""
+print '\nParameters: using', ps.PARAMETER_FILE
+
+print 'Populations:', N_subpop, 'glomerular columns;',
+print N_mitral, 'mitral cells;', N_granule, 'granule cells.'
+
+print 'Times:', simu_length, 'of simulation; dt =', defaultclock.dt, '.'
+
+sts_index = analysis.sts(monit_gr['s_syn'], monit_mt['spikes'])
+mps_index = analysis.mps(monit_mt['V'])
+print 'Indexes: STS =', sts_index, '; MPS =', mps_index, '.'
+
+
+"""
 Plotting
 --------
-Plot monitored variable and a scatter plot.
+Plot monitored variables and a scatter plot.
 
 """
 # Raster plot
