@@ -4,12 +4,13 @@
 from brian import Equations
 from brian.units import *
 from brian.stdunits import *
-from parameters import Input as InputParameters
 
-psin = InputParameters()
-tau_Ein   = psin.tau_Ein
-g_Ein0    = psin.g_Ein0
-sigma_Ein = psin.sigma_Ein
+from model import PARAMETERS as ps
+
+PSIN = ps['Input']
+tau_Ein   = PSIN['tau_Ein']
+g_Ein0    = PSIN['g_Ein0']
+sigma_Ein = PSIN['sigma_Ein']
 
 class NetworkInput:
     """Input for the network of mitral and granule cells."""

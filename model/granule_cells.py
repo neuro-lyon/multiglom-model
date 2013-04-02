@@ -4,14 +4,15 @@
 from brian import Equations, NeuronGroup
 from brian.units import *
 from brian.stdunits import *
-from parameters import Granule as GranuleParameters
 
-psgr = GranuleParameters()
-C_m  = psgr.C_m
-g_L  = psgr.g_L
-E_L  = psgr.E_L
-g_SD = psgr.g_SD
-g_DS = psgr.g_DS
+from model import PARAMETERS as ps
+
+PSGR = ps['Granule']
+C_m  = PSGR['C_m']
+g_L  = PSGR['g_L']
+E_L  = PSGR['E_L']
+g_SD = PSGR['g_SD']
+g_DS = PSGR['g_DS']
 
 class GranuleCells:
     """Population of granule cells."""

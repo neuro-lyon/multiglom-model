@@ -4,15 +4,16 @@
 from brian import Equations, NeuronGroup
 from brian.units import *
 from brian.stdunits import *
-from parameters import Mitral as MitralParameters
 
-psmt = MitralParameters()
-V_t = psmt.V_t
-V_r = psmt.V_r
-t_refract = psmt.t_refract
-C_m  = psmt.C_m
-g_L = psmt.g_L
-E_L = psmt.E_L
+from model import PARAMETERS as ps
+
+PSMT = ps['Mitral']
+V_t = PSMT['V_t']
+V_r = PSMT['V_r']
+t_refract = PSMT['t_refract']
+C_m  = PSMT['C_m']
+g_L = PSMT['g_L']
+E_L = PSMT['E_L']
 
 class MitralCells:
     """Population of mitral cells."""

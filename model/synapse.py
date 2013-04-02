@@ -4,26 +4,25 @@
 from brian import Equations
 from brian.units import *
 from brian.stdunits import *
-from parameters import Synapse as SynapseParameters
-from parameters import Common as CommonParameters
 
-pscomm = CommonParameters()
-N_subpop = pscomm.N_subpop
+from model import PARAMETERS as ps
 
-pssyn = SynapseParameters()
-V_E      = pssyn.V_E
-V_act_E  = pssyn.V_act_E
-g_E      = pssyn.g_E
-sigma_E  = pssyn.sigma_E
-alpha_E  = pssyn.alpha_E
-beta_E   = pssyn.beta_E
+N_subpop = ps['Common']['N_subpop']
 
-V_I      = pssyn.V_I
-V_act_I  = pssyn.V_act_I
-g_I      = pssyn.g_I
-sigma_I  = pssyn.sigma_I
-alpha_I  = pssyn.alpha_I
-beta_I   = pssyn.beta_I
+PSSYN = ps['Synapse']
+V_E      = PSSYN['V_E']
+V_act_E  = PSSYN['V_act_E']
+g_E      = PSSYN['g_E']
+sigma_E  = PSSYN['sigma_E']
+alpha_E  = PSSYN['alpha_E']
+beta_E   = PSSYN['beta_E']
+
+V_I      = PSSYN['V_I']
+V_act_I  = PSSYN['V_act_I']
+g_I      = PSSYN['g_I']
+sigma_I  = PSSYN['sigma_I']
+alpha_I  = PSSYN['alpha_I']
+beta_I   = PSSYN['beta_I']
 
 class Synapse:
     """Synapse, from mitral cells to granule cells."""

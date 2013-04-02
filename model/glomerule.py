@@ -2,20 +2,20 @@
 # -*- coding:utf-8 -*-
 
 from brian import *
-from parameters import Glomerule as GlomeruleParameters
-from parameters import Input as InputParameters
 
-psin = InputParameters()
-tau_Ein   = psin.tau_Ein
-g_Ein0    = psin.g_Ein0
-sigma_Ein = psin.sigma_Ein
+from model import PARAMETERS as ps
 
-psgm = GlomeruleParameters()
-tau  = psgm.tau
-f    = psgm.f
-A    = psgm.A
-B    = psgm.B
-C    = psgm.C
+PSIN = ps['Input']
+tau_Ein   = PSIN['tau_Ein']
+g_Ein0    = PSIN['g_Ein0']
+sigma_Ein = PSIN['sigma_Ein']
+
+PSGM = ps['Glomerule'] 
+tau  = PSGM['tau']
+f    = PSGM['f']
+A    = PSGM['A']
+B    = PSGM['B']
+C    = PSGM['C']
 
 class Glomerule:
     """Ensemble of glomeruli, driving input to mitral cells."""

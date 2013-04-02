@@ -16,7 +16,7 @@ Synchronization
 
 """
 import numpy as np
-import model.parameters as ps
+from model import PARAMETERS as ps
 
 from scipy.signal import resample
 from scipy.misc import comb
@@ -24,8 +24,8 @@ from scipy.misc import comb
 from brian.stdunits import *
 from brian.units import *
 
-PSIN = ps.Input()
-TAU  = PSIN.tau_Ein
+PSIN = ps['Input']
+TAU  = PSIN['tau_Ein']
 N_SAMPLES = 1000
 
 
@@ -93,8 +93,11 @@ def mps(memb_pot):
     res = 0.
     all_corr = np.corrcoef(memb_pot.values)
     nneur = len(memb_pot.record)
+    ncomb = comb(nneur, 2, exact=True)
+    assert ncomb > 0, \
+        "No mitral combination are possible, are you using 1 mitral?"
     for i in xrange(nneur):
         for j in xrange(nneur):
             if j > i:
                 res += all_corr[i][j]
-    return res/comb(nneur, 2, exact=True)
+    return res/ncomb
