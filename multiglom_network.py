@@ -29,17 +29,19 @@ Script Overview
 """
 
 from sys import argv
+import importlib
 
 from brian import *
 import numpy as np
 from scipy.fftpack import fft, fftfreq
-from utils import get_module_var
+from utils import path_to_modline
 
 import model
 
 # Set the parameters from the specified file first
 PSFILE = 'paramsets/std_beta.py'
-model.PARAMETERS = get_module_var(PSFILE, 'parameters')
+PSMOD = importlib.import_module(path_to_modline(PSFILE))
+model.PARAMETERS = getattr(PSMOD, 'parameters')
 
 import analysis
 
