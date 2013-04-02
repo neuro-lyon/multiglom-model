@@ -28,6 +28,8 @@ Script Overview
 
 """
 
+from sys import argv
+
 from brian import *
 import numpy as np
 from scipy.fftpack import fft, fftfreq
@@ -41,6 +43,7 @@ from model.mitral_cells import MitralCells
 from model.synapse import Synapse
 from model.granule_cells import GranuleCells
 
+do_plot = (len(argv) > 0)
 
 # Reset old stuff from Brian memory
 clear(erase=True, all=True)
@@ -221,51 +224,52 @@ Plotting
 Plot monitored variables and a scatter plot.
 
 """
-# Raster plot
-raster_plot(monit_mt['spikes'], newfigure=True)
+if do_plot:
+    # Raster plot
+    raster_plot(monit_mt['spikes'], newfigure=True)
 
-# Membrane potentials
-figure()
-sub_v_mt = subplot(2, 1, 1)
-for neur in recn:
-    sub_v_mt.plot(monit_mt['V'].times/msecond,
-                  monit_mt['V'][neur]/mvolt, label="mitral #" + str(neur))
-sub_v_mt.legend()
-sub_v_mt.set_xlabel('Time (ms)')
-sub_v_mt.set_ylabel('Membrane potential of mitral : V (mvolt)')
+    # Membrane potentials
+    figure()
+    sub_v_mt = subplot(2, 1, 1)
+    for neur in recn:
+        sub_v_mt.plot(monit_mt['V'].times/msecond,
+                      monit_mt['V'][neur]/mvolt)
+    sub_v_mt.legend()
+    sub_v_mt.set_xlabel('Time (ms)')
+    sub_v_mt.set_ylabel('Membrane potential of mitral : V (mvolt)')
 
-sub_vd_gr = subplot(2, 1, 2, sharex=sub_v_mt)
-for gran in xrange(N_granule):
-    sub_vd_gr.plot(monit_gr['V_D'].times/msecond,
-                   monit_gr['V_D'][gran]/mvolt, label="granule #" + str(gran))
-sub_vd_gr.legend()
-sub_vd_gr.set_xlabel('Time (ms)')
-sub_vd_gr.set_ylabel('Membrane potential of granule : V (mvolt)')
+    sub_vd_gr = subplot(2, 1, 2, sharex=sub_v_mt)
+    for gran in xrange(N_granule):
+        sub_vd_gr.plot(monit_gr['V_D'].times/msecond,
+                       monit_gr['V_D'][gran]/mvolt, label="granule #" + str(gran))
+    sub_vd_gr.legend()
+    sub_vd_gr.set_xlabel('Time (ms)')
+    sub_vd_gr.set_ylabel('Membrane potential of granule : V (mvolt)')
 
-# s and s_syn from granule and mitral cells
-# also add an FFT on `s granule` to easily see the population frequency
-figure()
-sub_s = subplot(1, 2, 1)
-sub_s.plot(monit_mt['s'].times/msecond,
-         monit_mt['s'][0], label="s mitral")
-sub_s.plot(monit_mt['s_syn'].times/msecond,
-         monit_mt['s_syn'][0], label="s_syn mitral")
-sub_s.plot(monit_gr['s_syn'].times/msecond,
-         monit_gr['s_syn'][0], label="s_syn granule")
-sub_s.plot(monit_gr['s'].times/msecond,
-         monit_gr['s'][0], label="s granule")
-sub_s.legend()
-sub_s.set_xlabel('time (ms)')
-sub_s.set_ylabel('s mitral & s_syn granule & s granule')
+    # s and s_syn from granule and mitral cells
+    # also add an FFT on `s granule` to easily see the population frequency
+    figure()
+    sub_s = subplot(1, 2, 1)
+    sub_s.plot(monit_mt['s'].times/msecond,
+             monit_mt['s'][0], label="s mitral")
+    sub_s.plot(monit_mt['s_syn'].times/msecond,
+             monit_mt['s_syn'][0], label="s_syn mitral")
+    sub_s.plot(monit_gr['s_syn'].times/msecond,
+             monit_gr['s_syn'][0], label="s_syn granule")
+    sub_s.plot(monit_gr['s'].times/msecond,
+             monit_gr['s'][0], label="s granule")
+    sub_s.legend()
+    sub_s.set_xlabel('time (ms)')
+    sub_s.set_ylabel('s mitral & s_syn granule & s granule')
 
-sub_syncrho = subplot(1, 2, 2)
-FFT_MAX_FREQ = 200
-NTIMES = len(monit_gr['s'].times)
-FREQS = fftfreq(NTIMES, pscommon.simu_dt)
-FFT_MAX_FREQ_INDEX = next(f for f in xrange(len(FREQS)) if FREQS[f] > FFT_MAX_FREQ)
-sub_syncrho.plot(FREQS[:FFT_MAX_FREQ_INDEX],
-     abs(fft(monit_gr['s'][0]-(monit_gr['s'][0]).mean())[:FFT_MAX_FREQ_INDEX]))
-sub_syncrho.set_xlabel("granule 's' frequency (Hz)")
-sub_syncrho.set_ylabel('Power')
+    sub_syncrho = subplot(1, 2, 2)
+    FFT_MAX_FREQ = 200
+    NTIMES = len(monit_gr['s'].times)
+    FREQS = fftfreq(NTIMES, pscommon.simu_dt)
+    FFT_MAX_FREQ_INDEX = next(f for f in xrange(len(FREQS)) if FREQS[f] > FFT_MAX_FREQ)
+    sub_syncrho.plot(FREQS[:FFT_MAX_FREQ_INDEX],
+         abs(fft(monit_gr['s'][0]-(monit_gr['s'][0]).mean())[:FFT_MAX_FREQ_INDEX]))
+    sub_syncrho.set_xlabel("granule 's' frequency (Hz)")
+    sub_syncrho.set_ylabel('Power')
 
-show()
+    show()
