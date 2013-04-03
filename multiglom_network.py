@@ -28,19 +28,25 @@ Script Overview
 
 """
 
-from sys import argv
-import importlib
+import argparse
 
 from brian import *
 import numpy as np
 from scipy.fftpack import fft, fftfreq
-from utils import path_to_modline, set_model_ps
+from utils import set_model_ps
 
 import model
 
-# Set the parameters from the specified file first
-PSFILE = 'paramsets/std_beta.py'
-set_model_ps(PSFILE)
+#Argument parsing
+APARSER = argparse.ArgumentParser(description="Run a multi-glomerular simulation.")
+APARSER.add_argument('psfile')
+APARSER.add_argument('--no-plot', action='store_true')
+APARSER.add_argument('--no-indexes', action='store_true')
+APARSER.add_argument('--no-full-ps', action='store_true')
+ARGS = APARSER.parse_args()
+
+# Set the parameters from the specified file BEFORE any model.* import
+set_model_ps(ARGS.psfile)
 
 import analysis
 
@@ -157,7 +163,7 @@ for mtpop in INTER_CONN:
         "Incorrect mitral sub-population number "+str(mtpop)+" for inter-connectivity."
     for grpop in INTER_CONN[mtpop]:
         assert grpop >= 0 and grpop < N_granule, \
-            "Incorrect granule sub-population "+str(grpop)+" number for inter-connectivity."
+            "Incorrect granule sub-population number "+str(grpop)+" for inter-connectivity."
         conn = INTER_CONN[mtpop][grpop]
         assert conn >= 0 and conn <= 1, "Connectivity must be in [0, 1]."
         nlinks = int(N_mitral_per_subpop*conn)
@@ -229,16 +235,21 @@ Information Output
 ------------------
 
 """
-print '\nParameters: using', PSFILE
+print '\nParameters: using', ARGS.psfile
 
 print 'Populations:', N_subpop, 'glomerular columns;',
 print N_mitral, 'mitral cells;', N_granule, 'granule cells.'
 
 print 'Times:', simu_length, 'of simulation; dt =', defaultclock.dt, '.'
 
-sts_index = analysis.sts(monit_gr['s_syn'], monit_mt['spikes'])
-mps_index = analysis.mps(monit_mt['V'])
-print 'Indexes: STS =', sts_index, '; MPS =', mps_index, '.'
+if not ARGS.no_full_ps:
+    print 'Full set of parameters:'
+    print model.PARAMETERS
+
+if not ARGS.no_indexes:
+    sts_index = analysis.sts(monit_gr['s_syn'], monit_mt['spikes'])
+    mps_index = analysis.mps(monit_mt['V'])
+    print 'Indexes: STS =', sts_index, '; MPS =', mps_index, '.'
 
 
 """
@@ -247,50 +258,51 @@ Plotting
 Plot monitored variables and a scatter plot.
 
 """
-# Raster plot
-raster_plot(monit_mt['spikes'], newfigure=True)
+if not ARGS.no_plot:
+    # Raster plot
+    raster_plot(monit_mt['spikes'], newfigure=True)
 
-# Membrane potentials
-figure()
-sub_v_mt = subplot(2, 1, 1)
-for neur in recn:
-    sub_v_mt.plot(monit_mt['V'].times/msecond,
-                  monit_mt['V'][neur]/mvolt)
-sub_v_mt.set_xlabel('Time (ms)')
-sub_v_mt.set_ylabel('Membrane potential of mitral : V (mvolt)')
+    # Membrane potentials
+    figure()
+    sub_v_mt = subplot(2, 1, 1)
+    for neur in recn:
+        sub_v_mt.plot(monit_mt['V'].times/msecond,
+                      monit_mt['V'][neur]/mvolt)
+    sub_v_mt.set_xlabel('Time (ms)')
+    sub_v_mt.set_ylabel('Membrane potential of mitral : V (mvolt)')
 
-sub_vd_gr = subplot(2, 1, 2, sharex=sub_v_mt)
-for gran in xrange(N_granule):
-    sub_vd_gr.plot(monit_gr['V_D'].times/msecond,
-                   monit_gr['V_D'][gran]/mvolt, label="granule #" + str(gran))
-sub_vd_gr.legend()
-sub_vd_gr.set_xlabel('Time (ms)')
-sub_vd_gr.set_ylabel('Membrane potential of granule : V (mvolt)')
+    sub_vd_gr = subplot(2, 1, 2, sharex=sub_v_mt)
+    for gran in xrange(N_granule):
+        sub_vd_gr.plot(monit_gr['V_D'].times/msecond,
+                       monit_gr['V_D'][gran]/mvolt, label="granule #" + str(gran))
+    sub_vd_gr.legend()
+    sub_vd_gr.set_xlabel('Time (ms)')
+    sub_vd_gr.set_ylabel('Membrane potential of granule : V (mvolt)')
 
-# s and s_syn from granule and mitral cells
-# also add an FFT on `s granule` to easily see the population frequency
-figure()
-sub_s = subplot(1, 2, 1)
-sub_s.plot(monit_mt['s'].times/msecond,
-         monit_mt['s'][0], label="s mitral")
-sub_s.plot(monit_mt['s_syn'].times/msecond,
-         monit_mt['s_syn'][0], label="s_syn mitral")
-sub_s.plot(monit_gr['s_syn'].times/msecond,
-         monit_gr['s_syn'][0], label="s_syn granule")
-sub_s.plot(monit_gr['s'].times/msecond,
-         monit_gr['s'][0], label="s granule")
-sub_s.legend()
-sub_s.set_xlabel('time (ms)')
-sub_s.set_ylabel('s mitral & s_syn granule & s granule')
+    # s and s_syn from granule and mitral cells
+    # also add an FFT on `s granule` to easily see the population frequency
+    figure()
+    sub_s = subplot(1, 2, 1)
+    sub_s.plot(monit_mt['s'].times/msecond,
+             monit_mt['s'][0], label="s mitral")
+    sub_s.plot(monit_mt['s_syn'].times/msecond,
+             monit_mt['s_syn'][0], label="s_syn mitral")
+    sub_s.plot(monit_gr['s_syn'].times/msecond,
+             monit_gr['s_syn'][0], label="s_syn granule")
+    sub_s.plot(monit_gr['s'].times/msecond,
+             monit_gr['s'][0], label="s granule")
+    sub_s.legend()
+    sub_s.set_xlabel('time (ms)')
+    sub_s.set_ylabel('s mitral & s_syn granule & s granule')
 
-sub_syncrho = subplot(1, 2, 2)
-FFT_MAX_FREQ = 200
-NTIMES = len(monit_gr['s'].times)
-FREQS = fftfreq(NTIMES, PSCOMMON['simu_dt'])
-FFT_MAX_FREQ_INDEX = next(f for f in xrange(len(FREQS)) if FREQS[f] > FFT_MAX_FREQ)
-sub_syncrho.plot(FREQS[:FFT_MAX_FREQ_INDEX],
-     abs(fft(monit_gr['s'][0]-(monit_gr['s'][0]).mean())[:FFT_MAX_FREQ_INDEX]))
-sub_syncrho.set_xlabel("granule 's' frequency (Hz)")
-sub_syncrho.set_ylabel('Power')
+    sub_syncrho = subplot(1, 2, 2)
+    FFT_MAX_FREQ = 200
+    NTIMES = len(monit_gr['s'].times)
+    FREQS = fftfreq(NTIMES, PSCOMMON['simu_dt'])
+    FFT_MAX_FREQ_INDEX = next(f for f in xrange(len(FREQS)) if FREQS[f] > FFT_MAX_FREQ)
+    sub_syncrho.plot(FREQS[:FFT_MAX_FREQ_INDEX],
+         abs(fft(monit_gr['s'][0]-(monit_gr['s'][0]).mean())[:FFT_MAX_FREQ_INDEX]))
+    sub_syncrho.set_xlabel("granule 's' frequency (Hz)")
+    sub_syncrho.set_ylabel('Power')
 
-show()
+    show()
