@@ -3,7 +3,7 @@ from brian.units import *
 
 F = 1
 
-parameters = {
+PARAMETERS = {
 'Common':
     {'simu_dt'    : 0.05*msecond,
     'simu_length' : 2000*msecond,
