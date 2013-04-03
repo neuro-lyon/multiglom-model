@@ -165,7 +165,7 @@ for mtpop in INTER_CONN:
         for i in xrange(nlinks):
             newconn[i] = 1
         np.random.shuffle(newconn)
-        start = i_subpop*N_mitral_per_subpop
+        start = mtpop*N_mitral_per_subpop
         stop  = start + N_mitral_per_subpop
         mtgr_connections[start:stop, grpop] = newconn[:, 0]
 
