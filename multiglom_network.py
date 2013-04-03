@@ -34,14 +34,13 @@ import importlib
 from brian import *
 import numpy as np
 from scipy.fftpack import fft, fftfreq
-from utils import path_to_modline
+from utils import path_to_modline, set_model_ps
 
 import model
 
 # Set the parameters from the specified file first
 PSFILE = 'paramsets/std_beta.py'
-PSMOD = importlib.import_module(path_to_modline(PSFILE))
-model.PARAMETERS = getattr(PSMOD, 'parameters')
+set_model_ps(PSFILE)
 
 import analysis
 
@@ -150,6 +149,25 @@ for i_subpop in xrange(N_subpop):
     start = i_subpop*N_mitral_per_subpop
     stop  = start + N_mitral_per_subpop
     mtgr_connections[start:stop, i_subpop] = 1.
+
+# Inter subpopulation connectivities
+INTER_CONN = PSCOMMON['inter_conn']
+for mtpop in INTER_CONN:
+    assert mtpop >= 0 and mtpop < N_subpop, \
+        "Incorrect mitral sub-population number "+str(mtpop)+" for inter-connectivity."
+    for grpop in INTER_CONN[mtpop]:
+        assert grpop >= 0 and grpop < N_granule, \
+            "Incorrect granule sub-population "+str(grpop)+" number for inter-connectivity."
+        conn = INTER_CONN[mtpop][grpop]
+        assert conn >= 0 and conn <= 1, "Connectivity must be in [0, 1]."
+        nlinks = int(N_mitral_per_subpop*conn)
+        newconn = np.zeros((N_mitral_per_subpop, 1))
+        for i in xrange(nlinks):
+            newconn[i] = 1
+        np.random.shuffle(newconn)
+        start = i_subpop*N_mitral_per_subpop
+        stop  = start + N_mitral_per_subpop
+        mtgr_connections[start:stop, grpop] = newconn[:, 0]
 
 # Mitral--Granule interactions
 @network_operation(when='start')

@@ -3,12 +3,14 @@ from brian.units import *
 
 F = 1
 
-parameters = {
+PARAMETERS = {
 'Common':
     {'simu_dt'    : 0.05*msecond,
     'simu_length' : 2000*msecond,
-    'N_subpop'    : 1,
-    'N_mitral'    : 100*F
+    'N_subpop'    : 2,
+    'N_mitral'    : 10*F,
+    'inter_conn'  : {0 : {1 : 0.},
+                     1 : {0 : 0.}},
     },
 'Glomerule':
     {'tau' : 3*msecond,
