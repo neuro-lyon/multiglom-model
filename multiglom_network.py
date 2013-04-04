@@ -33,7 +33,7 @@ import argparse
 from brian import *
 import numpy as np
 from scipy.fftpack import fft, fftfreq
-from utils import set_model_ps
+from utils import set_model_ps, print_dict
 
 import model
 
@@ -199,8 +199,7 @@ monit_glom = {}
 monit_mt   = {}
 monit_gr   = {}
 
-# recn = [0, N_mitral/2, N_mitral-1]
-recn = range(N_mitral)
+recn = [0, N_mitral/2, N_mitral-1]
 glom_pm = ('g')
 mt_pm   = ('s', 's_syn', 'V')
 gr_pm   = ('V_D', 's_syn', 's')
@@ -244,7 +243,7 @@ print 'Times:', simu_length, 'of simulation; dt =', defaultclock.dt, '.'
 
 if not ARGS.no_full_ps:
     print 'Full set of parameters:'
-    print model.PARAMETERS
+    print_dict(model.PARAMETERS)
 
 if not ARGS.no_indexes:
     sts_index = analysis.sts(monit_gr['s_syn'], monit_mt['spikes'])
@@ -281,28 +280,25 @@ if not ARGS.no_plot:
 
     # s and s_syn from granule and mitral cells
     # also add an FFT on `s granule` to easily see the population frequency
-    figure()
-    sub_s = subplot(1, 2, 1)
-    sub_s.plot(monit_mt['s'].times/msecond,
-             monit_mt['s'][0], label="s mitral")
-    sub_s.plot(monit_mt['s_syn'].times/msecond,
-             monit_mt['s_syn'][0], label="s_syn mitral")
-    sub_s.plot(monit_gr['s_syn'].times/msecond,
-             monit_gr['s_syn'][0], label="s_syn granule")
-    sub_s.plot(monit_gr['s'].times/msecond,
-             monit_gr['s'][0], label="s granule")
-    sub_s.legend()
-    sub_s.set_xlabel('time (ms)')
-    sub_s.set_ylabel('s mitral & s_syn granule & s granule')
+    for gr in xrange(N_granule):
+        figure()
+        sub_s = subplot(1, 2, 1)
+        sub_s.plot(monit_gr['s_syn'].times/msecond,
+                 monit_gr['s_syn'][gr], label="s_syn granule #"+str(gr))
+        sub_s.plot(monit_gr['s'].times/msecond,
+                 monit_gr['s'][gr], label="s granule #"+str(gr))
+        sub_s.legend()
+        sub_s.set_xlabel('time (ms)')
+        sub_s.set_ylabel('s mitral & s_syn granule & s granule #'+str(gr))
 
-    sub_syncrho = subplot(1, 2, 2)
-    FFT_MAX_FREQ = 200
-    NTIMES = len(monit_gr['s'].times)
-    FREQS = fftfreq(NTIMES, PSCOMMON['simu_dt'])
-    FFT_MAX_FREQ_INDEX = next(f for f in xrange(len(FREQS)) if FREQS[f] > FFT_MAX_FREQ)
-    sub_syncrho.plot(FREQS[:FFT_MAX_FREQ_INDEX],
-         abs(fft(monit_gr['s'][0]-(monit_gr['s'][0]).mean())[:FFT_MAX_FREQ_INDEX]))
-    sub_syncrho.set_xlabel("granule 's' frequency (Hz)")
-    sub_syncrho.set_ylabel('Power')
+        sub_syncrho = subplot(1, 2, 2)
+        FFT_MAX_FREQ = 200
+        NTIMES = len(monit_gr['s'].times)
+        FREQS = fftfreq(NTIMES, PSCOMMON['simu_dt'])
+        FFT_MAX_FREQ_INDEX = next(f for f in xrange(len(FREQS)) if FREQS[f] > FFT_MAX_FREQ)
+        sub_syncrho.plot(FREQS[:FFT_MAX_FREQ_INDEX],
+             abs(fft(monit_gr['s'][gr]-(monit_gr['s'][gr]).mean())[:FFT_MAX_FREQ_INDEX]))
+        sub_syncrho.set_xlabel("granule #"+str(gr)+" 's' frequency (Hz)")
+        sub_syncrho.set_ylabel('Power')
 
     show()
