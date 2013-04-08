@@ -28,16 +28,9 @@ Script Overview
 
 """
 
+# Argument parsing
 import argparse
 
-from brian import *
-import numpy as np
-from scipy.fftpack import fft, fftfreq
-from utils import set_model_ps, print_dict
-
-import model
-
-#Argument parsing
 APARSER = argparse.ArgumentParser(description="Run a multi-glomerular simulation.")
 APARSER.add_argument('psfile')
 APARSER.add_argument('--no-plot', action='store_true')
@@ -46,9 +39,17 @@ APARSER.add_argument('--no-full-ps', action='store_true')
 ARGS = APARSER.parse_args()
 
 # Set the parameters from the specified file BEFORE any model.* import
+from brian import *
+from model_utils import set_model_ps, intrapop_connections, interpop_connections
+
+import model
+
 set_model_ps(ARGS.psfile)
 
+import numpy as np
+from scipy.fftpack import fft, fftfreq
 import analysis
+from utils import print_dict
 
 from model.glomerule import Glomerule
 from model.mitral_cells import MitralCells
@@ -150,32 +151,13 @@ def mt_input():
     mt.pop.g_input = dot(glom.pop.g, glmt_connections)
 
 # Connecting sub-population of mitral cells to granule cells
-mtgr_connections = np.zeros((N_MITRAL, N_GRANULE))
-for i_subpop in xrange(N_SUBPOP):
-    start = i_subpop*N_MITRAL_PER_SUBPOP
-    stop  = start + N_MITRAL_PER_SUBPOP
-    mtgr_connections[start:stop, i_subpop] = 1.
+mtgr_connections = intrapop_connections(N_MITRAL, N_GRANULE, N_SUBPOP, N_MITRAL_PER_SUBPOP)
 
 # Inter subpopulation connectivities
 INTER_CONN_RATE = PSCOMMON['inter_conn_rate']
 INTER_CONN_STRENGTH = PSCOMMON['inter_conn_strength']
-for mtpop in INTER_CONN_RATE:
-    assert mtpop >= 0 and mtpop < N_SUBPOP, \
-        "Incorrect mitral sub-population number "+str(mtpop)+" for inter-connectivity."
-    for grpop in INTER_CONN_RATE[mtpop]:
-        assert grpop >= 0 and grpop < N_GRANULE, \
-            "Incorrect granule sub-population number "+str(grpop)+" for inter-connectivity."
-        conn = INTER_CONN_RATE[mtpop][grpop]
-        assert conn >= 0 and conn <= 1, "Connectivity must be in [0, 1]."
-        nlinks = int(N_MITRAL_PER_SUBPOP*conn)
-        newconn = np.zeros((N_MITRAL_PER_SUBPOP, 1))
-        for i in xrange(nlinks):
-            newconn[i] = INTER_CONN_STRENGTH[mtpop][grpop]
-        np.random.shuffle(newconn)
-        start = mtpop*N_MITRAL_PER_SUBPOP
-        stop  = start + N_MITRAL_PER_SUBPOP
-        mtgr_connections[start:stop, grpop] = newconn[:, 0]
-
+mtgr_connections = interpop_connections(mtgr_connections, N_MITRAL, N_SUBPOP,
+                                        N_MITRAL_PER_SUBPOP, INTER_CONN_RATE, INTER_CONN_STRENGTH)
 # Mitral--Granule interactions
 @network_operation(when='start')
 def graded_synapse():
