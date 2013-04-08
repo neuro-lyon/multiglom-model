@@ -77,16 +77,16 @@ PSMT     = model.PARAMETERS['Mitral']
 PSGR     = model.PARAMETERS['Granule']
 PSCOMMON = model.PARAMETERS['Common']
 
-N_mitral    = PSCOMMON['N_mitral']
-N_glomerule = N_granule = N_subpop = PSCOMMON['N_subpop']
+N_MITRAL    = PSCOMMON['N_mitral']
+N_GLOMERULI = N_GRANULE = N_SUBPOP = PSCOMMON['N_subpop']
 
 # check to have an even number of mitral in each sub-population
-assert N_mitral % N_subpop == 0, \
+assert N_MITRAL % N_SUBPOP == 0, \
        "N_mitral is not a multiple of the number of sub-populations N_subpop."
-N_mitral_per_subpop = N_mitral/N_subpop
+N_MITRAL_PER_SUBPOP = N_MITRAL/N_SUBPOP
 
 defaultclock.dt = PSCOMMON['simu_dt']
-simu_length     = PSCOMMON['simu_length']
+SIMU_LENGTH     = PSCOMMON['simu_length']
 
 
 """
@@ -101,7 +101,7 @@ Population Initialization
 # Glomeruli
 glom = Glomerule()
 glom.add_eqs(oscillating=False)
-glom.make_pop(N_glomerule*N_mitral_per_subpop)
+glom.make_pop(N_GLOMERULI*N_MITRAL_PER_SUBPOP)
 
 # Synapses (granule -- mitral)
 synexc = Synapse(synapse_type='exc') # excitatory synapse
@@ -119,7 +119,7 @@ mt_supp_eqs =  {'var': ['- I_syn', '- g_input*V'],
                         Equations("g_input : siemens*meter**-2")]}
 mt.add_eqs(supp_eqs=mt_supp_eqs)
 
-mt.make_pop(N_mitral)
+mt.make_pop(N_MITRAL)
 mt.pop.V = (PSMT['E_L'] - PSMT['V_r'])*np.random.random_sample(np.shape(mt.pop.V)) \
            + PSMT['V_r']
 
@@ -129,7 +129,7 @@ gr_supp_eqs = {'var': ['-I_syn'],
                'eqs': [syninhib.get_eqs_model()]}
 gr.add_eqs(supp_eqs=gr_supp_eqs)
 
-gr.make_pop(N_granule)
+gr.make_pop(N_GRANULE)
 gr.pop.V_D = PSGR['E_L']
 gr.pop.V_S = PSGR['E_L']
 
@@ -142,7 +142,7 @@ Connecting Populations
 
 """
 # Connecting mitral cells to glomeruli
-glmt_connections = diag(ones(N_mitral))
+glmt_connections = diag(ones(N_MITRAL))
 
 # Glomeruli--Mitral interactions
 @network_operation(when='start')
@@ -150,29 +150,30 @@ def mt_input():
     mt.pop.g_input = dot(glom.pop.g, glmt_connections)
 
 # Connecting sub-population of mitral cells to granule cells
-mtgr_connections = np.zeros((N_mitral, N_granule))
-for i_subpop in xrange(N_subpop):
-    start = i_subpop*N_mitral_per_subpop
-    stop  = start + N_mitral_per_subpop
+mtgr_connections = np.zeros((N_MITRAL, N_GRANULE))
+for i_subpop in xrange(N_SUBPOP):
+    start = i_subpop*N_MITRAL_PER_SUBPOP
+    stop  = start + N_MITRAL_PER_SUBPOP
     mtgr_connections[start:stop, i_subpop] = 1.
 
 # Inter subpopulation connectivities
-INTER_CONN = PSCOMMON['inter_conn']
-for mtpop in INTER_CONN:
-    assert mtpop >= 0 and mtpop < N_subpop, \
+INTER_CONN_RATE = PSCOMMON['inter_conn_rate']
+INTER_CONN_STRENGTH = PSCOMMON['inter_conn_strength']
+for mtpop in INTER_CONN_RATE:
+    assert mtpop >= 0 and mtpop < N_SUBPOP, \
         "Incorrect mitral sub-population number "+str(mtpop)+" for inter-connectivity."
-    for grpop in INTER_CONN[mtpop]:
-        assert grpop >= 0 and grpop < N_granule, \
+    for grpop in INTER_CONN_RATE[mtpop]:
+        assert grpop >= 0 and grpop < N_GRANULE, \
             "Incorrect granule sub-population number "+str(grpop)+" for inter-connectivity."
-        conn = INTER_CONN[mtpop][grpop]
+        conn = INTER_CONN_RATE[mtpop][grpop]
         assert conn >= 0 and conn <= 1, "Connectivity must be in [0, 1]."
-        nlinks = int(N_mitral_per_subpop*conn)
-        newconn = np.zeros((N_mitral_per_subpop, 1))
+        nlinks = int(N_MITRAL_PER_SUBPOP*conn)
+        newconn = np.zeros((N_MITRAL_PER_SUBPOP, 1))
         for i in xrange(nlinks):
-            newconn[i] = 1
+            newconn[i] = INTER_CONN_STRENGTH[mtpop][grpop]
         np.random.shuffle(newconn)
-        start = mtpop*N_mitral_per_subpop
-        stop  = start + N_mitral_per_subpop
+        start = mtpop*N_MITRAL_PER_SUBPOP
+        stop  = start + N_MITRAL_PER_SUBPOP
         mtgr_connections[start:stop, grpop] = newconn[:, 0]
 
 # Mitral--Granule interactions
@@ -199,7 +200,7 @@ monit_glom = {}
 monit_mt   = {}
 monit_gr   = {}
 
-recn = [0, N_mitral/2, N_mitral-1]
+recn = [0, N_MITRAL/2, N_MITRAL - 1]
 glom_pm = ('g')
 mt_pm   = ('s', 's_syn', 'V')
 gr_pm   = ('V_D', 's_syn', 's')
@@ -226,7 +227,7 @@ netw = Network(glom.pop, mt.pop, gr.pop, mt_input, graded_synapse, keep_reset,
                [m for m in monit_gr.values()])
 
 # Simulation run
-netw.run(simu_length, report="text")
+netw.run(SIMU_LENGTH, report="text")
 
 
 """
@@ -236,10 +237,10 @@ Information Output
 """
 print '\nParameters: using', ARGS.psfile
 
-print 'Populations:', N_subpop, 'glomerular columns;',
-print N_mitral, 'mitral cells;', N_granule, 'granule cells.'
+print 'Populations:', N_SUBPOP, 'glomerular columns;',
+print N_MITRAL, 'mitral cells;', N_GRANULE, 'granule cells.'
 
-print 'Times:', simu_length, 'of simulation; dt =', defaultclock.dt, '.'
+print 'Times:', SIMU_LENGTH, 'of simulation; dt =', defaultclock.dt, '.'
 
 if not ARGS.no_full_ps:
     print 'Full set of parameters:'
@@ -271,7 +272,7 @@ if not ARGS.no_plot:
     sub_v_mt.set_ylabel('Membrane potential of mitral : V (mvolt)')
 
     sub_vd_gr = subplot(2, 1, 2, sharex=sub_v_mt)
-    for gran in xrange(N_granule):
+    for gran in xrange(N_GRANULE):
         sub_vd_gr.plot(monit_gr['V_D'].times/msecond,
                        monit_gr['V_D'][gran]/mvolt, label="granule #" + str(gran))
     sub_vd_gr.legend()
@@ -280,7 +281,7 @@ if not ARGS.no_plot:
 
     # s and s_syn from granule and mitral cells
     # also add an FFT on `s granule` to easily see the population frequency
-    for gr in xrange(N_granule):
+    for gr in xrange(N_GRANULE):
         figure()
         sub_s = subplot(1, 2, 1)
         sub_s.plot(monit_gr['s_syn'].times/msecond,

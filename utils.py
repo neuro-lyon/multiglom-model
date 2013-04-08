@@ -19,6 +19,7 @@ def set_model_ps(filepath, dicname='PARAMETERS'):
     model.PARAMETERS = getattr(psmod, dicname)
 
 def print_dict(dictio, level=0):
+    """Pretty print a dictionnary."""
     for k in dictio:
         if type(dictio[k]) == type({}):
             print ' '*2*level + str(k)

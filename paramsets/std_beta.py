@@ -3,15 +3,21 @@ from brian.units import *
 
 F = 1
 
+N_SUBPOP = 10
+
 PARAMETERS = {
 'Common':
     {'simu_dt'    : 0.05*msecond,
     'simu_length' : 2000*msecond,
-    'N_subpop'    : 2,
-    'N_mitral'    : 10*F,
-    'inter_conn'  : {0 : {1 : 0.},
-                     1 : {0 : 0.}},
-    },
+    'N_subpop'    : N_SUBPOP,
+    'N_mitral'    : N_SUBPOP*15*F,
+    'inter_conn_rate'     : {0: {1: 0.5, 2: 0.},
+                             1: {0: 0.75, 2: 0},
+                             2: {0: 0.5, 1: 0}},
+    'inter_conn_strength' : {0: {1: 0.2, 2: 0.9},
+                             1: {0: 1, 2: 0.5},
+                             2: {0: 0.5, 1: 0.4}},
+    }, 
 'Glomerule':
     {'tau' : 3*msecond,
     'f'    : 2*Hz,
