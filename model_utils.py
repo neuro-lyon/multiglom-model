@@ -8,6 +8,7 @@ import importlib
 import model
 import numpy as np
 
+from brian import StateMonitor, SpikeMonitor
 from utils import path_to_modline
 
 def set_model_ps(filepath, dicname='PARAMETERS'):
@@ -50,3 +51,12 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
             stop  = start + n_mitral_per_subpop
             res_mat[start:stop, grpop] = newconn[:, 0]
     return res_mat
+
+def monit(pop, params, reclist=True, spikes=False):
+    """Returns a dictionnary of monitors for the population."""
+    res = {}
+    for pname in params:
+        res[pname] = StateMonitor(pop, pname, record=reclist)
+    if spikes:
+        res['spikes'] = SpikeMonitor(pop, record=True)
+    return res

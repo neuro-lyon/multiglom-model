@@ -40,7 +40,7 @@ ARGS = APARSER.parse_args()
 
 # Set the parameters from the specified file BEFORE any model.* import
 from brian import *
-from model_utils import set_model_ps, intrapop_connections, interpop_connections
+from model_utils import set_model_ps, intrapop_connections, interpop_connections, monit
 
 import model
 
@@ -174,25 +174,18 @@ def keep_reset():
 """
 Simulation Monitoring
 ---------------------
-Define a dict for each population. Then add the variable to monitor.
+Monitor state variables for the different populations.
 
 """
-# Simulation monitors
-monit_glom = {}
-monit_mt   = {}
-monit_gr   = {}
+rec_neurons = [0, N_MITRAL/2, N_MITRAL - 1]
+glom_ps = ('g')
+mt_ps   = ('s', 's_syn', 'V')
+gr_ps   = ('V_D', 's_syn', 's')
 
-recn = [0, N_MITRAL/2, N_MITRAL - 1]
-glom_pm = ('g')
-mt_pm   = ('s', 's_syn', 'V')
-gr_pm   = ('V_D', 's_syn', 's')
-for pname in glom_pm:
-    monit_glom[pname] = StateMonitor(glom.pop, pname, record=recn)
-for pname in mt_pm:
-    monit_mt[pname] = StateMonitor(mt.pop, pname, record=recn)
-monit_mt['spikes'] = SpikeMonitor(mt.pop, record=True)
-for pname in gr_pm:
-    monit_gr[pname] = StateMonitor(gr.pop, pname, record=True)
+# Simulation monitors
+monit_glom = monit(glom.pop, glom_ps, rec_neurons)
+monit_mt   = monit(mt.pop, mt_ps, rec_neurons, spikes=True)
+monit_gr   = monit(gr.pop, gr_ps)
 
 
 """
@@ -247,7 +240,7 @@ if not ARGS.no_plot:
     # Membrane potentials
     figure()
     sub_v_mt = subplot(2, 1, 1)
-    for neur in recn:
+    for neur in rec_neurons:
         sub_v_mt.plot(monit_mt['V'].times/msecond,
                       monit_mt['V'][neur]/mvolt)
     sub_v_mt.set_xlabel('Time (ms)')
