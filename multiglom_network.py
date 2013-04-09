@@ -264,12 +264,16 @@ if not ARGS.no_plot:
         sub_s.set_ylabel('s mitral & s_syn granule & s granule #'+str(gr))
 
         sub_syncrho = subplot(1, 2, 2)
-        FFT_MAX_FREQ = 200
-        NTIMES = len(monit_gr['s'].times)
-        FREQS = fftfreq(NTIMES, PSCOMMON['simu_dt'])
-        FFT_MAX_FREQ_INDEX = next(f for f in xrange(len(FREQS)) if FREQS[f] > FFT_MAX_FREQ)
-        sub_syncrho.plot(FREQS[:FFT_MAX_FREQ_INDEX],
-             abs(fft(monit_gr['s'][gr]-(monit_gr['s'][gr]).mean())[:FFT_MAX_FREQ_INDEX]))
+        fft_max_freq = 200
+        ntimes = len(monit_gr['s'].times)
+        freqs = fftfreq(ntimes, PSCOMMON['simu_dt'])
+        fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
+
+        fft_sig = abs(fft(monit_gr['s'][gr]-(monit_gr['s'][gr]).mean())[:fft_max_freq_index])
+        ind_max_freq = argmax(fft_sig)
+        print 'MAX Freq FFT :', freqs[ind_max_freq]
+
+        sub_syncrho.plot(freqs[:fft_max_freq_index], fft_sig)
         sub_syncrho.set_xlabel("granule #"+str(gr)+" 's' frequency (Hz)")
         sub_syncrho.set_ylabel('Power')
 
