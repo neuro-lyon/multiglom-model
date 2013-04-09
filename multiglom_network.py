@@ -107,11 +107,9 @@ glom.make_pop(N_GLOMERULI*N_MITRAL_PER_SUBPOP)
 # Synapses (granule -- mitral)
 synexc = Synapse(synapse_type='exc') # excitatory synapse
 synexc.set_eqs_model()
-synexc.get_eqs_model()
 
 syninhib = Synapse(synapse_type='inhib') # inhibitory synapse
 syninhib.set_eqs_model()
-syninhib.get_eqs_model()
 
 # Mitral cells
 mt = MitralCells()
@@ -119,7 +117,6 @@ mt_supp_eqs =  {'var': ['- I_syn', '- g_input*V'],
                 'eqs': [synexc.get_eqs_model(),
                         Equations("g_input : siemens*meter**-2")]}
 mt.add_eqs(supp_eqs=mt_supp_eqs)
-
 mt.make_pop(N_MITRAL)
 mt.pop.V = (PSMT['E_L'] - PSMT['V_r'])*np.random.random_sample(np.shape(mt.pop.V)) \
            + PSMT['V_r']
@@ -129,7 +126,6 @@ gr = GranuleCells()
 gr_supp_eqs = {'var': ['-I_syn'],
                'eqs': [syninhib.get_eqs_model()]}
 gr.add_eqs(supp_eqs=gr_supp_eqs)
-
 gr.make_pop(N_GRANULE)
 gr.pop.V_D = PSGR['E_L']
 gr.pop.V_S = PSGR['E_L']
