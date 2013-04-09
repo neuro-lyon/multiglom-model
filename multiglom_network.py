@@ -35,16 +35,16 @@ APARSER = argparse.ArgumentParser(description="Run a multi-glomerular simulation
 APARSER.add_argument('psfile')
 APARSER.add_argument('--no-plot', action='store_true')
 APARSER.add_argument('--no-indexes', action='store_true')
-APARSER.add_argument('--no-full-ps', action='store_true')
+APARSER.add_argument('--full-ps', action='store_true')
 ARGS = APARSER.parse_args()
 
 # Set the parameters from the specified file BEFORE any model.* import
 from brian import *
-from model_utils import set_model_ps, intrapop_connections, interpop_connections, monit
+import model_utils as mutils
 
 import model
 
-set_model_ps(ARGS.psfile)
+mutils.set_model_ps(ARGS.psfile)
 
 import numpy as np
 from scipy.fftpack import fft, fftfreq
@@ -147,12 +147,12 @@ def mt_input():
     mt.pop.g_input = dot(glom.pop.g, glmt_connections)
 
 # Connecting sub-population of mitral cells to granule cells
-mtgr_connections = intrapop_connections(N_MITRAL, N_GRANULE, N_SUBPOP, N_MITRAL_PER_SUBPOP)
+mtgr_connections = mutils.intrapop_connections(N_MITRAL, N_GRANULE, N_SUBPOP, N_MITRAL_PER_SUBPOP)
 
 # Inter subpopulation connectivities
 INTER_CONN_RATE = PSCOMMON['inter_conn_rate']
 INTER_CONN_STRENGTH = PSCOMMON['inter_conn_strength']
-mtgr_connections = interpop_connections(mtgr_connections, N_MITRAL, N_SUBPOP,
+mtgr_connections = mutils.interpop_connections(mtgr_connections, N_MITRAL, N_SUBPOP,
                                         N_MITRAL_PER_SUBPOP, INTER_CONN_RATE, INTER_CONN_STRENGTH)
 # Mitral--Granule interactions
 @network_operation(when='start')
@@ -179,9 +179,9 @@ mt_ps   = ('s', 's_syn', 'V')
 gr_ps   = ('V_D', 's_syn', 's')
 
 # Simulation monitors
-monit_glom = monit(glom.pop, glom_ps, rec_neurons)
-monit_mt   = monit(mt.pop, mt_ps, rec_neurons, spikes=True)
-monit_gr   = monit(gr.pop, gr_ps)
+monit_glom = mutils.monit(glom.pop, glom_ps, rec_neurons)
+monit_mt   = mutils.monit(mt.pop, mt_ps, rec_neurons, spikes=True)
+monit_gr   = mutils.monit(gr.pop, gr_ps)
 
 
 """
@@ -213,7 +213,7 @@ print N_MITRAL, 'mitral cells;', N_GRANULE, 'granule cells.'
 
 print 'Times:', SIMU_LENGTH, 'of simulation; dt =', defaultclock.dt, '.'
 
-if not ARGS.no_full_ps:
+if ARGS.full_ps:
     print 'Full set of parameters:'
     print_dict(model.PARAMETERS)
 
@@ -251,7 +251,7 @@ if not ARGS.no_plot:
     sub_vd_gr.set_ylabel('Membrane potential of granule : V (mvolt)')
 
     # s and s_syn from granule and mitral cells
-    # also add an FFT on `s granule` to easily see the population frequency
+    # and an FFT on `s granule` to easily see the population frequency
     for gr in xrange(N_GRANULE):
         figure()
         sub_s = subplot(1, 2, 1)
