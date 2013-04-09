@@ -12,7 +12,7 @@ PARAMETERS = {
     'N_mitral'    : N_SUBPOP*100*F,
     'inter_conn_rate'     : {},
     'inter_conn_strength' : {},
-    }, 
+    },
 'Glomerule':
     {'tau' : 3*msecond,
     'f'    : 2*Hz,

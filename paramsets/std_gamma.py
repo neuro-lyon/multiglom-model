@@ -2,14 +2,17 @@ from brian.stdunits import *
 from brian.units import *
 
 F = 1
+N_SUBPOP = 1
 
 PARAMETERS = {
 'Common':
     {'simu_dt'    : 0.05*msecond,
     'simu_length' : 2000*msecond,
-    'N_subpop'    : 1,
-    'N_mitral'    : 100*F
-    },
+    'N_subpop'    : N_SUBPOP,
+    'N_mitral'    : N_SUBPOP*100*F,
+    'inter_conn_rate'     : {},
+    'inter_conn_strength' : {},
+    }, 
 'Glomerule':
     {'tau' : 3*msecond,
     'f'    : 2*Hz,
