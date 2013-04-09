@@ -2,20 +2,16 @@ from brian.stdunits import *
 from brian.units import *
 
 F = 1
-N_SUBPOP = 3
+N_SUBPOP = 1
 
 PARAMETERS = {
 'Common':
     {'simu_dt'    : 0.05*msecond,
     'simu_length' : 2000*msecond,
     'N_subpop'    : N_SUBPOP,
-    'N_mitral'    : 4*N_SUBPOP*F,
-    'inter_conn_rate'     : {0: {1: 0.5, 2: 0.},
-                             1: {0: 0.75, 2: 0},
-                             2: {0: 0.25, 1: 0.25}},
-    'inter_conn_strength' : {0: {1: 0.2, 2: 0.9},
-                             1: {0: 1, 2: 0.5},
-                             2: {0: 0.5, 1: 0}},
+    'N_mitral'    : N_SUBPOP*100*F,
+    'inter_conn_rate'     : {},
+    'inter_conn_strength' : {},
     }, 
 'Glomerule':
     {'tau' : 3*msecond,
@@ -40,8 +36,8 @@ PARAMETERS = {
     'g_DS' : 300*siemens*meter**-2
     },
 'Input':
-    {'tau_Ein'  : 6*msecond,
-    'g_Ein0'    : 2.4*siemens*meter**-2,
+    {'tau_Ein'  : 3*msecond,
+    'g_Ein0'    : 0.5*siemens*meter**-2,
     'sigma_Ein' : .05*siemens*meter**-2*second**(-1./2)
     },
 'Synapse':
