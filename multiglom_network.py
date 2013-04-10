@@ -235,31 +235,7 @@ if not ARGS.no_plot:
     # Membrane potentials
     plotting.memb_plot_figure(monit_mt, monit_gr, rec_neurons, N_GRANULE)
 
-    # s and s_syn from granule and mitral cells
-    # and an FFT on `s granule` to easily see the population frequency
-    for gr in xrange(N_GRANULE):
-        figure()
-        sub_s = subplot(1, 2, 1)
-        sub_s.plot(monit_gr['s_syn'].times/msecond,
-                 monit_gr['s_syn'][gr], label="s_syn granule #"+str(gr))
-        sub_s.plot(monit_gr['s'].times/msecond,
-                 monit_gr['s'][gr], label="s granule #"+str(gr))
-        sub_s.legend()
-        sub_s.set_xlabel('time (ms)')
-        sub_s.set_ylabel('s mitral & s_syn granule & s granule #'+str(gr))
-
-        sub_syncrho = subplot(1, 2, 2)
-        fft_max_freq = 200
-        ntimes = len(monit_gr['s'].times)
-        freqs = fftfreq(ntimes, PSCOMMON['simu_dt'])
-        fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
-
-        fft_sig = abs(fft(monit_gr['s'][gr]-(monit_gr['s'][gr]).mean())[:fft_max_freq_index])
-        ind_max_freq = argmax(fft_sig)
-        print 'MAX Freq FFT :', freqs[ind_max_freq]
-
-        sub_syncrho.plot(freqs[:fft_max_freq_index], fft_sig)
-        sub_syncrho.set_xlabel("granule #"+str(gr)+" 's' frequency (Hz)")
-        sub_syncrho.set_ylabel('Power')
+    # Granule synapses
+    plotting.granule_figure(monit_gr, PSCOMMON)
 
     show()
