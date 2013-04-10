@@ -18,9 +18,10 @@ def raster_plot(spike_monitor, n_subpop):
             abs_neuron = neur + subpop*n_neuron_per_subpop
             spikes = spike_monitor[abs_neuron]
             plt.plot(spikes/msecond, [abs_neuron]*len(spikes), ' .',
-                     color=subpop_color)
-    x_overplot = 0.05*spike_monitor.clock.end
-    y_overplot = 0.05*n_neurons
+                     color=subpop_color, mew=0)
+    margin = 0.01
+    x_overplot = margin*spike_monitor.clock.end
+    y_overplot = margin*n_neurons
     plt.xlim((-x_overplot)/msecond,
              (spike_monitor.clock.end + x_overplot)/msecond)
     plt.ylim(-y_overplot, n_neurons + y_overplot)
