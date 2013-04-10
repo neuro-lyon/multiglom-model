@@ -230,7 +230,7 @@ Plot monitored variables and a scatter plot.
 """
 if not ARGS.no_plot:
     # Raster plot
-    raster_plot(monit_mt['spikes'], newfigure=True)
+    plotting.raster_plot(monit_mt['spikes'], N_SUBPOP)
 
     # Membrane potentials
     plotting.memb_plot_figure(monit_mt, monit_gr, rec_neurons, N_GRANULE)
