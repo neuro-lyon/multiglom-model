@@ -7,7 +7,7 @@ from brian.stdunits import *
 from brian.units import *
 
 def raster_plot(spike_monitor, n_subpop):
-    """Raster plot different color for each subpop."""
+    """Raster plot with a different color for each sub-population."""
     n_neurons = len(spike_monitor.spiketimes)
     n_neuron_per_subpop = n_neurons/n_subpop
     colors = get_colorlist(n_subpop)
@@ -38,6 +38,7 @@ def get_colorlist(n_colors, cmap_name="gist_ncar"):
     return colors
 
 def memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule):
+    """Membrane potentials of mitral and granule cells."""
     plt.figure()
     sub_v_mt = plt.subplot(2, 1, 1)
     for neur in rec_neurons:
@@ -55,8 +56,7 @@ def memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule):
     sub_vd_gr.set_ylabel('Membrane potential of granule : V (mvolt)')
 
 def granule_figure(monit_gr, pscommon):
-    # s and s_syn from granule and mitral cells
-    # and an FFT on `s granule` to easily see the population frequency
+    """Parameters to/from the granule, useful to see population synchrony."""
     for gr in xrange(pscommon['N_subpop']):
         plt.figure()
         sub_s = plt.subplot(1, 2, 1)
