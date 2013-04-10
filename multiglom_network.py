@@ -41,14 +41,13 @@ ARGS = APARSER.parse_args()
 # Set the parameters from the specified file BEFORE any model.* import
 from brian import *
 import model_utils as mutils
-
 import model
-
 mutils.set_model_ps(ARGS.psfile)
 
 import numpy as np
 from scipy.fftpack import fft, fftfreq
 import analysis
+import plotting
 from utils import print_dict
 
 from model.glomerule import Glomerule
@@ -234,21 +233,7 @@ if not ARGS.no_plot:
     raster_plot(monit_mt['spikes'], newfigure=True)
 
     # Membrane potentials
-    figure()
-    sub_v_mt = subplot(2, 1, 1)
-    for neur in rec_neurons:
-        sub_v_mt.plot(monit_mt['V'].times/msecond,
-                      monit_mt['V'][neur]/mvolt)
-    sub_v_mt.set_xlabel('Time (ms)')
-    sub_v_mt.set_ylabel('Membrane potential of mitral : V (mvolt)')
-
-    sub_vd_gr = subplot(2, 1, 2, sharex=sub_v_mt)
-    for gran in xrange(N_GRANULE):
-        sub_vd_gr.plot(monit_gr['V_D'].times/msecond,
-                       monit_gr['V_D'][gran]/mvolt, label="granule #" + str(gran))
-    sub_vd_gr.legend()
-    sub_vd_gr.set_xlabel('Time (ms)')
-    sub_vd_gr.set_ylabel('Membrane potential of granule : V (mvolt)')
+    plotting.memb_plot_figure(monit_mt, monit_gr, rec_neurons, N_GRANULE)
 
     # s and s_syn from granule and mitral cells
     # and an FFT on `s granule` to easily see the population frequency
