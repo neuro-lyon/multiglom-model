@@ -76,7 +76,7 @@ def granule_figure(monit_gr, pscommon):
 
         fft_sig = abs(fft(monit_gr['s'][gr]-(monit_gr['s'][gr]).mean())[:fft_max_freq_index])
         ind_max_freq = argmax(fft_sig)
-        print 'MAX Freq FFT :', freqs[ind_max_freq]
+        print 'MAX Freq FFT of granule', gr, ':', freqs[ind_max_freq]
 
         sub_syncrho.plot(freqs[:fft_max_freq_index], fft_sig)
         sub_syncrho.set_xlabel("granule #"+str(gr)+" 's' frequency (Hz)")
