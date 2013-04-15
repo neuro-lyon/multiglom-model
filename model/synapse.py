@@ -53,6 +53,7 @@ class Synapse:
                     ds/dt = alpha_I * (1 - s) * T - beta_I * s : 1
                     T = 1/(1 + exp(-1*(V_D - V_act_I)/sigma_I)) : 1
                     s_syn : 1
+                    s_syn_self : 1
                 ''')
             else:
                 self.eqs_model = Equations('''

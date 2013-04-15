@@ -14,13 +14,13 @@ Script Overview
 1. Import the model and necessary stuff (like numpy)
 2. Get the set of parameters (see inside the paramsets directory)
 3. Initialize the different cell populations:
-  - glomeruli
-  - (synapses between granule and mitral)
-  - mitral cells
-  - granule cells
+    - glomeruli
+    - (synapses between granule and mitral)
+    - mitral cells
+    - granule cells
 4. Connects the different cell populations:
-  - glomeruli and mitral cells
-  - mitral cells and granule cells
+    - glomeruli and mitral cells
+    - mitral cells and granule cells
 5. Set some monitors on the simulation
 6. Run the simulation
 7. Output simulation information and indexes.
@@ -156,10 +156,19 @@ mtgr_connections = mutils.interpop_connections(mtgr_connections, N_MITRAL, N_SUB
 # Mitral--Granule interactions
 @network_operation(when='start')
 def graded_synapse():
+    """Computes granule and mitral s_syn"""
     mt.pop.state('T')[:] = 0.
     mt.pop.state('T')[mt.pop.get_refractory_indices()] = 1.
     gr.pop.s_syn = dot(mt.pop.s, mtgr_connections)
     mt.pop.s_syn = dot(gr.pop.s, transpose(mtgr_connections))
+
+@network_operation(when='start')
+def sum_s():
+    """Computes granule self s_syn (for its glomerular column only)"""
+    for subpop in xrange(N_SUBPOP):
+        start = subpop*N_MITRAL_PER_SUBPOP
+        stop  = start + N_MITRAL_PER_SUBPOP
+        gr.pop.s_syn_self[subpop] = sum(mt.pop.state('s')[start:stop])
 
 @network_operation(when='after_groups')
 def keep_reset():
@@ -175,7 +184,7 @@ Monitor state variables for the different populations.
 rec_neurons = [0, N_MITRAL/2, N_MITRAL - 1]
 glom_ps = ('g')
 mt_ps   = ('s', 's_syn', 'V')
-gr_ps   = ('V_D', 's_syn', 's')
+gr_ps   = ('V_D', 's_syn', 's', 's_syn_self')
 
 # Simulation monitors
 monit_glom = mutils.monit(glom.pop, glom_ps, rec_neurons)
@@ -191,7 +200,8 @@ Then run this network.
 
 """
 # Gathering simulation objects
-netw = Network(glom.pop, mt.pop, gr.pop, mt_input, graded_synapse, keep_reset,
+netw = Network(glom.pop, mt.pop, gr.pop,
+               mt_input, graded_synapse, keep_reset, sum_s,
                [m for m in monit_glom.values()],
                [m for m in monit_mt.values()],
                [m for m in monit_gr.values()])
