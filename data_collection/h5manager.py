@@ -6,9 +6,27 @@ import os
 
 def init_data_h5(filename):
     """Initialize a data HDF5 file"""
+    filename = filename_to_h5(filename)
     if not file_exists(filename):
-        with tables.openFile(filename, 'w') as f:
-            setattr(f.root._v_attrs, 'n_simu', 0)
+        f = tables.openFile(filename, 'w')
+        f.close()
+
+
+def write_simu_data(filename, info, paramset, results):
+    """Create a HDF5 file for new simulation"""
+    if not file_exists(filename):
+        with tables.openFile(filename, 'a') as f:
+            # Put info into the HDF5 root
+            for attr in info:
+                setattr(f.root._v_attrs, attr, info[attr])
+            # Put the parameter set into the file
+            pset = f.createGroup('/', 'paramset', title="Parameter set")
+            for attr in paramset:
+                setattr(pset._v_attrs, attr, paramset[attr])
+            # Put the data results into the file
+            res = f.createGroup('/', 'results', title="Simulation results")
+            for attr in results:
+                f.createArray(res, attr, results[attr])
 
 
 def file_exists(filename):
@@ -24,10 +42,6 @@ def file_exists(filename):
     return file_exists
 
 
-def new_simu(filename, data):
-    """Put the simulation data into the HDF5 file"""
-    with tables.openFile(filename, 'a') as f:
-        n_simu = getattr(f.root._v_attrs, 'n_simu')
-        # parse data and put them in a new group
-        simu_group = f.createGroup('/', 'simu' + str(n_simu))
-        # TODO change value of n_simu
+def filename_to_h5(filename):
+    """Add extension .h5 to filename"""
+    return filename if filename.endswith('.h5') else filename + '.h5'
