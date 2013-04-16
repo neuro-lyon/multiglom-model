@@ -7,12 +7,32 @@ from multiprocessing import Pool
 from os import listdir, path
 from sys import argv
 
+from arg_parser import APARSER
+from multiglom_network import main
+from data_collection.h5manager import init_data_h5, write_simu_data
+
 
 def new_simu(psfile):
+    """Run a simulation using the specified parameter set file"""
+    # Register system state
+    info = get_sys_state()
+
     # Creating simulation run arguments
-    from arg_parser import APARSER
     args = APARSER.parse_args()
     args.no_plot = True
+    args.psfile = psfile
+
+    # Run simulation and get results
+    results = main(args)
+
+    # Write the simulation to HDF5
+    init_data_h5(nfile)
+    write_simu_data(nfile, info, paramset, results)
+
+
+def get_sys_state():
+    """"""
+    pass
 
 
 def get_pset_files(dir_paramsets):
