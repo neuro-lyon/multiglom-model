@@ -4,3 +4,8 @@
 # Temporary files
 *.swp
 sandbox/
+
+# Big data files
+*.h5
+*.hdf5
+*.he5
