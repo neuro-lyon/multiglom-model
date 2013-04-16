@@ -1,9 +1,13 @@
 # -*- coding:utf-8 -*-
+"""
+Script for running multiple simulation with different parameter set.
 
+"""
 from subprocess import check_output
 from multiprocessing import Pool
 from os import listdir, mkdir, path
 from sys import argv
+
 
 def run_simu((psfile, dir_runs)):
     """Runs the main script with specified parameter file."""
@@ -13,6 +17,7 @@ def run_simu((psfile, dir_runs)):
                                 "--full-ps"])
     with open(path.join(ndir, "output.txt"), 'w') as f:
         f.write(simu_output)
+
 
 if __name__ == '__main__':
     n_processes = int(argv[1])
