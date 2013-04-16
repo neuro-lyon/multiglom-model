@@ -36,7 +36,6 @@ def main(args):
     mutils.set_model_ps(args.psfile)
 
     import numpy as np
-    from scipy.fftpack import fft, fftfreq
     import analysis
     import plotting
     from utils import print_dict
@@ -62,7 +61,6 @@ def main(args):
     Finally set some simulation parameters.
 
     """
-    PSGM     = model.PARAMETERS['Glomerule']
     psmt     = model.PARAMETERS['Mitral']
     psgr     = model.PARAMETERS['Granule']
     pscommon = model.PARAMETERS['Common']
@@ -243,12 +241,8 @@ def main(args):
 
 if __name__ == '__main__':
     # Argument parsing
-    import argparse
-    aparser = argparse.ArgumentParser(description="Run a multi-glomerular simulation.")
-    aparser.add_argument('psfile')
-    aparser.add_argument('--no-plot', action='store_true')
-    aparser.add_argument('--no-indexes', action='store_true')
-    aparser.add_argument('--full-ps', action='store_true')
+    from arg_parser import APARSER
+    args = APARSER.parse_args()
 
-    args = aparser.parse_args()
+    # Run script
     main(args)
