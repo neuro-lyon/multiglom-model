@@ -239,6 +239,15 @@ def main(args):
         show()
 
 
+    """
+    Simulation outputs
+    ------------------
+
+    """
+    results = {'mydata': np.ones((10, 10))}
+    return model.PARAMETERS, results
+
+
 if __name__ == '__main__':
     # Argument parsing
     from arg_parser import APARSER
