@@ -230,18 +230,27 @@ def main(args):
     if not args.no_plot:
         # Raster plot
         plotting.raster_plot(monit_mt['spikes'], n_subpop)
-
         # Membrane potentials
         plotting.memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule)
-
         # Granule synapses
         plotting.granule_figure(monit_gr, pscommon)
-
         show()
 
 
-    # Return simulation parameters and registered results
-    results = {}
+    """
+    Simulation records
+    ------------------
+
+    Put numpy arrays in var `results` to save them into the simulation record.
+    Note: the variable must be monitored by Brian.
+
+    """
+    array_spikes_it = np.array((monit_mt['spikes'].it[0],
+                                monit_mt['spikes'].it[1]))
+    results = {'spikes_it': array_spikes_it,
+               'input': monit_glom['g'].values,
+               's_granule': monit_gr['s'].values,
+               's_syn_self': monit_gr['s_syn_self'].values}
     return model.PARAMETERS, results
 
 
