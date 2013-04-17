@@ -44,6 +44,7 @@ def main(args):
     from model.mitral_cells import MitralCells
     from model.synapse import Synapse
     from model.granule_cells import GranuleCells
+
     # Reset old stuff from Brian memory
     clear(erase=True, all=True)
     defaultclock.reinit()
@@ -239,19 +240,15 @@ def main(args):
         show()
 
 
-    """
-    Simulation outputs
-    ------------------
-
-    """
-    results = {'mydata': np.ones((10, 10))}
+    # Return simulation parameters and registered results
+    results = {}
     return model.PARAMETERS, results
 
 
 if __name__ == '__main__':
     # Argument parsing
-    from arg_parser import APARSER
-    args = APARSER.parse_args()
+    from arg_parsers import SIM_PARSER
+    args = SIM_PARSER.parse_args()
 
     # Run script
     main(args)
