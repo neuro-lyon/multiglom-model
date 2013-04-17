@@ -5,7 +5,6 @@ Script for running multiple simulation with different parameter set.
 """
 from multiprocessing import Pool
 from os import listdir, path
-from sys import argv
 from datetime import datetime
 from uuid import uuid4
 import git
@@ -21,15 +20,13 @@ def new_simu(psfile):
     info = get_sys_state()
 
     # Creating simulation run arguments
-    args = SIM_PARSER.parse_args()
-    args.no_plot = True
-    args.psfile = psfile
+    args = SIM_PARSER.parse_args([psfile, '--no-plot'])
 
     # Run simulation and get results
     paramset, results = main(args)
 
     # Write the simulation to HDF5
-    nfilename = info['time'] + '_' + info['uuid'] + '.h5'
+    nfilename = info['time'].replace(':', '-') + '_' + info['uuid'] + '.h5'
     init_data_h5(nfilename)
     write_simu_data(nfilename, info, paramset, results)
 
