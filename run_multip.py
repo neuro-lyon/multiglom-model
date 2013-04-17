@@ -6,8 +6,11 @@ Script for running multiple simulation with different parameter set.
 from multiprocessing import Pool
 from os import listdir, path
 from sys import argv
+from datetime import datetime
+from uuid import uuid4
+import git
 
-from arg_parser import APARSER
+from arg_parsers import SIM_PARSER, MULTISIM_PARSER
 from multiglom_network import main
 from data_collection.h5manager import init_data_h5, write_simu_data
 
@@ -18,21 +21,33 @@ def new_simu(psfile):
     info = get_sys_state()
 
     # Creating simulation run arguments
-    args = APARSER.parse_args()
+    args = SIM_PARSER.parse_args()
     args.no_plot = True
     args.psfile = psfile
 
     # Run simulation and get results
-    results = main(args)
+    paramset, results = main(args)
 
     # Write the simulation to HDF5
-    init_data_h5(nfile)
-    write_simu_data(nfile, info, paramset, results)
+    nfilename = info['time'] + '_' + info['uuid'] + '.h5'
+    init_data_h5(nfilename)
+    write_simu_data(nfilename, info, paramset, results)
 
 
 def get_sys_state():
-    """"""
-    pass
+    """Get system state"""
+    sys_state = {}
+    # Time and UUID
+    sys_state['time'] = str(datetime.now()).replace(' ', '_')
+    sys_state['uuid'] = str(uuid4())
+
+    # Git revision
+    repo = git.Repo('.')
+    assert not repo.is_dirty(), \
+        "Your git repository has uncommited changes."
+    sys_state['git_rev'] = str(repo.commit(repo.head))
+
+    return sys_state
 
 
 def get_pset_files(dir_paramsets):
@@ -49,12 +64,11 @@ def get_pset_files(dir_paramsets):
 
 if __name__ == '__main__':
     # Get run arguments
-    n_processes = int(argv[1])
-    dir_paramsets = argv[2]
+    args = MULTISIM_PARSER.parse_args()
 
     # Get all the parameter set files
-    psfiles = get_pset_files(dir_paramsets)
+    psfiles = get_pset_files(args.pset_dir)
 
     # Run the simulation with each parameter set
-    pool = Pool(processes=n_processes)
-    pool.map(run_simu, psfiles)
+    pool = Pool(processes=args.nproc)
+    pool.map(new_simu, psfiles)
