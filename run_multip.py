@@ -16,6 +16,7 @@ from data_collection.h5manager import init_data_h5, write_simu_data
 
 def new_simu(psfile):
     """Run a simulation using the specified parameter set file"""
+    filedir = path.dirname(psfile) +  '/'
     # Register system state
     info = get_sys_state()
 
@@ -26,7 +27,8 @@ def new_simu(psfile):
     paramset, results = main(args)
 
     # Write the simulation to HDF5
-    nfilename = info['time'].replace(':', '-') + '_' + info['uuid'] + '.h5'
+    nfilename = filedir + info['time'].replace(':', '-')
+    nfilename += '_' + info['uuid'] + '.h5'
     init_data_h5(nfilename)
     write_simu_data(nfilename, info, paramset, results)
 
@@ -40,8 +42,7 @@ def get_sys_state():
 
     # Git revision
     repo = git.Repo('.')
-    assert not repo.is_dirty(), \
-        "Your git repository has uncommited changes."
+    assert not repo.is_dirty(), "Your git repository has uncommited changes."
     sys_state['git_rev'] = str(repo.commit(repo.head))
 
     return sys_state
