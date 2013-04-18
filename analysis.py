@@ -16,7 +16,6 @@ Synchronization
 import numpy as np
 from model import PARAMETERS as ps
 
-from scipy.signal import resample
 from scipy.misc import comb
 from scipy.fftpack import fft, fftfreq
 from scipy import argmax
@@ -26,10 +25,9 @@ from brian.units import *
 
 PSIN = ps['Input']
 TAU  = PSIN['tau_Ein']
-N_SAMPLES = 1000
 
 
-def sts(netw_act, spikes, nsamples=N_SAMPLES):
+def sts(netw_act, spikes):
     """
     Returns the STS index [1] for the given network activity.
 
@@ -50,11 +48,9 @@ def sts(netw_act, spikes, nsamples=N_SAMPLES):
     keep_ratio = 3./4
     sig_size = len(netw_act[0])
     cut_sig = netw_act[0][sig_size*(1 - keep_ratio):]
-    # Fist, resample the signal
-    signal = resample(cut_sig, nsamples)
     # Then compute the autocorrelation at zero time.
-    autocorr = autocorr_zero(signal)
-    # Finally, normalize it by sqrt(nu)*tau
+    autocorr = autocorr_zero(cut_sig)
+    # Finally, normalize it by nu*tau
     nu = get_nspikes(spikes, keep_ratio)/(spikes.clock.t*keep_ratio)
     return autocorr/(nu*TAU)
 
