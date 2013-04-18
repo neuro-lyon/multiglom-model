@@ -71,13 +71,13 @@ def granule_figure(monit_gr, pscommon):
         sub_s.set_xlabel('time (ms)')
         sub_s.set_ylabel('s mitral & s_syn granule & s granule #'+str(gr))
 
-        sub_syncrho = plt.subplot(1, 2, 2)
+        sub_synchro = plt.subplot(1, 2, 2)
         fft_max_freq = 200
         ntimes = len(monit_gr['s'].times)
         freqs = fftfreq(ntimes, pscommon['simu_dt'])
         fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
         fft_sig = abs(fft(monit_gr['s'][gr]-(monit_gr['s'][gr]).mean())[:fft_max_freq_index])
 
-        sub_syncrho.plot(freqs[:fft_max_freq_index], fft_sig)
-        sub_syncrho.set_xlabel("granule #"+str(gr)+" 's' frequency (Hz)")
-        sub_syncrho.set_ylabel('Power')
+        sub_synchro.plot(freqs[:fft_max_freq_index], fft_sig)
+        sub_synchro.set_xlabel("granule #"+str(gr)+" 's' frequency (Hz)")
+        sub_synchro.set_ylabel('Power')
