@@ -25,7 +25,7 @@ def write_simu_data(filename, info, paramset, results):
         # Put the data results into the file
         res = f.createGroup('/', 'results', title="Simulation results")
         for attr in results:
-            f.createArray(res, attr, results[attr])
+            f.createArray(res, attr, results[attr][0], title=results[attr][1])
 
 
 def file_exists(filename):
