@@ -24,8 +24,11 @@ def write_simu_data(filename, info, paramset, results):
             setattr(pset._v_attrs, attr, paramset[attr])
         # Put the data results into the file
         res = f.createGroup('/', 'results', title="Simulation results")
-        for attr in results:
-            f.createArray(res, attr, results[attr][0], title=results[attr][1])
+        for attr in results['data']:
+            f.createArray(res, attr, results['data'][attr][0],
+                          title=results['data'][attr][1])
+        for attr in results['indexes']:
+            setattr(res._v_attrs, attr, results['indexes'][attr])
 
 
 def file_exists(filename):
