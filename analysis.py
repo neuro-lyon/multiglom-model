@@ -74,7 +74,6 @@ def get_nspikes(spikes, keep_ratio):
     return int(len(spike_times[start_time:]))
 
 
-
 def mps(memb_pot):
     """
     Returns the MPS index [1] of the given network.

@@ -6,6 +6,7 @@ from scipy import argmax
 from brian.stdunits import *
 from brian.units import *
 
+
 def raster_plot(spike_monitor, n_subpop):
     """Raster plot with a different color for each sub-population."""
     n_neurons = len(spike_monitor.spiketimes)
@@ -28,6 +29,7 @@ def raster_plot(spike_monitor, n_subpop):
     plt.xlabel("time (ms)")
     plt.ylabel("neuron number")
 
+
 def get_colorlist(n_colors, cmap_name="gist_ncar"):
     """Get a list of `n_colors` color from a matplotlib colormap."""
     colors = []
@@ -36,6 +38,7 @@ def get_colorlist(n_colors, cmap_name="gist_ncar"):
     for i in xrange(n_colors):
         colors += [colormap(1.*i/n_colors)]
     return colors
+
 
 def memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule):
     """Membrane potentials of mitral and granule cells."""
@@ -54,6 +57,7 @@ def memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule):
     sub_vd_gr.legend()
     sub_vd_gr.set_xlabel('Time (ms)')
     sub_vd_gr.set_ylabel('Membrane potential of granule : V (mvolt)')
+
 
 def granule_figure(monit_gr, pscommon):
     """Parameters to/from the granule, useful to see population synchrony."""
