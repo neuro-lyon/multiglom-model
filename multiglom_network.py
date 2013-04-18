@@ -89,7 +89,7 @@ def main(args):
     """
     # Glomeruli
     glom = Glomerule()
-    glom.add_eqs(oscillating=False)
+    glom.add_eqs()
     glom.make_pop(n_glomeruli*n_mitral_per_subpop)
 
     # Synapses (granule -- mitral)

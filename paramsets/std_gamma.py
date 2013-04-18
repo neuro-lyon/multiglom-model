@@ -12,13 +12,15 @@ PARAMETERS = {
     'N_mitral'    : N_SUBPOP*100*F,
     'inter_conn_rate'     : {},
     'inter_conn_strength' : {},
-    }, 
-'Glomerule':
-    {'tau' : 3*msecond,
-    'f'    : 2*Hz,
-    'A'    : .1*second**-.5*siemens*meter**-2,
-    'B'    : 10*second**-1*siemens*meter**-2,
-    'C'    : 1
+    },
+'Input':
+    {'tau_Ein'  : 3*msecond,
+    'g_Ein0'    : 1*siemens*meter**-2,
+    'sigma_Ein' : 0.08*siemens*meter**-2*second**(-1./2)
+    },
+'InputOscillation':
+    {'f'    : 2*Hz,
+    'C'    : 1  # Must be set to 1 for oscillation
     },
 'Mitral':
     {'C_m'      : 0.08*farad*meter**-2,
@@ -34,11 +36,6 @@ PARAMETERS = {
     'E_L'  : -70*mvolt,
     'g_SD' : 1*siemens*meter**-2,
     'g_DS' : 300*siemens*meter**-2
-    },
-'Input':
-    {'tau_Ein'  : 3*msecond,
-    'g_Ein0'    : 1*siemens*meter**-2,
-    'sigma_Ein' : 1.5*siemens*meter**-2*second**(-1./2)
     },
 'Synapse':
     {'V_E'     : 0*mvolt,

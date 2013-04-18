@@ -9,12 +9,10 @@ tau_Ein   = PSIN['tau_Ein']
 g_Ein0    = PSIN['g_Ein0']
 sigma_Ein = PSIN['sigma_Ein']
 
-PSGM = ps['Glomerule'] 
-tau  = PSGM['tau']
-f    = PSGM['f']
-A    = PSGM['A']
-B    = PSGM['B']
-C    = PSGM['C']
+PSINOSC = ps['InputOscillation']
+f    = PSINOSC['f']
+C    = PSINOSC['C']
+
 
 class Glomerule:
     """Ensemble of glomeruli, driving input to mitral cells."""
@@ -24,18 +22,18 @@ class Glomerule:
         self.eqs_model = Equations()
         self.pop = None
     
-    def add_eqs(self, oscillating=True):
+    def add_eqs(self, oscillating=False):
         if oscillating:
             std_eqs = Equations('''
-                dn/dt = -(n + xi)/tau : second**-.5
-                sigma = A*tau**.5*sqrt(1 + C*cos(2*pi*f*t)) : siemens*meter**-2
-                m0 = B*tau*(1 + C*cos(2*pi*f*t)) : siemens*meter**-2
-                dm/dt = (m0 - m)/tau : siemens*meter**-2
-                g = m + sigma*n*tau**.5 : siemens*meter**-2
+                dn/dt = -(n + tau_Ein**.5*xi)/tau_Ein : 1
+                sigma = sigma_Ein*sqrt(1 + C*cos(2*pi*f*t)) : siemens*meter**-2
+                m0 = g_Ein0*(1 + C*cos(2*pi*f*t)) : siemens*meter**-2
+                dm/dt = (m0 - m)/tau_Ein : siemens*meter**-2
+                g = m + sigma*n: siemens*meter**-2
                 ''')
         else:
             std_eqs = Equations('''
-                dg/dt = (g_Ein0 - g)/tau_Ein + sigma_Ein*xi : siemens*meter**-2
+                dg/dt = (g_Ein0 - g + sigma_Ein*tau_Ein**.5*xi)/tau_Ein : siemens*meter**-2
                 ''')
         self.eqs_model += std_eqs
 
