@@ -219,6 +219,9 @@ def main(args):
         sts_index = analysis.sts(monit_gr['s_syn'], monit_mt['spikes'])
         mps_index = analysis.mps(monit_mt['V'])
         print 'Indexes: STS =', sts_index, '; MPS =', mps_index, '.'
+        fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])
+        for n in xrange(n_subpop):
+            print 'FFT peak for sub-population', n, ':', fftmax[n], 'Hz.'
 
 
     """

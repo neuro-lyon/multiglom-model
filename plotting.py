@@ -2,7 +2,6 @@
 
 from matplotlib import pyplot as plt, cm as cmap
 from scipy.fftpack import fft, fftfreq
-from scipy import argmax
 from brian.stdunits import *
 from brian.units import *
 
@@ -77,10 +76,7 @@ def granule_figure(monit_gr, pscommon):
         ntimes = len(monit_gr['s'].times)
         freqs = fftfreq(ntimes, pscommon['simu_dt'])
         fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
-
         fft_sig = abs(fft(monit_gr['s'][gr]-(monit_gr['s'][gr]).mean())[:fft_max_freq_index])
-        ind_max_freq = argmax(fft_sig)
-        print 'MAX Freq FFT of granule', gr, ':', freqs[ind_max_freq]
 
         sub_syncrho.plot(freqs[:fft_max_freq_index], fft_sig)
         sub_syncrho.set_xlabel("granule #"+str(gr)+" 's' frequency (Hz)")

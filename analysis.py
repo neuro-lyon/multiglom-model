@@ -10,8 +10,7 @@ Synchronization
 ---------------
 - Spike Train Synchrony (STS) index
 - Membrane Potential Synchrony (MPS) index
-- Cross-correlation
-- Gabor Transform
+- FFT peak
 
 """
 import numpy as np
@@ -19,6 +18,8 @@ from model import PARAMETERS as ps
 
 from scipy.signal import resample
 from scipy.misc import comb
+from scipy.fftpack import fft, fftfreq
+from scipy import argmax
 
 from brian.stdunits import *
 from brian.units import *
@@ -99,3 +100,17 @@ def mps(memb_pot):
             if j > i:
                 res += all_corr[i][j]
     return res/ncomb
+
+
+def fftmax(signal, n_subpop, simu_dt, fft_max_freq=200):
+    """Return the peak in the FFT frequency of the signal values."""
+    res = []
+    ntimes = len(signal.times)
+    freqs = fftfreq(ntimes, simu_dt)
+    fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
+
+    for unit in xrange(n_subpop):
+        fft_sig = abs(fft(signal[unit]-(signal[unit]).mean())[:fft_max_freq_index])
+        ind_max_freq = argmax(fft_sig)
+        res.append(freqs[ind_max_freq])
+    return res
