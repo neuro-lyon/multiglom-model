@@ -7,7 +7,7 @@ from numpy import arange
 from os import path
 from copy import deepcopy
 from importlib import import_module
-from itertools import product
+import itertools
 
 def path_to_modline(filepath):
     """Returns a string representation for module import of a file."""
@@ -35,12 +35,21 @@ def gen_parameters(template_file, params, output_dir):
     output_dir: directory to put the created parameter sets in
 
     Example of params:
-    params = {'Input': {'g_Ein0': {'start': 0.,
-                                  'stop' : 1.,
-                                  'step' : 0.2,
-                                  'unit' : siemens*meter**-2}}}
+    params = {"Input":
+                {'g_Ein0': {'start': 0.,
+                            'stop': 1,
+                            'step': 0.5,
+                            'unit': siemens*meter**-2},
+                 'tau_Ein': {'start': 0.,
+                             'stop': 3,
+                             'step': 0.5,
+                             'unit': second}}}
     """
     original_template = get_template(template_file)
+    var_list = []
+    range_list = []
+
+    # Build the variable value ranges
     for category in params:
         for var in params[category]:
             # Get the info for the parameter to change
@@ -48,16 +57,23 @@ def gen_parameters(template_file, params, output_dir):
             var_range = arange(var_details['start'], var_details['stop'], var_details['step'])
             var_units = var_details['unit']
 
-            # Create a new file for each variable value
-            for value in var_range:
-                new_parameters = deepcopy(original_template)
-                new_parameters[category][var] = value*var_units
-                units = str(var_units).replace(' ', '_')
-                fname = '__'.join([category, var, str(value), units])
-                fname = fname.replace('.', '_')  # So we can import it easily as a module
-                fname += '.py'
-                with open(path.join(output_dir, fname), 'w') as f:
-                    f.write('PARAMETERS = ' + str(new_parameters))
+            var_list.append({'name': var, 'units': var_units, 'cat': category})
+            range_list.append(var_range)
+
+    # Iterate of the cartesian product of the ranges to create new sets
+    for comb in itertools.product(*range_list):
+        new_parameters = deepcopy(original_template)
+        fname = ''
+        for ind_var in xrange(len(var_list)):
+            var_category = var_list[ind_var]['cat']
+            var_name = var_list[ind_var]['name']
+            var_units = var_list[ind_var]['units']
+            new_parameters[var_category][var_name] = comb[ind_var]*var_units
+            var_value = str(comb[ind_var]).replace('.', '_')
+            fname += '__'.join([var_category, var_name, var_value])
+        fname += '.py'
+        with open(path.join(output_dir, fname), 'w') as f:
+            f.write('PARAMETERS = ' + str(new_parameters))
 
     # Put a __init__.py to make the modules importable
     f = open(path.join(output_dir, '__init__.py'), 'w')
@@ -76,4 +92,4 @@ if __name__ == '__main__':
             {'g_Ein0': {'start': 0., 'stop': 1, 'step': 0.5, 'unit': siemens*meter**-2},
             'tau_Ein': {'start': 0., 'stop': 3, 'step': 0.5, 'unit': second}}
         }
-    gen_parameters('paramsets/std_beta.py', d, '/tmp/ps2')
+    gen_parameters('paramsets/std_beta.py', d, '/tmp/ps3')
