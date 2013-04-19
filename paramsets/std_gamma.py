@@ -16,7 +16,7 @@ PARAMETERS = {
 'Input':
     {'tau_Ein'  : 3*msecond,
     'g_Ein0'    : 1*siemens*meter**-2,
-    'sigma_Ein' : 0.08*siemens*meter**-2*second**(-1./2)
+    'sigma_Ein' : 0.3*siemens*meter**-2
     },
 'InputOscillation':
     {'f'    : 2*Hz,
@@ -40,7 +40,7 @@ PARAMETERS = {
 'Synapse':
     {'V_E'     : 0*mvolt,
     'V_act_E'  : 0*mvolt,
-    'g_E'      : 3.5*siemens*meter**-2/F,
+    'g_E'      : 0.7*siemens*meter**-2/F,
     'sigma_E'  : 0.01*mvolt,
     'alpha_E'  : 10*msecond**-1,
     'beta_E'   : 1./3*msecond**-1,
