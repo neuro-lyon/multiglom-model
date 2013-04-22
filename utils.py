@@ -45,7 +45,7 @@ def gen_parameters(template_file, params, output_dir):
                              'step': 0.5,
                              'unit': second}}}
     """
-    original_template = get_template(template_file)
+    template = get_template(template_file)
     var_list = []
     range_list = []
 
@@ -62,20 +62,19 @@ def gen_parameters(template_file, params, output_dir):
 
     # Iterate on the cartesian product of the ranges to create new sets
     for comb in itertools.product(*range_list):
-        new_parameters = deepcopy(original_template)
         fname = ''
         for ind_var in xrange(len(var_list)):
             var_category = var_list[ind_var]['cat']
             var_name = var_list[ind_var]['name']
             var_units = var_list[ind_var]['units']
-            new_parameters[var_category][var_name] = comb[ind_var]*var_units
+            template[var_category][var_name] = comb[ind_var]*var_units
             var_value = str(comb[ind_var]).replace('.', '_')
             fname += '__'.join([var_category, var_name, var_value])
         fname += '.py'
         with open(path.join(output_dir, fname), 'w') as f:
             f.writelines(["from brian.stdunits import *",
                           "from brian.units import *", "\n"])
-            f.write('PARAMETERS = ' + str(new_parameters) + '\n')
+            f.write('PARAMETERS = ' + str(template) + '\n')
 
     # Put a __init__.py to make the modules importable
     f = open(path.join(output_dir, '__init__.py'), 'w')
@@ -91,8 +90,8 @@ def get_template(template_file, varname="PARAMETERS"):
 from brian import *
 if __name__ == '__main__':
     d = {"Input":
-            {'g_Ein0': {'start': 0., 'stop': 1, 'step': 0.2, 'unit': siemens*meter**-2},
-             'tau_Ein': {'start': 0., 'stop': 3, 'step': 0.5, 'unit': second}
+            {'g_Ein0': {'start': 0., 'stop': 1, 'step': 0.5, 'unit': siemens*meter**-2},
+             'tau_Ein': {'start': 0., 'stop': 3, 'step': 1, 'unit': second}
             }
         }
     gen_parameters('paramsets/std_beta.py', d, '/tmp/ps')
