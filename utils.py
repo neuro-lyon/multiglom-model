@@ -5,9 +5,9 @@ Utilities not related to neuronal network simulation.
 """
 from numpy import arange
 from os import path
-from copy import deepcopy
 from importlib import import_module
 import itertools
+
 
 def path_to_modline(filepath):
     """Returns a string representation for module import of a file."""
@@ -72,8 +72,8 @@ def gen_parameters(template_file, params, output_dir):
             fname += '__'.join([var_category, var_name, var_value])
         fname += '.py'
         with open(path.join(output_dir, fname), 'w') as f:
-            f.writelines(["from brian.stdunits import *",
-                          "from brian.units import *", "\n"])
+            f.writelines(["from brian.stdunits import *\n",
+                          "from brian.units import *\n"])
             f.write('PARAMETERS = ' + str(template) + '\n')
 
     # Put a __init__.py to make the modules importable
