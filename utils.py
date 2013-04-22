@@ -114,12 +114,11 @@ def change_dict_key(dic, path, new_value, anykey='*'):
 
 from brian import *
 if __name__ == '__main__':
-    # d = {'in': {0: {'ok': True}, 1: {'ok': True}}, 'out': 1}
-    # change_dict_key(d, ('in', '*', 'ok'), False)
-
-    d = {('Input', 'g_Ein0'): {'range': linspace(start=0, stop=1, num=4),
-                               'unit': siemens*meter**-2},
-         ('Common', 'inter_conn_rate', '*', '*'): {'range': linspace(start=0.2, stop=0.8, num=2),
-                                                   'unit': 1}
+    d = {('Common', 'inter_conn_strength', '*', '*'):
+            {'range': linspace(start=0.2, stop=0.8, num=2),
+             'unit': 1},
+         ('Common', 'inter_conn_rate', '*', '*'):
+            {'range': linspace(start=0.2, stop=0.8, num=2),
+             'unit': 1}
     }
-    gen_parameters('paramsets/std_beta.py', d, '/tmp/ps')
+    gen_parameters('paramsets/std_beta.py', d, 'runs/interco2/beta')
