@@ -3,7 +3,7 @@
 Utilities not related to neuronal network simulation.
 
 """
-from numpy import arange
+from numpy import linspace
 from os import path
 from importlib import import_module
 import itertools
@@ -35,42 +35,41 @@ def gen_parameters(template_file, params, output_dir):
     output_dir: directory to put the created parameter sets in
 
     Example of params:
-    params = {"Input":
-                {'g_Ein0': {'start': 0.,
-                            'stop': 1,
-                            'step': 0.5,
-                            'unit': siemens*meter**-2},
-                 'tau_Ein': {'start': 0.,
-                             'stop': 3,
-                             'step': 0.5,
-                             'unit': second}}}
+    params = {('Input', 'g_Ein0'): {'range': linspace(start=0, stop=1, num=4),
+                                    'unit': siemens*meter**-2},
+              ('Common', 'inter_conn_rate', '*', '*'): {'range': linspace(start=0.2, stop=0.8, num=2),
+                                                        'unit': 1}
+    }
     """
     template = get_template(template_file)
-    var_list = []
+
+    # Map params dict key to indices
+    params_map = []
+    for key in params:
+        params_map.append(key)
+
+    # Build range list
     range_list = []
-
-    # Build the variable value ranges
-    for category in params:
-        for var in params[category]:
-            # Get the info for the parameter to change
-            var_details = params[category][var]
-            var_range = arange(var_details['start'], var_details['stop'], var_details['step'])
-            var_units = var_details['unit']
-
-            var_list.append({'name': var, 'units': var_units, 'cat': category})
-            range_list.append(var_range)
+    for key, value in zip(params.keys(), params.values()):
+        range_list.append(value['range'])
 
     # Iterate on the cartesian product of the ranges to create new sets
     for comb in itertools.product(*range_list):
         fname = ''
-        for ind_var in xrange(len(var_list)):
-            var_category = var_list[ind_var]['cat']
-            var_name = var_list[ind_var]['name']
-            var_units = var_list[ind_var]['units']
-            template[var_category][var_name] = comb[ind_var]*var_units
-            var_value = str(comb[ind_var]).replace('.', '_')
-            fname += '__'.join([var_category, var_name, var_value])
+
+        # Set the new value for each variable of the combination
+        for ind_var in xrange(len(comb)):
+            var_key = params_map[ind_var]
+            var_value = comb[ind_var]
+            var_unit = params[var_key]['unit']
+
+            change_dict_key(template, var_key, var_value*var_unit)
+
+            fname += '__'.join([_.replace('*', '') for _ in var_key])
+            fname += '_' + str(comb[ind_var]).replace('.', '_') + '_'
         fname += '.py'
+
+        # Write the new parameter set to a file
         with open(path.join(output_dir, fname), 'w') as f:
             f.writelines(["from brian.stdunits import *\n",
                           "from brian.units import *\n"])
@@ -87,11 +86,40 @@ def get_template(template_file, varname="PARAMETERS"):
     return getattr(module, varname)
 
 
+def change_dict_key(dic, path, new_value, anykey='*'):
+    """Change0 *in place* the dictionnary key value to new_value.
+
+    If key is '*', then change all dictionnary key values to new_value.
+    """
+    # Stop case
+    if len(path) == 1:
+        key = path[0]
+        if key == anykey:
+            for k in dic:
+                dic[k] = new_value
+        elif dic.has_key(key):
+            dic[key] = new_value
+
+    # Recursion
+    else:
+        sub = path[0]
+        if sub == anykey:
+            for k in dic:
+                change_dict_key(dic[k], path[1:], new_value, anykey)
+        else:
+            change_dict_key(dic[sub], path[1:], new_value, anykey)
+
+    return dic
+
+
 from brian import *
 if __name__ == '__main__':
-    d = {"Input":
-            {'g_Ein0': {'start': 0., 'stop': 1, 'step': 0.5, 'unit': siemens*meter**-2},
-             'tau_Ein': {'start': 0., 'stop': 3, 'step': 1, 'unit': second}
-            }
-        }
+    # d = {'in': {0: {'ok': True}, 1: {'ok': True}}, 'out': 1}
+    # change_dict_key(d, ('in', '*', 'ok'), False)
+
+    d = {('Input', 'g_Ein0'): {'range': linspace(start=0, stop=1, num=4),
+                               'unit': siemens*meter**-2},
+         ('Common', 'inter_conn_rate', '*', '*'): {'range': linspace(start=0.2, stop=0.8, num=2),
+                                                   'unit': 1}
+    }
     gen_parameters('paramsets/std_beta.py', d, '/tmp/ps')
