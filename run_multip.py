@@ -10,7 +10,7 @@ from uuid import uuid4
 import git
 
 from arg_parsers import SIM_PARSER, MULTISIM_PARSER
-from multiglom_network import main
+import multiglom_network
 from data_collection.h5manager import init_data_h5, write_simu_data
 
 
@@ -24,7 +24,7 @@ def new_simu(psfile):
     args = SIM_PARSER.parse_args([psfile, '--no-plot'])
 
     # Run simulation and get results
-    paramset, results = main(args)
+    paramset, results = multiglom_network.main(args)
 
     # Write the simulation to HDF5
     nfilename = filedir + info['time'].replace(':', '-')
