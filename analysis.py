@@ -109,4 +109,5 @@ def fftmax(signal, n_subpop, simu_dt, fft_max_freq=200):
         fft_sig = abs(fft(signal[unit]-(signal[unit]).mean())[:fft_max_freq_index])
         ind_max_freq = argmax(fft_sig)
         res.append(freqs[ind_max_freq])
+
     return res
