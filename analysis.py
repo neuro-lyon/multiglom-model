@@ -27,32 +27,33 @@ PSIN = ps['Input']
 TAU  = PSIN['tau_Ein']
 
 
-def sts(netw_act, spikes):
+def sts(netw_act, spikes, start, stop, keep_ratio=3./4):
     """
     Returns the STS index [1] for the given network activity.
 
     Parameters
     ----------
-    netw_act : brian.StateMonitor
+    netw_act : brian.StateMonitor.values
         Signal that represents the network activity in one variable.
     spikes : brian.SpikeMonitor
         Set of spikes during the simulation.
-    nsamples : int
-        Number of samples when resampling the signal.
+    start : int
+        neuron index left border for the slice of neuron we want
+    stop : int
+        neuron index right border
 
     References
     ----------
     [1] Brunel & Wang, 2003
 
     """
-    keep_ratio = 3./4
-    sig_size = len(netw_act[0])
-    cut_sig = netw_act[0][sig_size*(1 - keep_ratio):]
+    sig_size = len(netw_act)
+    cut_sig = netw_act[sig_size*(1 - keep_ratio):]
     # Then compute the autocorrelation at zero time.
     autocorr = autocorr_zero(cut_sig)
     # Finally, normalize it by nu*tau
-    nu = get_nspikes(spikes, keep_ratio)/(spikes.clock.t*keep_ratio)
-    return autocorr/(nu*TAU)
+    nu = get_nspikes(spikes, keep_ratio, start, stop)/(spikes.clock.t*keep_ratio)
+    return float(autocorr/(nu*TAU))  # float() to not return a Quantity object
 
 
 def autocorr_zero(signal):
@@ -61,17 +62,20 @@ def autocorr_zero(signal):
     return np.sqrt(np.mean((signal - mean_sig)*(signal - mean_sig)))
 
 
-def get_nspikes(spikes, keep_ratio):
+def get_nspikes(spikes, keep_ratio, start, stop):
     """Returns the number of spikes, keeping only the last portion of the
     simulation."""
-    spike_times = spikes.it[1]
-    start_time = 0
-    while spike_times[start_time]*second < (1 - keep_ratio)*spikes.clock.t:
-        start_time += 1
-    return int(len(spike_times[start_time:]))
+    nspikes = 0
+    # Convert time to second because times in `spikes` are in second
+    time_treshold = (spikes.clock.t/second)*keep_ratio
+    for neur in xrange(start, stop):
+        for spike_time in spikes[neur]:
+            if spike_time > time_treshold:
+                nspikes += 1
+    return nspikes
 
 
-def mps(memb_pot):
+def mps(memb_pot, start, stop):
     """
     Returns the MPS index [1] of the given network.
 
@@ -86,8 +90,8 @@ def mps(memb_pot):
 
     """
     res = 0.
-    all_corr = np.corrcoef(memb_pot.values)
-    nneur = len(memb_pot.record)
+    all_corr = np.corrcoef(memb_pot.values[start:stop])
+    nneur = stop - start
     ncomb = comb(nneur, 2, exact=True)
     assert ncomb > 0, \
         "No mitral combination are possible, are you using 1 mitral?"

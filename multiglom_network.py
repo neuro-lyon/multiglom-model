@@ -170,14 +170,14 @@ def main(args):
     Monitor state variables for the different populations.
 
     """
-    rec_neurons = [0, n_mitral/2, n_mitral - 1]
     glom_ps = ('g')
     mt_ps   = ('s', 's_syn', 'V')
     gr_ps   = ('V_D', 's_syn', 's', 's_syn_self')
 
     # Simulation monitors
-    monit_glom = mutils.monit(glom.pop, glom_ps, rec_neurons)
-    monit_mt   = mutils.monit(mt.pop, mt_ps, rec_neurons, spikes=True)
+    rec_neurons = True  # Must be set to True if we want accurate MPS and STS
+    monit_glom = mutils.monit(glom.pop, glom_ps, reclist=rec_neurons)
+    monit_mt   = mutils.monit(mt.pop, mt_ps, reclist=rec_neurons, spikes=True)
     monit_gr   = mutils.monit(gr.pop, gr_ps)
 
 
@@ -216,9 +216,26 @@ def main(args):
         print_dict(model.PARAMETERS)
 
     if not args.no_indexes:
-        sts_index = analysis.sts(monit_gr['s_syn'], monit_mt['spikes'])
-        mps_index = analysis.mps(monit_mt['V'])
-        print 'Indexes: STS =', sts_index, '; MPS =', mps_index, '.'
+        sts_indexes = {}
+        mps_indexes = {}
+        fftmax = {}
+        mps_indexes['whole'] = analysis.mps(monit_mt['V'], 0, n_mitral)
+        gr_s_syn_whole = np.zeros(monit_gr['s_syn'][0].shape)
+        # MPS and STS computation for subpopulation
+        for subpop in xrange(n_subpop):
+            start = subpop*n_mitral_per_subpop
+            stop  = start + n_mitral_per_subpop
+            sts = analysis.sts(monit_gr['s_syn'][subpop], monit_mt['spikes'], start, stop)
+            sts_indexes[subpop] = sts
+            gr_s_syn_whole += monit_gr['s_syn'][subpop]
+            mps = analysis.mps(monit_mt['V'], start, stop)
+            mps_indexes[subpop] = mps
+        sts_whole_activity = np.zeros(monit_gr['s_syn'][0].shape)
+        for subpop in xrange(n_subpop):
+            sts_whole_activity += monit_gr['s_syn'][subpop]  # TODO pas tres sur s'il faut ajouter ou concaténer
+        sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral)
+        print 'Indexes: STS =', sts_indexes, '\nMPS =', mps_indexes
+
         fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])
         for n in xrange(n_subpop):
             print 'FFT peak for sub-population', n, ':', fftmax[n], 'Hz.'
@@ -234,7 +251,8 @@ def main(args):
         # Raster plot
         plotting.raster_plot(monit_mt['spikes'], n_subpop)
         # Membrane potentials
-        plotting.memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule)
+        if not rec_neurons:  # if we only have a couple of recorded neurons
+            plotting.memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule)
         # Granule synapses
         plotting.granule_figure(monit_gr, pscommon)
         show()
@@ -259,7 +277,7 @@ def main(args):
                        "Variable 's' of the granules."),
                        's_syn_self': (monit_gr['s_syn_self'].values,
                        "Variable 's_syn' for the granule, without integrating the mitral 's' from other subpopulations.")}
-    results['indexes'] = {'MPS': mps_index, 'STS': sts_index, 'FFTMAX': fftmax}
+    results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax}
     return model.PARAMETERS, results
 
 
