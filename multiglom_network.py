@@ -270,13 +270,13 @@ def main(args):
                                 monit_mt['spikes'].it[1]))
     results = {}
     results['data'] = {'spikes_it': (array_spikes_it,
-                       "Spikes: one array for the neuron number, another one for the spike times."),
+                           "Spikes: one array for the neuron number, another one for the spike times."),
                        'input': (monit_glom['g'].values,
-                       "Network input conductance value."),
+                           "Network input conductance value."),
                        's_granule': (monit_gr['s'].values,
-                       "Variable 's' of the granules."),
+                           "Variable 's' of the granules."),
                        's_syn_self': (monit_gr['s_syn_self'].values,
-                       "Variable 's_syn' for the granule, without integrating the mitral 's' from other subpopulations.")}
+                           "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations.")}
     results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax}
     return model.PARAMETERS, results
 
