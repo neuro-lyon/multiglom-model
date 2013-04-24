@@ -18,13 +18,15 @@ from model import PARAMETERS as ps
 
 from scipy.misc import comb
 from scipy.fftpack import fft, fftfreq
+from scipy.signal import resample
 from scipy import argmax
 
 from brian.stdunits import *
 from brian.units import *
 
-PSIN = ps['Input']
-TAU  = PSIN['tau_Ein']
+if ps:
+    PSIN = ps['Input']
+    TAU  = PSIN['tau_Ein']
 
 
 def sts(netw_act, spikes, start, stop, keep_ratio=3./4):
@@ -115,3 +117,30 @@ def fftmax(signal, n_subpop, simu_dt, fft_max_freq=200):
         res.append(freqs[ind_max_freq])
 
     return res
+
+
+def crosscorr_phase_angle(sig1, sig2, x, max_length=10000):
+    """Return the cross correlation phase angle between 2 signals
+
+    Parameters
+    ----------
+    sig1 : array
+        signal of length L
+    sig2 : array
+        another signal of length L
+    x : array
+        time axis for the signals sig1 and sig2
+    max_length : int
+        maximum length for the signals, signals are resampled otherwise
+    """
+    assert len(sig1) == len(sig2) == len(x), \
+        "The signals don't have the same length."
+    sig_length = len(sig1)
+    # Resample if signal is too big thus slowing down correlation computation
+    if sig_length > max_length:
+        sig1, x = resample(sig1, max_length, x)
+        sig2 = resample(sig2, max_length)
+        sig_length = max_length
+    corr = np.correlate(sig1, sig2, mode="same")
+    xmean = sig_length/2
+    return float(argmax(corr) - xmean)/sig_length*x[-1]  # *x[-1] to scale
