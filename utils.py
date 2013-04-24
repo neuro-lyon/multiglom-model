@@ -4,7 +4,7 @@ Utilities not related to neuronal network simulation.
 
 """
 from numpy import linspace
-from os import path
+from os import path, listdir
 from importlib import import_module
 import itertools
 
@@ -120,6 +120,13 @@ def pairs(n, no_ident=True):
             if not (no_ident and i == j):
                 list_pairs.append((i, j))
     return list_pairs
+
+
+def listdir_filter(dir, file_filter):
+    """List all files in dir and apply a filter to select them"""
+    files = listdir(dir)
+    filtered_files = filter(file_filter, files)
+    return [path.join(dir, fname) for fname in filtered_files]
 
 
 from brian import *

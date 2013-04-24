@@ -4,7 +4,7 @@ Script for running multiple simulation with different parameter set.
 
 """
 from multiprocessing import Pool
-from os import listdir, path
+from os import path
 from datetime import datetime
 from uuid import uuid4
 import git
@@ -12,6 +12,7 @@ import git
 from arg_parsers import SIM_PARSER, MULTISIM_PARSER
 import multiglom_network
 from data_collection.h5manager import init_data_h5, write_simu_data
+from utils import listdir_filter
 
 
 def new_simu(psfile):
@@ -50,14 +51,10 @@ def get_sys_state():
 
 def get_pset_files(dir_paramsets):
     """Return a list of parameter set files"""
-    psfiles = listdir(dir_paramsets)
-
     def pset_filter(fname):
         return fname[-3:] == '.py' and fname != '__init__.py'
-    psfiles = filter(pset_filter, psfiles)
 
-    psfiles = [path.join(dir_paramsets, fname) for fname in psfiles]
-    return psfiles
+    return listdir_filter(dir_paramsets, pset_filter)
 
 
 if __name__ == '__main__':
