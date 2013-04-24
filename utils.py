@@ -125,10 +125,10 @@ def pairs(n, no_ident=True):
 from brian import *
 if __name__ == '__main__':
     d = {('Common', 'inter_conn_strength', '*', '*'):
-            {'range': linspace(start=0.2, stop=0.8, num=2),
+            {'range': linspace(start=0., stop=1., num=10),
              'unit': 1},
          ('Common', 'inter_conn_rate', '*', '*'):
-            {'range': linspace(start=0.2, stop=0.8, num=2),
+            {'range': linspace(start=0., stop=1, num=10),
              'unit': 1}
     }
-    gen_parameters('paramsets/std_beta.py', d, 'runs/interco2/beta')
+    gen_parameters('paramsets/std_beta.py', d, 'runs/interco10x10/beta')
