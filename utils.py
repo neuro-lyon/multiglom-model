@@ -112,6 +112,16 @@ def change_dict_key(dic, path, new_value, anykey='*'):
     return dic
 
 
+def pairs(n, no_ident=True):
+    """All possible pairs (i, j) with i and j < n"""
+    list_pairs = []
+    for i in xrange(n):
+        for j in xrange(i, n):
+            if not (no_ident and i == j):
+                list_pairs.append((i, j))
+    return list_pairs
+
+
 from brian import *
 if __name__ == '__main__':
     d = {('Common', 'inter_conn_strength', '*', '*'):
