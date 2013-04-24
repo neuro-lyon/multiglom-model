@@ -11,7 +11,7 @@ import git
 
 from arg_parsers import SIM_PARSER, MULTISIM_PARSER
 import multiglom_network
-from data_collection.h5manager import init_data_h5, write_simu_data
+from h5manager import init_data_h5, write_simu_data
 from utils import listdir_filter
 
 
