@@ -38,7 +38,7 @@ def main(args):
     import numpy as np
     import analysis
     import plotting
-    from utils import print_dict
+    from utils import print_dict, pairs
 
     from model.glomerule import Glomerule
     from model.mitral_cells import MitralCells
@@ -221,6 +221,7 @@ def main(args):
         fftmax = {}
         mps_indexes['whole'] = analysis.mps(monit_mt['V'], 0, n_mitral)
         gr_s_syn_whole = np.zeros(monit_gr['s_syn'][0].shape)
+
         # MPS and STS computation for subpopulation
         for subpop in xrange(n_subpop):
             start = subpop*n_mitral_per_subpop
@@ -230,11 +231,26 @@ def main(args):
             gr_s_syn_whole += monit_gr['s_syn'][subpop]
             mps = analysis.mps(monit_mt['V'], start, stop)
             mps_indexes[subpop] = mps
+
+        # STS for the whole population
         sts_whole_activity = np.zeros(monit_gr['s_syn'][0].shape)
         for subpop in xrange(n_subpop):
             sts_whole_activity += monit_gr['s_syn'][subpop]  # TODO pas tres sur s'il faut ajouter ou concaténer
         sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral)
+
         print 'Indexes: STS =', sts_indexes, '\nMPS =', mps_indexes
+
+        # Phase angle computation for inter-subpopulation
+        phase_angles = {}
+        if n_subpop > 1:
+            for sub_i, sub_j in pairs(n_subpop):
+                sig1 = monit_gr['s_syn'][sub_i]
+                sig2 = monit_gr['s_syn'][sub_j]
+                x = arange(0, simu_length/second, pscommon['simu_dt']/second)
+                if not phase_angles.has_key(sub_i):
+                    phase_angles[sub_i] = {}
+                phase_angles[sub_i][sub_j] = analysis.crosscorr_phase_angle(sig1, sig2, x)
+        print 'Phase angles between sub-population', phase_angles
 
         fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])
         for n in xrange(n_subpop):
@@ -277,7 +293,8 @@ def main(args):
                            "Variable 's' of the granules."),
                        's_syn_self': (monit_gr['s_syn_self'].values,
                            "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations.")}
-    results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax}
+    results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax,
+                          'phase_angles': phase_angles}
     return model.PARAMETERS, results
 
 
