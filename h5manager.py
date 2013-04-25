@@ -54,7 +54,10 @@ def filename_to_h5(filename):
 def collect_h5_to_db(dirpath, dbpath):
     """Collects all HDF5 in dirpath and put them into the big HDF5 DB"""
     h5files = listdir_filter(dirpath, lambda fname: fname[-3:] == '.h5')
-    h5files.remove(dbpath)  # In case db is in the same directory
+    try:
+        h5files.remove(dbpath)  # In case db is in the same directory
+    except ValueError:
+        pass  # Nothing to do if the db path is not in the same directory
     old_simus_id = get_all_simus_id(dbpath)
 
     # Open the db to put the new simus in
