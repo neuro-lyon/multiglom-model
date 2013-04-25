@@ -208,58 +208,57 @@ def main(args):
     ------------------
 
     """
-    print '\nParameters: using', args.psfile
-
-    print 'Populations:', n_subpop, 'glomerular columns;',
-    print n_mitral, 'mitral cells;', n_granule, 'granule cells.'
-
-    print 'Times:', simu_length, 'of simulation; dt =', defaultclock.dt, '.'
-
     if args.full_ps:
         print 'Full set of parameters:'
         print_dict(model.PARAMETERS)
 
-    if not args.no_indexes:
-        sts_indexes = {}
-        mps_indexes = {}
-        fftmax = {}
-        mps_indexes['whole'] = analysis.mps(monit_mt['V'], 0, n_mitral)
-        gr_s_syn_whole = np.zeros(monit_gr['s_syn'][0].shape)
+    sts_indexes = {}
+    mps_indexes = {}
+    fftmax = {}
+    mps_indexes['whole'] = analysis.mps(monit_mt['V'], 0, n_mitral)
+    gr_s_syn_whole = np.zeros(monit_gr['s_syn'][0].shape)
 
-        # MPS and STS computation for subpopulation
-        for subpop in xrange(n_subpop):
-            start = subpop*n_mitral_per_subpop
-            stop  = start + n_mitral_per_subpop
-            sts = analysis.sts(monit_gr['s_syn'][subpop], monit_mt['spikes'], start, stop)
-            sts_indexes[subpop] = sts
-            gr_s_syn_whole += monit_gr['s_syn'][subpop]
-            mps = analysis.mps(monit_mt['V'], start, stop)
-            mps_indexes[subpop] = mps
+    # MPS and STS computation for subpopulation
+    for subpop in xrange(n_subpop):
+        start = subpop*n_mitral_per_subpop
+        stop  = start + n_mitral_per_subpop
+        sts = analysis.sts(monit_gr['s_syn'][subpop], monit_mt['spikes'], start, stop)
+        sts_indexes[subpop] = sts
+        gr_s_syn_whole += monit_gr['s_syn'][subpop]
+        mps = analysis.mps(monit_mt['V'], start, stop)
+        mps_indexes[subpop] = mps
 
-        # STS for the whole population
-        sts_whole_activity = np.zeros(monit_gr['s_syn'][0].shape)
-        for subpop in xrange(n_subpop):
-            sts_whole_activity += monit_gr['s_syn'][subpop]  # TODO pas tres sur s'il faut ajouter ou concaténer
-        sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral)
+    # STS for the whole population
+    sts_whole_activity = np.zeros(monit_gr['s_syn'][0].shape)
+    for subpop in xrange(n_subpop):
+        sts_whole_activity += monit_gr['s_syn'][subpop]  # TODO pas tres sur s'il faut ajouter ou concaténer
+    sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral)
+
+    # Phase angle computation for inter-subpopulation
+    phase_angles = {}
+    if n_subpop > 1:
+        for sub_i, sub_j in pairs(n_subpop):
+            sig1 = monit_gr['s_syn'][sub_i]
+            sig2 = monit_gr['s_syn'][sub_j]
+            x = arange(0, simu_length/second, pscommon['simu_dt']/second)
+            if not phase_angles.has_key(sub_i):
+                phase_angles[sub_i] = {}
+            phase_angles[sub_i][sub_j] = analysis.crosscorr_phase_angle(sig1, sig2, x)
+
+    fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])
+
+    if not args.no_summary:
+        print '\nParameters: using', args.psfile
+
+        print 'Populations:', n_subpop, 'glomerular columns;',
+        print n_mitral, 'mitral cells;', n_granule, 'granule cells.'
+
+        print 'Times:', simu_length, 'of simulation; dt =', defaultclock.dt, '.'
 
         print 'Indexes: STS =', sts_indexes, '\nMPS =', mps_indexes
-
-        # Phase angle computation for inter-subpopulation
-        phase_angles = {}
-        if n_subpop > 1:
-            for sub_i, sub_j in pairs(n_subpop):
-                sig1 = monit_gr['s_syn'][sub_i]
-                sig2 = monit_gr['s_syn'][sub_j]
-                x = arange(0, simu_length/second, pscommon['simu_dt']/second)
-                if not phase_angles.has_key(sub_i):
-                    phase_angles[sub_i] = {}
-                phase_angles[sub_i][sub_j] = analysis.crosscorr_phase_angle(sig1, sig2, x)
         print 'Phase angles between sub-population', phase_angles
-
-        fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])
         for n in xrange(n_subpop):
             print 'FFT peak for sub-population', n, ':', fftmax[n], 'Hz.'
-
 
     """
     Plotting
