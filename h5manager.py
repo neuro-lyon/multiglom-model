@@ -2,6 +2,8 @@
 
 import tables
 import os
+from os import path
+from utils import listdir_filter
 
 
 def init_data_h5(filename):
@@ -47,3 +49,41 @@ def file_exists(filename):
 def filename_to_h5(filename):
     """Add extension .h5 to filename"""
     return filename if filename.endswith('.h5') else filename + '.h5'
+
+
+def collect_h5_to_db(dirpath, dbpath):
+    """Collects all HDF5 in dirpath and put them into the big HDF5 DB"""
+    h5files = listdir_filter(dirpath, lambda fname: fname[-3:] == '.h5')
+    h5files.remove(dbpath)  # In case db is in the same directory
+    old_simus_id = get_all_simus_id(dbpath)
+
+    # Open the db to put the new simus in
+    with tables.openFile(dbpath, 'a') as db:
+        for h5file in h5files:
+            # Browse all simulation files in dirpath
+            with tables.openFile(h5file, 'r') as f:
+                file_time = f.root._v_attrs['time']
+                file_uuid = f.root._v_attrs['uuid']
+
+                # Add the simulation if not in DB
+                if (file_time, file_uuid) not in old_simus_id:
+                    simu_id = file_time + '__' + file_uuid
+                    simu_id = simu_id.replace(':', '_')
+                    simu_id = simu_id.replace('.', '_')
+                    simu_id = simu_id.replace('-', '_')
+                    simu_name = 'simu' + simu_id
+                    newgroup = db.createGroup(db.root, simu_name)
+                    f.copyNode(f.root, newgroup, recursive=True)
+                    f.copyNodeAttrs(f.root, newgroup)
+
+
+def get_all_simus_id(dbpath):
+    """Return simulations id (time, uuid) from the DB"""
+    ids = []
+    with tables.openFile(dbpath) as db:
+        for g in db.walkGroups():
+            try:
+                ids.append((g._v_attrs['time'], g._v_attrs['uuid']))
+            except KeyError:
+                pass
+    return ids
