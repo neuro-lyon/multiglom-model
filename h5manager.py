@@ -51,18 +51,20 @@ def filename_to_h5(filename):
     return filename if filename.endswith('.h5') else filename + '.h5'
 
 
-def collect_h5_to_db(dirpath, dbpath):
+def collect_h5_to_db(dirpath, dbpath, output=False):
     """Collects all HDF5 in dirpath and put them into the big HDF5 DB"""
     h5files = listdir_filter(dirpath, lambda fname: fname[-3:] == '.h5')
     try:
         h5files.remove(dbpath)  # In case db is in the same directory
     except ValueError:
         pass  # Nothing to do if the db path is not in the same directory
+
+    n_files = len(h5files)
     old_simus_id = get_all_simus_id(dbpath)
 
     # Open the db to put the new simus in
     with tables.openFile(dbpath, 'a') as db:
-        for h5file in h5files:
+        for num_file, h5file in enumerate(h5files):
             # Browse all simulation files in dirpath
             with tables.openFile(h5file, 'r') as f:
                 file_time = f.root._v_attrs['time']
@@ -78,6 +80,10 @@ def collect_h5_to_db(dirpath, dbpath):
                     newgroup = db.createGroup(db.root, simu_name)
                     f.copyNode(f.root, newgroup, recursive=True)
                     f.copyNodeAttrs(f.root, newgroup)
+
+            # Output progress
+            if output:
+                print 'File '+str(num_file + 1)+'/'+str(n_files)+' done.'
 
 
 def get_all_simus_id(dbpath):
