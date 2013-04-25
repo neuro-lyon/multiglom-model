@@ -6,6 +6,7 @@ SIM_PARSER.add_argument('psfile')
 SIM_PARSER.add_argument('--no-plot', action='store_true')
 SIM_PARSER.add_argument('--no-indexes', action='store_true')
 SIM_PARSER.add_argument('--full-ps', action='store_true')
+SIM_PARSER.add_argument('--no-brian-output', action='store_true')
 
 MULTISIM_PARSER = ArgumentParser(description="Run simulations in parallel.")
 MULTISIM_PARSER.add_argument('nproc', type=int)

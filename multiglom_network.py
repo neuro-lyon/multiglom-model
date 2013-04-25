@@ -196,7 +196,11 @@ def main(args):
                    [m for m in monit_gr.values()])
 
     # Simulation run
-    netw.run(simu_length, report="text")
+    if args.no_brian_output:
+        report_output = None
+    else:
+        report_output = "text"
+    netw.run(simu_length, report=report_output)
 
 
     """
