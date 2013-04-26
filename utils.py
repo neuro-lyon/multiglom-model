@@ -129,6 +129,11 @@ def listdir_filter(dir, file_filter):
     return [path.join(dir, fname) for fname in filtered_files]
 
 
+def to1d(x, y, lenx):
+    """1-D coordinate from 2-D coordinate"""
+    return x + y*lenx
+
+
 from brian import *
 if __name__ == '__main__':
     d = {('Common', 'inter_conn_strength', '*', '*'):
