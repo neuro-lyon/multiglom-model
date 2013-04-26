@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
-from pylab import *
-from h5manager import *
-from utils import to1d
+import numpy as np
+import matplotlib.pyplot as plt
 import tables
+
+from h5manager import get_all_attrs
+from utils import to1d
 
 """
 TODO
@@ -11,6 +13,7 @@ TODO
 
 """
 
+plt.ion()
 DB = tables.openFile('db.h5')
 
 
@@ -18,6 +21,8 @@ DB = tables.openFile('db.h5')
 MPS
 
 """
+MPS_FIG, MPS_AXS = plt.subplots(3, 1)
+
 MPS_ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
              ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
              ('results', '_v_attrs', 'MPS'))
@@ -28,20 +33,22 @@ X_MPS.sort()
 Y_MPS = list(set([i[1] for i in MPS]))
 Y_MPS.sort()
 
-Z_MPS0 = np.zeros((len(X_MPS), len(Y_MPS)))
-Z_MPS1 = np.zeros((len(X_MPS), len(Y_MPS)))
-Z_MPSW = np.zeros((len(X_MPS), len(Y_MPS)))
+Z_MPS = []
+for i in xrange(3):
+    Z_MPS.append(np.zeros((len(X_MPS), len(Y_MPS))))
 for ind_rate in xrange(len(X_MPS)):
     for ind_strength in xrange(len(Y_MPS)):
         tmp_mps = MPS[to1d(ind_rate, ind_strength, len(X_MPS))][2]
-        Z_MPS0[ind_rate][ind_strength] = tmp_mps[0]
-        Z_MPS1[ind_rate][ind_strength] = tmp_mps[0]
-        Z_MPSW[ind_rate][ind_strength] = tmp_mps['whole']
+        Z_MPS[0][ind_rate][ind_strength] = tmp_mps[0]
+        Z_MPS[1][ind_rate][ind_strength] = tmp_mps[1]
+        Z_MPS[2][ind_rate][ind_strength] = tmp_mps['whole']
 
-figure()
-MPSW_CS = contourf(X_MPS, Y_MPS, Z_MPSW)
-colorbar(MPSW_CS)
-show()
+for i in xrange(3):
+    cs = MPS_AXS[i].contourf(X_MPS, Y_MPS, Z_MPS[i], MPS_AXS[i],
+                            levels=np.linspace(0, 1, 11))
+    MPS_FIG.colorbar(cs, ax=MPS_AXS[i])
+plt.show()
+
 
 """
 DEPHASAGE
@@ -63,9 +70,9 @@ for ind_rate in xrange(len(X_PHI)):
     for ind_strength in xrange(len(Y_PHI)):
         Z_PHI[ind_rate][ind_strength] = PHI[to1d(ind_rate, ind_strength, len(X_PHI))][2]
 
-figure()
-PHI_CS = contourf(X_PHI, Y_PHI, Z_PHI)
-colorbar(PHI_CS)
-show()
+PHI_FIG = plt.figure()
+PHI_CS = plt.contourf(X_PHI, Y_PHI, Z_PHI)
+PHI_FIG.colorbar(PHI_CS)
+plt.show()
 
 DB.close()
