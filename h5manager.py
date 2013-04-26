@@ -90,9 +90,36 @@ def get_all_simus_id(dbpath):
     """Return simulations id (time, uuid) from the DB"""
     ids = []
     with tables.openFile(dbpath) as db:
-        for g in db.walkGroups():
-            try:
-                ids.append((g._v_attrs['time'], g._v_attrs['uuid']))
-            except KeyError:
-                pass
+        for g in get_first_level_groups(db.root):
+            ids.append((g._v_attrs['time'], g._v_attrs['uuid']))
     return ids
+
+
+def get_first_level_groups(root_group):
+    """Return an non-ordered list of first-level groups of root_group"""
+    groups = []
+    for group_name in root_group._v_groups:
+        groups.append(getattr(root_group, group_name))
+    return groups
+
+
+def get_all_attr(db, attr_path):
+    """Get the attribute for each group of db (except '/')
+
+    Parameters
+    ----------
+    db : tables.file.File
+    attr_path : list
+    """
+    attrs = []
+    for group in get_first_level_groups(db.root):
+        attrs.append(get_group_attr(group, attr_path))
+    return attrs
+
+
+def get_group_attr(group, attr_path):
+    """Return the attribute specified by a path in a group"""
+    res = group
+    for attr in attr_path:
+        res = getattr(res, attr)
+    return res

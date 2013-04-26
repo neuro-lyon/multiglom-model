@@ -15,14 +15,15 @@ from h5manager import init_data_h5, write_simu_data
 from utils import listdir_filter
 
 
-def new_simu(psfile):
+def new_simu((psfile, num_file, tot_file)):
     """Run a simulation using the specified parameter set file"""
     filedir = path.dirname(psfile) +  '/'
     # Register system state
     info = get_sys_state()
 
     # Creating simulation run arguments
-    args = SIM_PARSER.parse_args([psfile, '--no-plot'])
+    args = SIM_PARSER.parse_args([psfile, '--no-plot', '--no-brian-output',
+                                  '--no-summary'])
 
     # Run simulation and get results
     paramset, results = multiglom_network.main(args)
@@ -32,6 +33,7 @@ def new_simu(psfile):
     nfilename += '_' + info['uuid'] + '.h5'
     init_data_h5(nfilename)
     write_simu_data(nfilename, info, paramset, results)
+    print "File " + str(num_file + 1) + "/" + str(tot_file) + " done."
 
 
 def get_sys_state():
@@ -66,4 +68,7 @@ if __name__ == '__main__':
 
     # Run the simulation with each parameter set
     pool = Pool(processes=args.nproc)
-    pool.map(new_simu, psfiles)
+    args = []
+    for ind, psfile in enumerate(psfiles):
+        args.append((psfile, ind, len(psfiles)))
+    pool.map(new_simu, args)
