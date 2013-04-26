@@ -103,18 +103,21 @@ def get_first_level_groups(root_group):
     return groups
 
 
-def get_all_attr(db, attr_path):
-    """Get the attribute for each group of db (except '/')
+def get_all_attrs(db, attrs_path):
+    """Get the attributes for each group of db (except '/')
 
     Parameters
     ----------
     db : tables.file.File
-    attr_path : list
+    attrs_path : 2-D list
     """
-    attrs = []
+    groups_attrs = []
     for group in get_first_level_groups(db.root):
-        attrs.append(get_group_attr(group, attr_path))
-    return attrs
+        attrs = []
+        for apath in attrs_path:
+            attrs.append(get_group_attr(group, apath))
+        groups_attrs.append(attrs)
+    return groups_attrs
 
 
 def get_group_attr(group, attr_path):
