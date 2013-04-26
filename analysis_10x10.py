@@ -13,59 +13,35 @@ TODO
 
 DB = tables.openFile('db.h5')
 
-# Get data
-DATA = []
-for g in DB.walkGroups():
-    try:
-        pset = g.paramset._v_attrs
-        res = g.results._v_attrs
-    except tables.NoSuchNodeError:
-        pass
-    else:
-        new_data_item = {}
 
-        # Interconnection rate and strength
-        common = pset['Common']
-        interco_strength = common['inter_conn_strength'][0][1]
-        interco_rate = common['inter_conn_rate'][0][1]
-        new_data_item['interco'] = {}
-        new_data_item['interco']['strength'] = interco_strength
-        new_data_item['interco']['rate'] = interco_rate
+"""
+MPS
 
-        # MPS
-        new_data_item['MPS'] = res['MPS']
-
-        # MPS
-        new_data_item['STS'] = res['STS']
-
-        # Add data item
-        DATA.append(new_data_item)
-
-
-
-# Plot data
-
-# MPS
-MPS = []
-for simu in DATA:
-    rate = simu['interco']['rate']
-    strength = simu['interco']['strength']
-    MPS.append((rate, strength, simu['MPS']))
+"""
+MPS_ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
+             ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
+             ('results', '_v_attrs', 'MPS'))
+MPS = get_all_attrs(DB, MPS_ATTRS)
 MPS.sort()
+X_MPS = list(set([i[0] for i in MPS]))
+X_MPS.sort()
+Y_MPS = list(set([i[1] for i in MPS]))
+Y_MPS.sort()
 
-# plot MPS whole
-X = linspace(0, 1, 10)
-Y = linspace(0, 1, 10)
-MESH = zeros((len(X), len(Y)))
-for indx in xrange(len(X)):
-    for indy in xrange(len(Y)):
-        MESH[indx][indy] = MPS[indy*len(X) + indx][2]['whole']
+Z_MPS0 = np.zeros((len(X_MPS), len(Y_MPS)))
+Z_MPS1 = np.zeros((len(X_MPS), len(Y_MPS)))
+Z_MPSW = np.zeros((len(X_MPS), len(Y_MPS)))
+for ind_rate in xrange(len(X_MPS)):
+    for ind_strength in xrange(len(Y_MPS)):
+        tmp_mps = MPS[to1d(ind_rate, ind_strength, len(X_MPS))][2]
+        Z_MPS0[ind_rate][ind_strength] = tmp_mps[0]
+        Z_MPS1[ind_rate][ind_strength] = tmp_mps[0]
+        Z_MPSW[ind_rate][ind_strength] = tmp_mps['whole']
 
-CS = contourf(X, Y, MESH)
-colorbar(CS)  # TODO mauvaise échelle...
+figure()
+MPSW_CS = contourf(X_MPS, Y_MPS, Z_MPSW)
+colorbar(MPSW_CS)
 show()
-
-
 
 """
 DEPHASAGE
@@ -75,7 +51,7 @@ DEPHASAGE
 PHI_ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
              ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
              ('results', '_v_attrs', 'phase_angles', 0, 1))
-PHI = get_all_attrs(db, PHI_ATTRS)
+PHI = get_all_attrs(DB, PHI_ATTRS)
 PHI.sort()
 X_PHI = list(set([i[0] for i in PHI]))
 X_PHI.sort()
@@ -87,6 +63,7 @@ for ind_rate in xrange(len(X_PHI)):
     for ind_strength in xrange(len(Y_PHI)):
         Z_PHI[ind_rate][ind_strength] = PHI[to1d(ind_rate, ind_strength, len(X_PHI))][2]
 
+figure()
 PHI_CS = contourf(X_PHI, Y_PHI, Z_PHI)
 colorbar(PHI_CS)
 show()
