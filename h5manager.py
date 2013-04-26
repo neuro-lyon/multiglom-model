@@ -124,5 +124,8 @@ def get_group_attr(group, attr_path):
     """Return the attribute specified by a path in a group"""
     res = group
     for attr in attr_path:
-        res = getattr(res, attr)
+        if type(res) == type({}):
+            res = res.get(attr)
+        else:
+            res = getattr(res, attr)
     return res

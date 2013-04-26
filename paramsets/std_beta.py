@@ -9,7 +9,7 @@ INTERCO_STRENGTH = 0
 PARAMETERS = {
 'Common':
     {'simu_dt'    : 0.05*msecond,
-    'simu_length' : 3000*msecond,
+    'simu_length' : 2000*msecond,
     'N_subpop'    : N_SUBPOP,
     'N_mitral'    : N_SUBPOP*50*F,
     'inter_conn_rate'     : {0: {1: INTERCO_RATE},
