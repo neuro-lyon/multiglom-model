@@ -257,8 +257,7 @@ def main(args):
 
         print 'Indexes: STS =', sts_indexes, '\nMPS =', mps_indexes
         print 'Phase angles between sub-population', phase_angles
-        for n in xrange(n_subpop):
-            print 'FFT peak for sub-population', n, ':', fftmax[n], 'Hz.'
+        print 'FFT peaks (Hz):', fftmax
 
     """
     Plotting

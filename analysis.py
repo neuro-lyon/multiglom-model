@@ -106,15 +106,22 @@ def mps(memb_pot, start, stop):
 
 def fftmax(signal, n_subpop, simu_dt, fft_max_freq=200):
     """Return the peak in the FFT frequency of the signal values."""
-    res = []
+    res = {}
     ntimes = len(signal.times)
     freqs = fftfreq(ntimes, simu_dt)
     fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
 
+    # Compute FFT for each subpopulation
     for unit in xrange(n_subpop):
         fft_sig = abs(fft(signal[unit]-(signal[unit]).mean())[:fft_max_freq_index])
         ind_max_freq = argmax(fft_sig)
-        res.append(freqs[ind_max_freq])
+        res[unit] = freqs[ind_max_freq]
+
+    # Compute FFT for the whole population by the mean of activities
+    signal = np.mean(signal.values, axis=0)
+    fft_sig = abs(fft(signal - signal.mean())[:fft_max_freq_index])
+    ind_max_freq = argmax(fft_sig)
+    res['mean'] = freqs[ind_max_freq]
 
     return res
 
