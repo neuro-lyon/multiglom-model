@@ -284,6 +284,13 @@ def main(args):
     Note: the variable must be monitored by Brian.
 
     """
+    # Add parameters
+    ps_arrays = {'times': (monit_gr['s'].times,
+                           "Times value as an array, from t0 to end, step=dt"),
+                 'mtgr_connections': (mtgr_connections,
+                            "Connection matrix from mitral (rows) to granules (columns)")}
+
+    # Add results
     array_spikes_it = np.array((monit_mt['spikes'].it[0],
                                 monit_mt['spikes'].it[1]))
     results = {}
@@ -297,7 +304,8 @@ def main(args):
                            "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations.")}
     results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax,
                           'phase_angles': phase_angles}
-    return model.PARAMETERS, results
+
+    return {'set': model.PARAMETERS, 'arrays': ps_arrays}, results
 
 
 if __name__ == '__main__':

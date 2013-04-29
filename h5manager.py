@@ -14,16 +14,22 @@ def init_data_h5(filename):
         f.close()
 
 
-def write_simu_data(filename, info, paramset, results):
+def write_simu_data(filename, info, parameters, results):
     """Create a HDF5 file for new simulation"""
     with tables.openFile(filename, 'a') as f:
         # Put info into the HDF5 root
         for attr in info:
             setattr(f.root._v_attrs, attr, info[attr])
+
         # Put the parameter set into the file
-        pset = f.createGroup('/', 'paramset', title="Parameter set")
-        for attr in paramset:
-            setattr(pset._v_attrs, attr, paramset[attr])
+        ps = f.createGroup('/', 'paramset', title="Parameters")
+        for attr in parameters['set']:
+            setattr(ps._v_attrs, attr, parameters['set'][attr])
+        ps_arrays = f.createGroup(ps, 'arrays', title="Parameter arrays")
+        for ps_array in parameters['arrays']:
+            f.createArray(ps_arrays, ps_array, parameters['arrays'][ps_array][0],
+                          title=parameters['arrays'][ps_array][1])
+
         # Put the data results into the file
         res = f.createGroup('/', 'results', title="Simulation results")
         for attr in results['data']:
