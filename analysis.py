@@ -85,6 +85,8 @@ def mps(memb_pot, start, stop):
     ----------
     memb_pot : StateMonitor
         Membrane potential for a whole category (eg. mitral) of neurons.
+    start, stop : int
+        indices of the first and last neuron to take
 
     References
     ----------
@@ -97,10 +99,12 @@ def mps(memb_pot, start, stop):
     ncomb = comb(nneur, 2, exact=True)
     assert ncomb > 0, \
         "No mitral combination are possible, are you using 1 mitral?"
+
     for i in xrange(nneur):
         for j in xrange(nneur):
             if j > i:
                 res += all_corr[i][j]
+
     return res/ncomb
 
 
