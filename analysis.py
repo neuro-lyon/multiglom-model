@@ -29,7 +29,7 @@ if ps:
     TAU  = PSIN['tau_Ein']
 
 
-def sts(netw_act, spikes, start, stop, keep_ratio=3./4):
+def sts(netw_act, spikes, start, stop, keep_ratio=1./2):
     """
     Returns the STS index [1] for the given network activity.
 
@@ -77,7 +77,7 @@ def get_nspikes(spikes, keep_ratio, start, stop):
     return nspikes
 
 
-def mps(memb_pot, start, stop):
+def mps(memb_pot, start, stop, keep_ratio=1./2):
     """
     Returns the MPS index [1] of the given network.
 
@@ -87,6 +87,8 @@ def mps(memb_pot, start, stop):
         Membrane potential for a whole category (eg. mitral) of neurons.
     start, stop : int
         indices of the first and last neuron to take
+    keep_ratio : float
+        portion of the signal to keep (right part is kept, left is dismissed)
 
     References
     ----------
@@ -94,7 +96,8 @@ def mps(memb_pot, start, stop):
 
     """
     res = 0.
-    all_corr = np.corrcoef(memb_pot.values[start:stop])
+    cut_index = len(memb_pot.values[0])*(1 - keep_ratio)
+    all_corr = np.corrcoef(memb_pot.values[start:stop, cut_index:])
     nneur = stop - start
     ncomb = comb(nneur, 2, exact=True)
     assert ncomb > 0, \
@@ -108,22 +111,25 @@ def mps(memb_pot, start, stop):
     return res/ncomb
 
 
-def fftmax(signal, n_subpop, simu_dt, fft_max_freq=200):
+def fftmax(signal, n_subpop, simu_dt, fft_max_freq=200, keep_ratio=1./2):
     """Return the peak in the FFT frequency of the signal values."""
     res = {}
-    ntimes = len(signal.times)
+    ntimes = int(len(signal.times)*(1 - keep_ratio))
+    # Cut the signal values to keep_ratio
+    cut_signal = signal.values[:, ntimes:]
+
     freqs = fftfreq(ntimes, simu_dt)
     fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
 
     # Compute FFT for each subpopulation
     for unit in xrange(n_subpop):
-        fft_sig = abs(fft(signal[unit]-(signal[unit]).mean())[:fft_max_freq_index])
+        fft_sig = abs(fft(cut_signal[unit]-(cut_signal[unit]).mean())[:fft_max_freq_index])
         ind_max_freq = argmax(fft_sig)
         res[unit] = freqs[ind_max_freq]
 
     # Compute FFT for the whole population by the mean of activities
-    signal = np.mean(signal.values, axis=0)
-    fft_sig = abs(fft(signal - signal.mean())[:fft_max_freq_index])
+    mean_signal = np.mean(cut_signal, axis=0)
+    fft_sig = abs(fft(mean_signal - mean_signal.mean())[:fft_max_freq_index])
     ind_max_freq = argmax(fft_sig)
     res['mean'] = freqs[ind_max_freq]
 
