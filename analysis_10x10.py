@@ -78,8 +78,41 @@ for ind_rate in xrange(len(X_PHI)):
 PHI_FIG = plt.figure()
 PHI_CS = plt.contourf(X_PHI, Y_PHI, Z_PHI)
 PHI_FIG.colorbar(PHI_CS)
-plt.ioff()
+
+
+
+"""
+FFT MAX
+
+"""
+FFT_ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
+             ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
+             ('results', '_v_attrs', 'FFTMAX'))
+FFT = get_all_attrs(DB, FFT_ATTRS)
+FFT.sort()
+X_FFT = list(set(i[0] for i in FFT))
+X_FFT.sort()
+Y_FFT = list(set(i[1] for i in FFT))
+Y_FFT.sort()
+
+Z_FFT = []
+for i in xrange(2):
+    Z_FFT.append(np.zeros((len(X_FFT), len(Y_FFT))))
+for ind_rate in xrange(len(X_FFT)):
+    for ind_strength in xrange(len(Y_FFT)):
+        tmp_fft = FFT[to1d(ind_rate, ind_strength, len(X_FFT))][2]
+        Z_FFT[0][ind_rate][ind_strength] = tmp_fft[0]
+        Z_FFT[1][ind_rate][ind_strength] = tmp_fft[1]
+
+# Plotting
+FFT_FIG, FFT_AXS = plt.subplots(2)
+for i in xrange(2):
+    cs = FFT_AXS[i].contourf(X_FFT, Y_FFT, Z_FFT[i])
+    FFT_FIG.colorbar(cs, ax=FFT_AXS[i])
 plt.show()
 
+
+plt.ioff()
+plt.show()
 
 DB.close()
