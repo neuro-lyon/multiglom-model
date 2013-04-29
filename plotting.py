@@ -69,7 +69,7 @@ def granule_figure(monit_gr, pscommon):
                  monit_gr['s'][gr], label="s granule #"+str(gr))
         sub_s.legend()
         sub_s.set_xlabel('time (ms)')
-        sub_s.set_ylabel('s mitral & s_syn granule & s granule #'+str(gr))
+        sub_s.set_ylabel('s_syn granule & s granule #'+str(gr))
 
         sub_synchro = plt.subplot(1, 2, 2)
         fft_max_freq = 200
