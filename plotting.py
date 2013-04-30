@@ -29,7 +29,7 @@ def raster_plot(spike_monitor, n_subpop):
     plt.ylabel("neuron number")
 
 
-def get_colorlist(n_colors, cmap_name="gist_ncar"):
+def get_colorlist(n_colors, cmap_name="Paired"):
     """Get a list of `n_colors` color from a matplotlib colormap."""
     colors = []
     colormap = cmap.get_cmap(cmap_name)
