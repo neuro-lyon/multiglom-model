@@ -8,7 +8,7 @@ from utils import to1d
 
 
 plt.ion()
-DB = tables.openFile('db.h5')
+DB = tables.openFile('db30x30.h5')
 
 
 """
