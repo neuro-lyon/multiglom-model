@@ -60,32 +60,42 @@ def memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule):
 
 def granule_figure(monit_gr, pscommon):
     """Parameters to/from the granule, useful to see population synchrony."""
-    for gr in xrange(pscommon['N_subpop']):
-        granule_pop_figure(monit_gr['s'].values, monit_gr['s_syn_self'].values, gr, monit_gr['s'].times, pscommon['simu_dt'])
+    granule_pop_figure(monit_gr['s'].values, monit_gr['s_syn_self'].values, monit_gr['s'].times, pscommon['simu_dt'])
 
 
-def granule_pop_figure(gr_s, gr_s_syn_self, num_granule, times, dt):
+def granule_pop_figure(gr_s, gr_s_syn_self, times, dt):
     """Plot a figure describing the granule activity."""
     plt.figure()
+    n_granule = len(gr_s)
 
-    # Granule s & s_syn activities
-    sub_s = plt.subplot(1, 2, 1)
-    sub_s.plot(times/msecond, gr_s_syn_self[num_granule],
-        label="s_syn_self granule #" + str(num_granule))
-    sub_s.plot(times/msecond, gr_s[num_granule],
-        label="s granule #" + str(num_granule))
+    # Granule s
+    sub_s = plt.subplot(2, 2, 1)
+    for num_granule in xrange(n_granule):
+        sub_s.plot(times/msecond, gr_s[num_granule],
+            label="s granule #" + str(num_granule))
     sub_s.legend()
-    sub_s.set_xlabel('time (ms)')
-    sub_s.set_ylabel('s & s_syn_self granule #' + str(num_granule))
+    sub_s.set_xlabel('times (ms)')
+    sub_s.set_ylabel('s granule')
 
-    # Granule FFT
-    sub_synchro = plt.subplot(1, 2, 2)
+    # Granule s_syn_self
+    sub_s_syn_self = plt.subplot(2, 2, 2, sharex=sub_s)
+    for num_granule in xrange(n_granule):
+        sub_s_syn_self.plot(times/msecond, gr_s_syn_self[num_granule],
+            label="s_syn_self granule #" + str(num_granule))
+    sub_s_syn_self.legend()
+    sub_s_syn_self.set_xlabel('times (ms)')
+    sub_s_syn_self.set_ylabel('s_syn_self granule')
+
+    # FFT max granules
+    sub_fft = plt.subplot(2, 1, 2)
     fft_max_freq = 200
     ntimes = len(times)
     freqs = fftfreq(ntimes, dt)
     fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
-    fft_sig = abs(fft(gr_s[num_granule] - (gr_s[num_granule]).mean())[:fft_max_freq_index])
-
-    sub_synchro.plot(freqs[:fft_max_freq_index], fft_sig)
-    sub_synchro.set_xlabel("granule #"+str(num_granule)+" 's' frequency (Hz)")
-    sub_synchro.set_ylabel('Power')
+    for num_granule in xrange(n_granule):
+        fft_sig = abs(fft(gr_s[num_granule] - (gr_s[num_granule]).mean())[:fft_max_freq_index])
+        sub_fft.plot(freqs[:fft_max_freq_index], fft_sig,
+            label="FFT on granule #" + str(num_granule) + " s")
+    sub_fft.legend()
+    sub_fft.set_xlabel("granule s frequency (Hz)")
+    sub_fft.set_ylabel('Power')
