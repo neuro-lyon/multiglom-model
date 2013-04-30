@@ -8,7 +8,36 @@ from utils import to1d
 
 
 plt.ion()
-DB = tables.openFile('db30x30.h5')
+DB = tables.openFile('db30x30beta.h5')
+
+
+"""
+Utility functions
+
+"""
+def get_v_scale(array_list, low_bound=False, high_bound=False, num=50,):
+    """Return a scale from the min value to the max value in all arrays.
+
+    Parameters
+    ----------
+    array_list: list[np.ndarray .. np.ndarray]
+        a list of numpy arrrays to get the min and max from
+    low_bound, high_bound: int or float
+        specifiy min and max value of the scale
+    num: int
+        number of value to return on the scale
+
+    Return
+    ------
+    np.ndarray
+        an array from the min to the max in all array, with num values.
+
+    """
+    if not type(low_bound) == type(1):  # check if we enter a number (even 0)
+        low_bound = min(np.amin(array) for array in array_list)
+    if not type(high_bound) == type(1):
+        high_bound = max(np.amax(array) for array in array_list)
+    return np.linspace(low_bound, high_bound, num=num)
 
 
 """
