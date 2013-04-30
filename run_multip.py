@@ -33,7 +33,6 @@ def new_simu((psfile, num_file, tot_file)):
     nfilename += '_' + info['uuid'] + '.h5'
     init_data_h5(nfilename)
     write_simu_data(nfilename, info, paramset, results)
-    print "File " + str(num_file + 1) + "/" + str(tot_file) + " done."
 
 
 def get_sys_state():
