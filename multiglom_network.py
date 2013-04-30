@@ -106,7 +106,7 @@ def main(args):
                             Equations("g_input : siemens*meter**-2")]}
     mt.add_eqs(supp_eqs=mt_supp_eqs)
     mt.make_pop(n_mitral)
-    mt.pop.V = (psmt['E_L'] - psmt['V_r'])*np.random.random_sample(np.shape(mt.pop.V)) \
+    mt.pop.V = (psmt['V_t'] - psmt['V_r'])*np.random.random_sample(np.shape(mt.pop.V)) \
                + psmt['V_r']
 
     # Granule Cells
