@@ -8,7 +8,7 @@ from utils import to1d
 
 
 plt.ion()
-DB = tables.openFile('db30x30.h5')
+DB = tables.openFile('db.h5')
 
 
 """
@@ -42,16 +42,18 @@ for ind_rate in xrange(len(X_IDX)):
         Z_IDX[5][ind_rate][ind_strength] = tmp_sts['whole']
 
 # MPS plotting
+V_MPS = np.linspace(0, max(np.amax(mps_array) for mps_array in Z_IDX[:3]), 20)
 IDX_FIG, IDX_AXS = plt.subplots(3)
 for i in xrange(3):
-    cs = IDX_AXS[i].contourf(X_IDX, Y_IDX, Z_IDX[i])
+    cs = IDX_AXS[i].contourf(X_IDX, Y_IDX, Z_IDX[i], V_MPS)
     IDX_FIG.colorbar(cs, ax=IDX_AXS[i])
 plt.show()
 
 # STS plotting
+V_STS = np.linspace(0, max(np.amax(sts_array) for sts_array in Z_IDX[3:]), 20)
 IDX_FIG, IDX_AXS = plt.subplots(3)
 for i in xrange(3):
-    cs = IDX_AXS[i].contourf(X_IDX, Y_IDX, Z_IDX[i + 3])
+    cs = IDX_AXS[i].contourf(X_IDX, Y_IDX, Z_IDX[i + 3], V_STS)
     IDX_FIG.colorbar(cs, ax=IDX_AXS[i])
 plt.show()
 
@@ -106,8 +108,9 @@ for ind_rate in xrange(len(X_FFT)):
 
 # Plotting
 FFT_FIG, FFT_AXS = plt.subplots(2)
+V_FFT = np.linspace(0, max(np.amax(fft_array) for fft_array in Z_FFT), 30)
 for i in xrange(2):
-    cs = FFT_AXS[i].contourf(X_FFT, Y_FFT, Z_FFT[i])
+    cs = FFT_AXS[i].contourf(X_FFT, Y_FFT, Z_FFT[i], V_FFT)
     FFT_FIG.colorbar(cs, ax=FFT_AXS[i])
 plt.show()
 
