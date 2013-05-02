@@ -8,7 +8,36 @@ from utils import to1d
 
 
 plt.ion()
-DB = tables.openFile('db.h5')
+DB = tables.openFile('db30x30beta.h5')
+
+
+"""
+Utility functions
+
+"""
+def get_v_scale(array_list, low_bound=False, high_bound=False, num=50,):
+    """Return a scale from the min value to the max value in all arrays.
+
+    Parameters
+    ----------
+    array_list: list[np.ndarray .. np.ndarray]
+        a list of numpy arrrays to get the min and max from
+    low_bound, high_bound: int or float
+        specifiy min and max value of the scale
+    num: int
+        number of value to return on the scale
+
+    Return
+    ------
+    np.ndarray
+        an array from the min to the max in all array, with num values.
+
+    """
+    if not type(low_bound) == type(1):  # check if we enter a number (even 0)
+        low_bound = min(np.amin(array) for array in array_list)
+    if not type(high_bound) == type(1):
+        high_bound = max(np.amax(array) for array in array_list)
+    return np.linspace(low_bound, high_bound, num=num)
 
 
 """
@@ -42,16 +71,18 @@ for ind_rate in xrange(len(X_IDX)):
         Z_IDX[5][ind_rate][ind_strength] = tmp_sts['whole']
 
 # MPS plotting
+V_MPS = get_v_scale(Z_IDX[:3])
 IDX_FIG, IDX_AXS = plt.subplots(3)
 for i in xrange(3):
-    cs = IDX_AXS[i].contourf(X_IDX, Y_IDX, Z_IDX[i])
+    cs = IDX_AXS[i].contourf(X_IDX, Y_IDX, Z_IDX[i], V_MPS)
     IDX_FIG.colorbar(cs, ax=IDX_AXS[i])
 plt.show()
 
 # STS plotting
+V_STS = get_v_scale(Z_IDX[3:])
 IDX_FIG, IDX_AXS = plt.subplots(3)
 for i in xrange(3):
-    cs = IDX_AXS[i].contourf(X_IDX, Y_IDX, Z_IDX[i + 3])
+    cs = IDX_AXS[i].contourf(X_IDX, Y_IDX, Z_IDX[i + 3], V_STS)
     IDX_FIG.colorbar(cs, ax=IDX_AXS[i])
 plt.show()
 
@@ -96,18 +127,21 @@ Y_FFT = list(set(i[1] for i in FFT))
 Y_FFT.sort()
 
 Z_FFT = []
-for i in xrange(2):
+for i in xrange(3):
     Z_FFT.append(np.zeros((len(X_FFT), len(Y_FFT))))
 for ind_rate in xrange(len(X_FFT)):
     for ind_strength in xrange(len(Y_FFT)):
         tmp_fft = FFT[to1d(ind_rate, ind_strength, len(X_FFT))][2]
         Z_FFT[0][ind_rate][ind_strength] = tmp_fft[0]
         Z_FFT[1][ind_rate][ind_strength] = tmp_fft[1]
+        if type(tmp_fft) == type({}):  # The first two big runs didn't record FFT mean, so skip it
+            Z_FFT[2][ind_rate][ind_strength] = tmp_fft['mean']
 
 # Plotting
-FFT_FIG, FFT_AXS = plt.subplots(2)
-for i in xrange(2):
-    cs = FFT_AXS[i].contourf(X_FFT, Y_FFT, Z_FFT[i])
+FFT_FIG, FFT_AXS = plt.subplots(3)
+V_FFT = get_v_scale(Z_FFT, low_bound=0, high_bound=100)
+for i in xrange(3):
+    cs = FFT_AXS[i].contourf(X_FFT, Y_FFT, Z_FFT[i], V_FFT)
     FFT_FIG.colorbar(cs, ax=FFT_AXS[i])
 plt.show()
 
