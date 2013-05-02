@@ -7,6 +7,7 @@ from multiprocessing import Pool
 from os import path
 from datetime import datetime
 from uuid import uuid4
+from math import ceil
 import git
 
 from arg_parsers import SIM_PARSER, MULTISIM_PARSER
@@ -66,8 +67,14 @@ if __name__ == '__main__':
     psfiles = get_pset_files(args.pset_dir)
 
     # Run the simulation with each parameter set
-    pool = Pool(processes=args.nproc)
-    args = []
+    simu_args = []
     for ind, psfile in enumerate(psfiles):
-        args.append((psfile, ind, len(psfiles)))
-    pool.map(new_simu, args)
+        simu_args.append((psfile, ind, len(psfiles)))
+
+    print "Start simul"
+    npool = int(ceil(1.*len(simu_args)/args.nproc))
+    for i in range(npool):
+        pool = Pool(processes=args.nproc)
+        pool.map(new_simu, simu_args[i*args.nproc:(i+1)*args.nproc])
+        pool.close()
+    print "End simul"
