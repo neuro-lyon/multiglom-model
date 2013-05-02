@@ -49,7 +49,9 @@ def main(args):
     clear(erase=True, all=True)
     defaultclock.reinit()
 
-
+    # Initialize random generator (necessary mainly for parallel simulations)
+    np.random.seed()
+    
     """
     Parameters
     ----------

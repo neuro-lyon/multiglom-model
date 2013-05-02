@@ -54,8 +54,10 @@ def gen_parameters(template_file, params, output_dir):
         range_list.append(value['range'])
 
     # Iterate on the cartesian product of the ranges to create new sets
+    index=0
     for comb in itertools.product(*range_list):
-        fname = ''
+        index+=1
+        fname = 'parset'+str(0)*(5-len(str(index)))+str(index)+"__" # assume less than 10000 parameters sets
 
         # Set the new value for each variable of the combination
         for ind_var in xrange(len(comb)):
@@ -74,6 +76,7 @@ def gen_parameters(template_file, params, output_dir):
             f.writelines(["from brian.stdunits import *\n",
                           "from brian.units import *\n"])
             f.write('PARAMETERS = ' + str(template) + '\n')
+            
 
     # Put a __init__.py to make the modules importable
     f = open(path.join(output_dir, '__init__.py'), 'w')
