@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import colors
 import tables
 
 from h5manager import get_all_attrs
@@ -9,6 +10,16 @@ from utils import to1d
 
 plt.ion()
 DB = tables.openFile('db30x30gamma.h5')
+
+
+"""
+Utility Functions
+
+"""
+def get_all_min_max(array_list):
+    """Return the min and max between all arrays."""
+    big_arr = np.concatenate(array_list)
+    return (np.amin(big_arr), np.amax(big_arr))
 
 
 """
@@ -42,17 +53,23 @@ for ind_rate in xrange(len(X_IDX)):
         Z_IDX[5][ind_rate][ind_strength] = tmp_sts['whole']
 
 # MPS plotting
-IDX_FIG, IDX_AXS = plt.subplots(3)
+MPS_FIG, MPS_AXS = plt.subplots(1, 3)
+MPS_MIN_MAX = get_all_min_max([Z_IDX[i] for i in xrange(3)])
+MPS_NORM = colors.normalize(MPS_MIN_MAX[0], MPS_MIN_MAX[1])
 for i in xrange(3):
-    cs = IDX_AXS[i].imshow(Z_IDX[i], origin="lower", interpolation="nearest", extent=(0, 1, 0, 1))
-    IDX_FIG.colorbar(cs, ax=IDX_AXS[i])
+    cs = MPS_AXS[i].imshow(Z_IDX[i], origin="lower", norm=MPS_NORM,
+                           interpolation="nearest", extent=(0, 1, 0, 1))
+MPS_FIG.colorbar(cs)
 plt.show()
 
 # STS plotting
-IDX_FIG, IDX_AXS = plt.subplots(3)
+STS_FIG, STS_AXS = plt.subplots(1, 3)
+STS_MIN_MAX = get_all_min_max([Z_IDX[i] for i in xrange(3, 6)])
+STS_NORM = colors.normalize(STS_MIN_MAX[0], STS_MIN_MAX[1])
 for i in xrange(3):
-    cs = IDX_AXS[i].imshow(Z_IDX[i + 3], origin="lower", interpolation="nearest", extent=(0, 1, 0, 1))
-    IDX_FIG.colorbar(cs, ax=IDX_AXS[i])
+    cs = STS_AXS[i].imshow(Z_IDX[i + 3], origin="lower", norm=STS_NORM,
+                           interpolation="nearest", extent=(0, 1, 0, 1))
+STS_FIG.colorbar(cs)
 plt.show()
 
 
@@ -76,9 +93,10 @@ for ind_rate in xrange(len(X_PHI)):
         Z_PHI[ind_rate][ind_strength] = PHI[to1d(ind_rate, ind_strength, len(X_PHI))][2]
 
 PHI_FIG = plt.figure()
-PHI_CS = plt.imshow(Z_PHI, origin="lower", interpolation="nearest")
+PHI_NORM = colors.normalize(np.amin(Z_PHI), np.amax(Z_PHI))
+PHI_CS = plt.imshow(Z_PHI, origin="lower", interpolation="nearest",
+                    norm=PHI_NORM, extent=(0, 1, 0, 1))
 PHI_FIG.colorbar(PHI_CS)
-
 
 
 """
@@ -107,10 +125,11 @@ for ind_rate in xrange(len(X_FFT)):
             Z_FFT[2][ind_rate][ind_strength] = tmp_fft['mean']
 
 # Plotting
-FFT_FIG, FFT_AXS = plt.subplots(3)
+FFT_FIG, FFT_AXS = plt.subplots(1, 3)
 for i in xrange(3):
-    cs = FFT_AXS[i].imshow(Z_FFT[i], origin="lower", interpolation="nearest", extent=(0, 1, 0, 1))
-    FFT_FIG.colorbar(cs, ax=FFT_AXS[i])
+    cs = FFT_AXS[i].imshow(Z_FFT[i], origin="lower", interpolation="nearest",
+                           norm=colors.normalize(0, 100), extent=(0, 1, 0, 1))
+FFT_FIG.colorbar(cs)
 plt.show()
 
 
