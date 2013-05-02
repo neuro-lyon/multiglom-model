@@ -8,36 +8,7 @@ from utils import to1d
 
 
 plt.ion()
-DB = tables.openFile('db30x30beta.h5')
-
-
-"""
-Utility functions
-
-"""
-def get_v_scale(array_list, low_bound=False, high_bound=False, num=50,):
-    """Return a scale from the min value to the max value in all arrays.
-
-    Parameters
-    ----------
-    array_list: list[np.ndarray .. np.ndarray]
-        a list of numpy arrrays to get the min and max from
-    low_bound, high_bound: int or float
-        specifiy min and max value of the scale
-    num: int
-        number of value to return on the scale
-
-    Return
-    ------
-    np.ndarray
-        an array from the min to the max in all array, with num values.
-
-    """
-    if not type(low_bound) == type(1):  # check if we enter a number (even 0)
-        low_bound = min(np.amin(array) for array in array_list)
-    if not type(high_bound) == type(1):
-        high_bound = max(np.amax(array) for array in array_list)
-    return np.linspace(low_bound, high_bound, num=num)
+DB = tables.openFile('db30x30gamma.h5')
 
 
 """
@@ -71,18 +42,16 @@ for ind_rate in xrange(len(X_IDX)):
         Z_IDX[5][ind_rate][ind_strength] = tmp_sts['whole']
 
 # MPS plotting
-V_MPS = get_v_scale(Z_IDX[:3])
 IDX_FIG, IDX_AXS = plt.subplots(3)
 for i in xrange(3):
-    cs = IDX_AXS[i].contourf(X_IDX, Y_IDX, Z_IDX[i], V_MPS)
+    cs = IDX_AXS[i].imshow(Z_IDX[i], origin="lower", interpolation="nearest", extent=(0, 1, 0, 1))
     IDX_FIG.colorbar(cs, ax=IDX_AXS[i])
 plt.show()
 
 # STS plotting
-V_STS = get_v_scale(Z_IDX[3:])
 IDX_FIG, IDX_AXS = plt.subplots(3)
 for i in xrange(3):
-    cs = IDX_AXS[i].contourf(X_IDX, Y_IDX, Z_IDX[i + 3], V_STS)
+    cs = IDX_AXS[i].imshow(Z_IDX[i + 3], origin="lower", interpolation="nearest", extent=(0, 1, 0, 1))
     IDX_FIG.colorbar(cs, ax=IDX_AXS[i])
 plt.show()
 
@@ -107,7 +76,7 @@ for ind_rate in xrange(len(X_PHI)):
         Z_PHI[ind_rate][ind_strength] = PHI[to1d(ind_rate, ind_strength, len(X_PHI))][2]
 
 PHI_FIG = plt.figure()
-PHI_CS = plt.contourf(X_PHI, Y_PHI, Z_PHI)
+PHI_CS = plt.imshow(Z_PHI, origin="lower", interpolation="nearest")
 PHI_FIG.colorbar(PHI_CS)
 
 
@@ -139,9 +108,8 @@ for ind_rate in xrange(len(X_FFT)):
 
 # Plotting
 FFT_FIG, FFT_AXS = plt.subplots(3)
-V_FFT = get_v_scale(Z_FFT, low_bound=0, high_bound=100)
 for i in xrange(3):
-    cs = FFT_AXS[i].contourf(X_FFT, Y_FFT, Z_FFT[i], V_FFT)
+    cs = FFT_AXS[i].imshow(Z_FFT[i], origin="lower", interpolation="nearest", extent=(0, 1, 0, 1))
     FFT_FIG.colorbar(cs, ax=FFT_AXS[i])
 plt.show()
 
