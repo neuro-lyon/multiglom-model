@@ -11,7 +11,7 @@ PARAMETERS = {
     {'simu_dt'    : 0.05*msecond,
     'simu_length' : 2000*msecond,
     'N_subpop'    : N_SUBPOP,
-    'N_mitral'    : N_SUBPOP*50*F,
+    'N_mitral'    : N_SUBPOP*100*F,
     'inter_conn_rate'     : {0: {1: INTERCO_RATE},
                              1: {0: INTERCO_RATE}},
     'inter_conn_strength' : {0: {1: INTERCO_STRENGTH},
@@ -19,8 +19,8 @@ PARAMETERS = {
     },
 'Input':
     {'tau_Ein'  : 3*msecond,
-    'g_Ein0'    : 1.*siemens*meter**-2,
-    'sigma_Ein' : .05*siemens*meter**-2
+    'g_Ein0'    : 2.*siemens*meter**-2,
+    'sigma_Ein' : .035*siemens*meter**-2
     },
 'InputOscillation':
     {'f'    : 2*Hz,
@@ -51,7 +51,7 @@ PARAMETERS = {
 
     'V_I'      : -80*mvolt,
     'V_act_I'  : -66.4*mvolt,
-    'g_I'      : 10*siemens*meter**-2,
+    'g_I'      : 20*siemens*meter**-2,
     'sigma_I'  : 0.4*mvolt,
     'alpha_I'  : 5*msecond**-1,
     'beta_I'   : 1./10*msecond**-1
