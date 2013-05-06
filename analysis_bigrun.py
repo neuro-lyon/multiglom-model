@@ -8,8 +8,9 @@ from h5manager import get_all_attrs
 from utils import to1d
 
 
-plt.ion()
-DB = tables.openFile('db_two_glom_beta_new_ps_interco_strength0_1_interco_rate0_1.h5')
+#~ filename='db_two_glom_beta_new_ps_interco_strength0_1_interco_rate0_1.h5'
+filename='db_two_glom_beta_hom.h5'
+DB = tables.openFile(filename)
 
 
 """
@@ -73,8 +74,9 @@ MPS_NORM = colors.normalize(MPS_MIN_MAX[0], MPS_MIN_MAX[1])
 for i in xrange(3):
     cs = MPS_AXS[i].imshow(Z_IDX[i], origin="lower", norm=MPS_NORM,
                            interpolation="nearest", extent=(0, 1, 0, 1))
+    MPS_AXS[i].set_title("MPS")
+
 MPS_FIG.colorbar(cs)
-plt.show()
 
 # STS plotting
 STS_FIG, STS_AXS = plt.subplots(1, 3)
@@ -83,8 +85,8 @@ STS_NORM = colors.normalize(STS_MIN_MAX[0], STS_MIN_MAX[1])
 for i in xrange(3):
     cs = STS_AXS[i].imshow(Z_IDX[i + 3], origin="lower", norm=STS_NORM,
                            interpolation="nearest", extent=(0, 1, 0, 1))
+    STS_AXS[i].set_title("STS")
 STS_FIG.colorbar(cs)
-plt.show()
 
 
 """
@@ -143,8 +145,9 @@ FFT_FIG, FFT_AXS = plt.subplots(1, 3)
 for i in xrange(3):
     cs = FFT_AXS[i].imshow(Z_FFT[i], origin="lower", interpolation="nearest",
                            norm=colors.normalize(0, 100), extent=(0, 1, 0, 1))
+    FFT_AXS[i].set_title("FFT")
+
 FFT_FIG.colorbar(cs)
-plt.show()
 
 
 """
@@ -161,13 +164,6 @@ X_SR.sort()
 Y_SR = list(set(i[1] for i in SR))
 Y_SR.sort()
 
-def get_neuron_spike_pos(spikes_i, range):
-    positions = []
-    for pos_spike, spike in enumerate(spikes_i):
-        if int(spike) >= range[0] and int(spike) < range[1]:
-            positions.append(pos_spike)
-    return positions
-
 START_TIME = SIMU_LENGTH/2.
 Z_SR = []
 SPIKES_IT = np.array([])
@@ -175,12 +171,13 @@ for i in xrange(3):
     Z_SR.append(np.zeros((len(X_SR), len(Y_SR))))
 for ind_rate in xrange(len(X_SR)):
     for ind_strength in xrange(len(Y_SR)):
-        SPIKES_IT = SR[to1d(ind_rate, ind_strength, len(X_SR))][2]
+        SPIKES_IT = np.array(SR[to1d(ind_rate, ind_strength, len(X_SR))][2])
         nspikes = []
         for pop in xrange(N_SUBPOP):
-            pos_spikes = get_neuron_spike_pos(SPIKES_IT[0], (pop*N_MITRAL_PER_SUBPOP, (pop + 1)*N_MITRAL_PER_SUBPOP))
-            spike_pop_times = [1 if SPIKES_IT[1, pspike] > float(START_TIME) else 0 for pspike in pos_spikes]
-            nspikes.append(np.sum(spike_pop_times))
+            neuron_range=[pop*N_MITRAL_PER_SUBPOP, (pop + 1)*N_MITRAL_PER_SUBPOP]
+            valid_spikes=(SPIKES_IT[0,:]>=neuron_range[0])&(SPIKES_IT[0,:]<neuron_range[1])
+            valid_times = (SPIKES_IT[1,valid_spikes] > float(START_TIME))
+            nspikes.append(valid_times.sum()/(N_MITRAL_PER_SUBPOP*(SIMU_LENGTH - START_TIME)))
         nspikes_whole = 1.*(SPIKES_IT[1,:] >= START_TIME).sum()/(N_MITRAL * (SIMU_LENGTH - START_TIME))
         nspikes.append(nspikes_whole)
         Z_SR[0][ind_rate][ind_strength] = nspikes[0]
@@ -193,8 +190,13 @@ SR_NORM = colors.normalize(np.amin(Z_SR), np.amax(Z_SR))
 for i in xrange(3):
     cs = SR_AXS[i].imshow(Z_SR[i], origin="lower", interpolation="nearest",
                            norm=SR_NORM, extent=(0, 1, 0, 1))
+    SR_AXS[i].set_title("Rates")
+
 SR_FIG.colorbar(cs)
+
+DB.close()
+
+
 plt.show()
 
 
-DB.close()

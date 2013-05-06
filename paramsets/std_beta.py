@@ -15,7 +15,7 @@ PARAMETERS = {
     'inter_conn_rate'     : {0: {1: INTERCO_RATE},
                              1: {0: INTERCO_RATE}},
     'inter_conn_strength' : {0: {1: INTERCO_STRENGTH},
-                             1: {0: INTERCO_STRENGTH}}
+                             1: {0: INTERCO_STRENGTH}},
     'homeostasy': False
     },
 'Input':
