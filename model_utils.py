@@ -25,13 +25,19 @@ def intrapop_connections(n_mitral, n_granule, n_subpop, n_mitral_per_subpop):
         resmat[start:stop, i_subpop] = 1.
     return resmat
 
-def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpop, inter_conn_rate, inter_conn_strength):
+def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpop, inter_conn_rate, inter_conn_strength,homeostasy=False):
     """
     Adds inter sub-population connections.
 
     Changes on the connection matrix are done in place.
 
     """
+
+    if homeostasy:
+        init_total=1.*mat_connections.sum(axis=0)
+        tr_init_total=1.*mat_connections.sum(axis=1)
+
+    
     res_mat = mat_connections
     n_granule = n_subpop
     for mtpop in inter_conn_rate:
@@ -50,7 +56,18 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
             start = mtpop*n_mitral_per_subpop
             stop  = start + n_mitral_per_subpop
             res_mat[start:stop, grpop] = newconn[:, 0]
-    return res_mat
+    
+    if not(homeostasy):
+        return res_mat,res_mat.transpose()
+    else:
+        # Connection strengthes are normalized such that each neuron (mitral or granule) receive the same total amount of excitation or inhibition 
+        # (i.e. the same total of synaptic conductance) as if they were no interglomerular connections
+        tr_res_mat=res_mat.transpose().copy()
+        tr_res_mat_norm=tr_init_total/tr_res_mat.sum(axis=0) # here the numerator is 1. because there is only one granule
+        tr_res_mat=tr_res_mat*tr_res_mat_norm
+        res_mat_norm=init_total/res_mat.sum(axis=0)
+        res_mat=res_mat*res_mat_norm
+        return res_mat,tr_res_mat
 
 def monit(pop, params, reclist=True, spikes=False):
     """Returns a dictionnary of monitors for the population."""

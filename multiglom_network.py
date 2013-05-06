@@ -142,8 +142,9 @@ def main(args):
     # Inter subpopulation connectivities
     inter_conn_rate = pscommon['inter_conn_rate']
     inter_conn_strength = pscommon['inter_conn_strength']
-    mtgr_connections = mutils.interpop_connections(mtgr_connections, n_mitral, n_subpop,
-                                            n_mitral_per_subpop, inter_conn_rate, inter_conn_strength)
+    homeostasy = pscommon['homeostasy']
+    mtgr_connections,grmt_connections = mutils.interpop_connections(mtgr_connections, n_mitral, n_subpop,
+                                            n_mitral_per_subpop, inter_conn_rate, inter_conn_strength,homeostasy)
     # Mitral--Granule interactions
     @network_operation(when='start')
     def graded_synapse():
@@ -151,7 +152,7 @@ def main(args):
         mt.pop.state('T')[:] = 0.
         mt.pop.state('T')[mt.pop.get_refractory_indices()] = 1.
         gr.pop.s_syn = dot(mt.pop.s, mtgr_connections)
-        mt.pop.s_syn = dot(gr.pop.s, transpose(mtgr_connections))
+        mt.pop.s_syn = dot(gr.pop.s, grmt_connections)
 
     @network_operation(when='start')
     def sum_s():

@@ -16,6 +16,7 @@ PARAMETERS = {
                              1: {0: INTERCO_RATE}},
     'inter_conn_strength' : {0: {1: INTERCO_STRENGTH},
                              1: {0: INTERCO_STRENGTH}}
+    'homeostasy': False
     },
 'Input':
     {'tau_Ein'  : 3*msecond,
