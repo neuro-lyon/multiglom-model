@@ -104,8 +104,7 @@ def mps(memb_pot, start, stop, keep_ratio=1./2):
         "No mitral combination are possible, are you using 1 mitral?"
 
     for i in xrange(nneur):
-        for j in xrange(nneur):
-            if j > i:
+        for j in xrange(i + 1, nneur):
                 res += all_corr[i][j]
 
     return res/ncomb
