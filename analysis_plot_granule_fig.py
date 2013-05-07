@@ -13,8 +13,6 @@ import h5manager as h5m
 from plotting import granule_pop_figure
 from analysis import fftmax
 
-plt.ion()
-
 DB_FILENAME = "db_two_glom_beta_new_ps_interco_strength0_1_interco_rate0_1.h5"
 DB = tables.openFile(DB_FILENAME)
 
@@ -25,7 +23,9 @@ ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
          ('paramset', '_v_attrs', 'Common', 'simu_dt'),
          ('results', 's_granule'),
          ('results', 's_syn_self'),
-         ('results', '_v_attrs'))
+         ('results', '_v_attrs'),
+         ('results', 'spikes_it'),
+)
 ALL_SIMU_ATTRS = h5m.get_all_attrs(DB, ATTRS)
 
 # Some useful functions
@@ -51,12 +51,18 @@ for simu in GOOD_SIMUS:
     times = simu[2].read()
     dt = float(simu[3])
     granule_pop_figure(gr_s, gr_s_syn_self, times, dt)
-    plt.show()
 
     dummy = DummyPkg(gr_s, times)
     REDO_FFTMAX.append(fftmax(dummy, 2, dt))
+
+    # Plot rasters
+    spit=simu[7]
+    plt.figure()
+    plt.scatter(spit[1,:],spit[0,:])
 
 print REDO_FFTMAX
 
 # Finally close the DB
 DB.close()
+
+plt.show()
