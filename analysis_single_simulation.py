@@ -23,7 +23,9 @@ ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
          ('paramset', '_v_attrs', 'Common', 'simu_dt'),
          ('results', 's_granule'),
          ('results', 's_syn_self'),
-         ('results', '_v_attrs'))
+         ('results', '_v_attrs'),
+         ('results', 'spikes_it'),
+)
 ALL_SIMU_ATTRS = h5m.get_all_attrs(DB, ATTRS)
 
 SET_INTERCO_RATE = list(set(s[0] for s in ALL_SIMU_ATTRS))
@@ -37,7 +39,7 @@ def deq(a, b, delta):
     """Delta equality"""
     return abs(a - b) < delta
 
-class DummyPkg:
+class SignalRepack:
     def __init__(self, values, times):
         self.values = values
         self.times = times
@@ -58,8 +60,12 @@ for simu in GOOD_SIMUS:
     dt = float(simu[3])
     granule_pop_figure(gr_s, gr_s_syn_self, times, dt)
 
-    dummy = DummyPkg(gr_s, times)
-    REDO_FFTMAX.append(fftmax(dummy, 2, dt))
+    signal = SignalRepack(gr_s, times)
+    REDO_FFTMAX.append(fftmax(signal, 2, dt))
+
+    spikes_it = simu[7].read()
+    plt.figure()
+    plt.plot(spikes_it[1], spikes_it[0], ' .', mew=0)
 
 print REDO_FFTMAX
 plt.show()
