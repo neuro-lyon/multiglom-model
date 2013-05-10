@@ -8,9 +8,8 @@ from h5manager import get_all_attrs
 from utils import to1d
 
 
-#~ filename='db_two_glom_beta_new_ps_interco_strength0_1_interco_rate0_1.h5'
-filename='db_two_glom_beta_hom.h5'
-DB = tables.openFile(filename)
+FILENAME='data/db30x30_two_glom_beta_new_ps_interco_strength0_1_interco_rate0_1.h5'
+DB = tables.openFile(FILENAME)
 
 
 """
