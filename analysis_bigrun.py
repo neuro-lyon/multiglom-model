@@ -74,8 +74,8 @@ for i in xrange(3):
     cs = MPS_AXS[i].imshow(Z_IDX[i], origin="lower", norm=MPS_NORM,
                            interpolation="nearest", extent=(0, 1, 0, 1))
     MPS_AXS[i].set_title("MPS")
-
-MPS_FIG.colorbar(cs)
+CAX = MPS_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
+MPS_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
 
 # STS plotting
 STS_FIG, STS_AXS = plt.subplots(1, 3)
@@ -85,7 +85,8 @@ for i in xrange(3):
     cs = STS_AXS[i].imshow(Z_IDX[i + 3], origin="lower", norm=STS_NORM,
                            interpolation="nearest", extent=(0, 1, 0, 1))
     STS_AXS[i].set_title("STS")
-STS_FIG.colorbar(cs)
+CAX = STS_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
+STS_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
 
 
 """
@@ -145,8 +146,8 @@ for i in xrange(3):
     cs = FFT_AXS[i].imshow(Z_FFT[i], origin="lower", interpolation="nearest",
                            norm=colors.normalize(0, 100), extent=(0, 1, 0, 1))
     FFT_AXS[i].set_title("FFT")
-
-FFT_FIG.colorbar(cs)
+CAX = FFT_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
+FFT_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
 
 
 """
@@ -190,8 +191,8 @@ for i in xrange(3):
     cs = SR_AXS[i].imshow(Z_SR[i], origin="lower", interpolation="nearest",
                            norm=SR_NORM, extent=(0, 1, 0, 1))
     SR_AXS[i].set_title("Rates")
-
-SR_FIG.colorbar(cs)
+CAX = SR_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
+SR_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
 
 DB.close()
 
