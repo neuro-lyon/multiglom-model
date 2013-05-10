@@ -6,6 +6,7 @@
 sandbox/
 
 # Big data files
+data/
 *.h5
 *.hdf
 *.hdf5
