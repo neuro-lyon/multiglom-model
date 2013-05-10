@@ -59,12 +59,12 @@ def memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule):
 
 
 def granule_figure(monit_gr, pscommon):
-    """Parameters to/from the granule, useful to see population synchrony."""
+    """Wraper to the granule figure."""
     granule_pop_figure(monit_gr['s'].values, monit_gr['s_syn_self'].values, monit_gr['s'].times, pscommon['simu_dt'])
 
 
 def granule_pop_figure(gr_s, gr_s_syn_self, times, dt):
-    """Plot a figure describing the granule activity."""
+    """Plot a figure describing the granule activity, useful to see population synchrony."""
     plt.figure()
     n_granule = len(gr_s)
 
