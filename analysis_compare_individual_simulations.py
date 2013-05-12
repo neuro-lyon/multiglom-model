@@ -48,24 +48,29 @@ class SignalRepack:
 def get_interco(simu, interco_rate, interco_strength):
     return deq(simu[0], interco_rate, 0.02) and deq(simu[1], interco_strength, 0.02)
 
-INTERCO_RATE = SET_INTERCO_RATE[25]
-INTERCO_STRENGTH = SET_INTERCO_STRENGTH[4]
-GOOD_SIMUS = filter(lambda x : get_interco(x, INTERCO_RATE, INTERCO_STRENGTH), ALL_SIMU_ATTRS)
+SELECTED_RATES = [26]
+SELECTED_STRENGTH = [26]
+for rate in SELECTED_RATES:
+    for strength in SELECTED_STRENGTH:
+        INTERCO_RATE = SET_INTERCO_RATE[rate]
+        INTERCO_STRENGTH = SET_INTERCO_STRENGTH[strength]
+        GOOD_SIMUS = filter(lambda x : get_interco(x, INTERCO_RATE, INTERCO_STRENGTH), ALL_SIMU_ATTRS)
 
-REDO_FFTMAX = []
-for simu in GOOD_SIMUS:
-    gr_s = simu[4].read()
-    gr_s_syn_self = simu[5].read()
-    times = simu[2].read()
-    dt = float(simu[3])
-    granule_pop_figure(gr_s, gr_s_syn_self, times, dt)
+        REDO_FFTMAX = []
+        for simu in GOOD_SIMUS:
+            gr_s = simu[4].read()
+            gr_s_syn_self = simu[5].read()
+            times = simu[2].read()
+            dt = float(simu[3])
+            granule_pop_figure(gr_s, gr_s_syn_self, times, dt)
 
-    signal = SignalRepack(gr_s, times)
-    REDO_FFTMAX.append(fftmax(signal, 2, dt))
+            signal = SignalRepack(gr_s, times)
+            REDO_FFTMAX.append(fftmax(signal, 2, dt))
 
-    spikes_it = simu[7].read()
-    plt.figure()
-    plt.plot(spikes_it[1], spikes_it[0], ' .', mew=0)
+            spikes_it = simu[7].read()
+            plt.figure()
+            plt.title("rate: "+str(rate)+", strength: "+str(strength))
+            plt.plot(spikes_it[1], spikes_it[0], ' .', mew=0)
 
 print REDO_FFTMAX
 plt.show()
