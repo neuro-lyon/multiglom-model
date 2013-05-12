@@ -1,7 +1,8 @@
 # -*- coding:utf-8 -*-
 
 """
-Select a specific simulation from a HDF5 file and plot its granule figure.
+Select specific simulations from a HDF5 file and plot the granule figures and
+scatter plot to compare the simulations.
 
 """
 
