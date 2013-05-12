@@ -6,7 +6,6 @@ scatter plot to compare the simulations.
 
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
 import tables
 
@@ -55,7 +54,7 @@ for rate in SELECTED_RATES:
     for strength in SELECTED_STRENGTH:
         INTERCO_RATE = SET_INTERCO_RATE[rate]
         INTERCO_STRENGTH = SET_INTERCO_STRENGTH[strength]
-        GOOD_SIMUS = filter(lambda x : get_interco(x, INTERCO_RATE, INTERCO_STRENGTH), ALL_SIMU_ATTRS)
+        GOOD_SIMUS = filter(lambda x: get_interco(x, INTERCO_RATE, INTERCO_STRENGTH), ALL_SIMU_ATTRS)
 
         REDO_FFTMAX = []
         for simu in GOOD_SIMUS:
