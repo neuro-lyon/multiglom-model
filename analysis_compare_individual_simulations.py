@@ -49,8 +49,8 @@ class SignalRepack:
 def get_interco(simu, interco_rate, interco_strength):
     return deq(simu[0], interco_rate, 0.02) and deq(simu[1], interco_strength, 0.02)
 
-SELECTED_RATES = [26]
-SELECTED_STRENGTH = [26]
+SELECTED_RATES = [28]
+SELECTED_STRENGTH = [0, 10, 20, 25]
 for rate in SELECTED_RATES:
     for strength in SELECTED_STRENGTH:
         INTERCO_RATE = SET_INTERCO_RATE[rate]
@@ -73,7 +73,7 @@ for rate in SELECTED_RATES:
             plt.title("rate: "+str(rate)+", strength: "+str(strength))
             plt.plot(spikes_it[1], spikes_it[0], ' .', mew=0)
 
-print REDO_FFTMAX
+        print 'rate:', rate, 'strength:', strength, REDO_FFTMAX
 plt.show()
 
 # Finally close the DB
