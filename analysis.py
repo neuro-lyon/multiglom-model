@@ -160,3 +160,79 @@ def crosscorr_phase_angle(sig1, sig2, x, max_length=10000):
     corr = np.correlate(sig1, sig2, mode="same")
     xmean = sig_length/2
     return float(argmax(corr) - xmean)/sig_length*x[-1]  # *x[-1] to scale
+
+
+def get_dist(sig1, sig2, xaxis=None):
+    """Return the distances between the peaks of two signals"""
+    distances = []
+    max_sig1, _ = getmax(sig1)
+    max_sig2, _ = getmax(sig2)
+    first_sig, second_sig = get_ordered_sig((max_sig1, max_sig2))
+    ind_peak_fs = 0
+    ind_peak_ss = 0
+
+    while ind_peak_fs < len(first_sig) - 1 and ind_peak_ss < len(second_sig):
+        peak_fs = first_sig[ind_peak_fs]
+        peak_ss = second_sig[ind_peak_ss]
+        dist_intra_fs = first_sig[ind_peak_fs + 1] - peak_fs
+        dist_inter = peak_ss - peak_fs
+
+        if dist_intra_fs < dist_inter:  # No SS peak in between two FS peaks
+            ind_peak_fs += 1
+
+        else :  # There is one or more SS peak in between two FS peaks
+            dist_left = peak_ss - peak_fs
+            dist_right = peak_ss - first_sig[ind_peak_fs + 1]
+            if abs(dist_left) < abs(dist_right):
+                distances.append(dist_left)
+            else:
+                distances.append(dist_right)
+            ind_peak_ss += 1
+
+    return distances
+
+
+def getmax(sig):
+    """Return local maxima of sig."""
+    ind_max = []
+    val_max = []
+    last_slope_sign = sign(slope(0, 0, 1, sig[1]))
+
+    for ind, val in enumerate(sig[:-1]):
+        new_slope_sign = sign(slope(ind, val, ind + 1, sig[ind + 1]))
+        if new_slope_sign < last_slope_sign:  # we are at a local maximum
+            ind_max.append(ind)
+            val_max.append(val)
+        last_slope_sign = new_slope_sign
+
+    return ind_max, val_max
+
+
+def get_ordered_sig(sig_list):
+    """Return the signals ordered according to their first value"""
+    first_values = []
+    
+    # Get the first values of each signal to sort them
+    for i, sig in enumerate(sig_list):
+        first_values.append((sig[0], i))
+    first_values.sort()
+
+    ordered_list = []
+    for fv in first_values:
+        sig = sig_list[fv[1]]
+        ordered_list.append(sig)
+
+    return ordered_list
+
+
+def slope(x1, y1, x2, y2):
+    """Return the slope between (x1, y1) and (x2, y2)."""
+    return (y2 - y1)/(x2 - x1)
+
+
+def sign(val):
+    """Return the sign of the value: -1 if negative, +1 if positive or null."""
+    if val < 0:
+        return -1
+    elif val >= 0:
+        return 1
