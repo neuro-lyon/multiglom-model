@@ -11,3 +11,5 @@ data/
 *.hdf
 *.hdf5
 *.he5
+res/
+runs/
