@@ -162,6 +162,12 @@ def crosscorr_phase_angle(sig1, sig2, x, max_length=10000):
     return float(argmax(corr) - xmean)/sig_length*x[-1]  # *x[-1] to scale
 
 
+def peak_dist_index(sig1, sig2, xaxis=None):
+    """Return the mean and std of peak-distances between the signals"""
+    peak_dist = get_dist(sig1, sig2, xaxis)
+    return np.mean(peak_dist), np.std(peak_dist)
+
+
 def get_dist(sig1, sig2, xaxis=None):
     """Return the distances between the peaks of two signals"""
     distances = []
