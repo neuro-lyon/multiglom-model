@@ -300,7 +300,6 @@ def main(args):
 
     mean_inputs = np.ndarray((n_glomeruli, monit_glom['g'].values.shape[1]))
     for glom in xrange(n_glomeruli):
-        import ipdb; ipdb.set_trace()
         start_subpop = glom*n_mitral_per_subpop
         stop_subpop = start_subpop + n_mitral_per_subpop
         mean_inputs[glom] = np.mean(monit_glom['g'].values[start_subpop:stop_subpop], axis=0)
