@@ -299,8 +299,8 @@ def main(args):
     results = {}
     results['data'] = {'spikes_it': (array_spikes_it,
                            "Spikes: one array for the neuron number, another one for the spike times."),
-                       'input': (monit_glom['g'].values,
-                           "Network input conductance value."),
+                       'input': (np.mean(monit_glom['g'].values, axis=0),
+                           "Mean network input conductance value."),
                        's_granule': (monit_gr['s'].values,
                            "Variable 's' of the granules."),
                        's_syn_self': (monit_gr['s_syn_self'].values,
