@@ -16,11 +16,11 @@ from h5manager import init_data_h5, write_simu_data
 from utils import listdir_filter
 
 
-def new_simu((psfile, num_file, tot_file)):
+def new_simu((psfile, num_file, tot_file, check_repo_is_dirty)):
     """Run a simulation using the specified parameter set file"""
     filedir = path.dirname(psfile) +  '/'
     # Register system state
-    info = get_sys_state()
+    info = get_sys_state(check_repo_is_dirty)
 
     # Creating simulation run arguments
     args = SIM_PARSER.parse_args([psfile, '--no-plot', '--no-brian-output',
@@ -36,7 +36,7 @@ def new_simu((psfile, num_file, tot_file)):
     write_simu_data(nfilename, info, paramset, results)
 
 
-def get_sys_state():
+def get_sys_state(check_repo_is_dirty=True):
     """Get system state"""
     sys_state = {}
     # Time and UUID
@@ -45,7 +45,13 @@ def get_sys_state():
 
     # Git revision
     repo = git.Repo('.')
-    assert not repo.is_dirty(), "Your git repository has uncommited changes."
+
+    is_repo_dirty = repo.is_dirty()
+    if check_repo_is_dirty:
+        assert not is_repo_dirty, \
+            "Your git repository has uncommited changes, use --testing for quick testing without asserting that the repo is clean."
+    sys_state['git_repo_is_dirty'] = is_repo_dirty
+
     sys_state['git_rev'] = str(repo.commit(repo.head))
 
     return sys_state
@@ -65,11 +71,12 @@ if __name__ == '__main__':
 
     # Get all the parameter set files
     psfiles = get_pset_files(args.pset_dir)
+    check_repo_is_dirty = not args.testing
 
     # Run the simulation with each parameter set
     simu_args = []
     for ind, psfile in enumerate(psfiles):
-        simu_args.append((psfile, ind, len(psfiles)))
+        simu_args.append((psfile, ind, len(psfiles), check_repo_is_dirty))
 
     print "Start simul"
     npool = int(ceil(1.*len(simu_args)/args.nproc))
