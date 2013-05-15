@@ -297,10 +297,18 @@ def main(args):
     array_spikes_it = np.array((monit_mt['spikes'].it[0],
                                 monit_mt['spikes'].it[1]))
     results = {}
+
+    mean_inputs = np.ndarray((n_glomeruli, monit_glom['g'].values.shape[1]))
+    for glom in xrange(n_glomeruli):
+        import ipdb; ipdb.set_trace()
+        start_subpop = glom*n_mitral_per_subpop
+        stop_subpop = start_subpop + n_mitral_per_subpop
+        mean_inputs[glom] = np.mean(monit_glom['g'].values[start_subpop:stop_subpop], axis=0)
+
     results['data'] = {'spikes_it': (array_spikes_it,
                            "Spikes: one array for the neuron number, another one for the spike times."),
-                       'input': (np.mean(monit_glom['g'].values, axis=0),
-                           "Mean network input conductance value."),
+                       'input': (mean_inputs,
+                           "Mean network input conductance value for each glomerule."),
                        's_granule': (monit_gr['s'].values,
                            "Variable 's' of the granules."),
                        's_syn_self': (monit_gr['s_syn_self'].values,
