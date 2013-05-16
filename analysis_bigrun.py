@@ -22,6 +22,19 @@ def get_all_min_max(array_list):
     return (np.amin(big_arr), np.amax(big_arr))
 
 
+def plot_run(fig, fig_title, axs, data, data_range, data_norm, axes_extent):
+    """Plot a figure with 3 subplots (subpop 1, 2, pop)"""
+    for ind_subplot, ind_data in enumerate(data_range):
+        cs = axs[ind_subplot].imshow(data[ind_data],
+                                     origin="lower",
+                                     norm=data_norm,
+                                     interpolation="nearest",
+                                     extent=axes_extent,
+                                     aspect="auto")
+        axs[ind_subplot].set_title(fig_title)
+    fig.colorbar(cs, orientation="horizontal")
+
+
 """
 Common Attributes
 
@@ -69,28 +82,16 @@ for ind_rate in xrange(len(X_IDX)):
         Z_IDX[5][ind_rate][ind_strength] = tmp_sts['whole']
 
 # MPS plotting
-MPS_FIG, MPS_AXS = plt.subplots(1, 3)
+MPS_FIG, MPS_AXS = plt.subplots(1, 3, figsize=(9, 3))
 MPS_MIN_MAX = get_all_min_max([Z_IDX[i] for i in xrange(3)])
 MPS_NORM = colors.normalize(MPS_MIN_MAX[0], MPS_MIN_MAX[1])
-for i in xrange(3):
-    cs = MPS_AXS[i].imshow(Z_IDX[i], origin="lower", norm=MPS_NORM,
-                           interpolation="nearest", extent=IMSHOW_EXTENT,
-                           aspect="auto")
-    MPS_AXS[i].set_title("MPS")
-CAX = MPS_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
-MPS_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
+plot_run(MPS_FIG, "MPS", MPS_AXS, Z_IDX, range(3), MPS_NORM, IMSHOW_EXTENT)
 
 # STS plotting
-STS_FIG, STS_AXS = plt.subplots(1, 3)
+STS_FIG, STS_AXS = plt.subplots(1, 3, figsize=(9, 3))
 STS_MIN_MAX = get_all_min_max([Z_IDX[i] for i in xrange(3, 6)])
 STS_NORM = colors.normalize(STS_MIN_MAX[0], STS_MIN_MAX[1])
-for i in xrange(3):
-    cs = STS_AXS[i].imshow(Z_IDX[i + 3], origin="lower", norm=STS_NORM,
-                           interpolation="nearest", extent=IMSHOW_EXTENT,
-                           aspect="auto")
-    STS_AXS[i].set_title("STS")
-CAX = STS_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
-STS_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
+plot_run(STS_FIG, "STS", STS_AXS, Z_IDX, range(3, 6), STS_NORM, IMSHOW_EXTENT)
 
 
 """
@@ -145,14 +146,9 @@ for ind_rate in xrange(len(X_FFT)):
             Z_FFT[2][ind_rate][ind_strength] = tmp_fft['mean']
 
 # Plotting
-FFT_FIG, FFT_AXS = plt.subplots(1, 3)
-for i in xrange(3):
-    cs = FFT_AXS[i].imshow(Z_FFT[i], origin="lower", interpolation="nearest",
-                           norm=colors.normalize(0, 100), extent=IMSHOW_EXTENT,
-                           aspect="auto")
-    FFT_AXS[i].set_title("FFT")
-CAX = FFT_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
-FFT_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
+FFT_FIG, FFT_AXS = plt.subplots(1, 3, figsize=(9, 3))
+FFT_NORM = colors.normalize(0, 100)
+plot_run(FFT_FIG, "FFT", FFT_AXS, Z_FFT, range(3), FFT_NORM, IMSHOW_EXTENT)
 
 
 """
@@ -190,15 +186,9 @@ for ind_rate in xrange(len(X_SR)):
         Z_SR[2][ind_rate][ind_strength] = nspikes[2]
 
 # Plotting
-SR_FIG, SR_AXS = plt.subplots(1, 3)
+SR_FIG, SR_AXS = plt.subplots(1, 3, figsize=(9, 3))
 SR_NORM = colors.normalize(np.amin(Z_SR), np.amax(Z_SR))
-for i in xrange(3):
-    cs = SR_AXS[i].imshow(Z_SR[i], origin="lower", interpolation="nearest",
-                           norm=SR_NORM, extent=IMSHOW_EXTENT,
-                           aspect="auto")
-    SR_AXS[i].set_title("Rates")
-CAX = SR_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
-SR_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
+plot_run(SR_FIG, "Spiking Rate", SR_AXS, Z_SR, range(3), SR_NORM, IMSHOW_EXTENT)
 
 DB.close()
 
