@@ -51,6 +51,8 @@ X_IDX.sort()
 Y_IDX = list(set([i[1] for i in IDX]))
 Y_IDX.sort()
 
+IMSHOW_EXTENT = (X_IDX[0], X_IDX[-1], Y_IDX[0], Y_IDX[-1])
+
 Z_IDX = []
 for i in xrange(6):
     Z_IDX.append(np.zeros((len(X_IDX), len(Y_IDX))))
@@ -72,7 +74,8 @@ MPS_MIN_MAX = get_all_min_max([Z_IDX[i] for i in xrange(3)])
 MPS_NORM = colors.normalize(MPS_MIN_MAX[0], MPS_MIN_MAX[1])
 for i in xrange(3):
     cs = MPS_AXS[i].imshow(Z_IDX[i], origin="lower", norm=MPS_NORM,
-                           interpolation="nearest", extent=(0, 1, 0, 1))
+                           interpolation="nearest", extent=IMSHOW_EXTENT,
+                           aspect="auto")
     MPS_AXS[i].set_title("MPS")
 CAX = MPS_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
 MPS_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
@@ -83,7 +86,8 @@ STS_MIN_MAX = get_all_min_max([Z_IDX[i] for i in xrange(3, 6)])
 STS_NORM = colors.normalize(STS_MIN_MAX[0], STS_MIN_MAX[1])
 for i in xrange(3):
     cs = STS_AXS[i].imshow(Z_IDX[i + 3], origin="lower", norm=STS_NORM,
-                           interpolation="nearest", extent=(0, 1, 0, 1))
+                           interpolation="nearest", extent=IMSHOW_EXTENT,
+                           aspect="auto")
     STS_AXS[i].set_title("STS")
 CAX = STS_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
 STS_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
@@ -144,7 +148,8 @@ for ind_rate in xrange(len(X_FFT)):
 FFT_FIG, FFT_AXS = plt.subplots(1, 3)
 for i in xrange(3):
     cs = FFT_AXS[i].imshow(Z_FFT[i], origin="lower", interpolation="nearest",
-                           norm=colors.normalize(0, 100), extent=(0, 1, 0, 1))
+                           norm=colors.normalize(0, 100), extent=IMSHOW_EXTENT,
+                           aspect="auto")
     FFT_AXS[i].set_title("FFT")
 CAX = FFT_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
 FFT_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
@@ -189,7 +194,8 @@ SR_FIG, SR_AXS = plt.subplots(1, 3)
 SR_NORM = colors.normalize(np.amin(Z_SR), np.amax(Z_SR))
 for i in xrange(3):
     cs = SR_AXS[i].imshow(Z_SR[i], origin="lower", interpolation="nearest",
-                           norm=SR_NORM, extent=(0, 1, 0, 1))
+                           norm=SR_NORM, extent=IMSHOW_EXTENT,
+                           aspect="auto")
     SR_AXS[i].set_title("Rates")
 CAX = SR_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
 SR_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
