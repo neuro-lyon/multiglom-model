@@ -176,23 +176,30 @@ def get_dist(sig1, sig2, xaxis=None):
     first_sig, second_sig = get_ordered_sig((max_sig1, max_sig2))
     ind_peak_fs = 0
     ind_peak_ss = 0
+    last_peak = False
 
-    while ind_peak_fs < len(first_sig) - 1 and ind_peak_ss < len(second_sig):
-        if xaxis == None:  # Take the indexes as x-axis
-            peak_fs = first_sig[ind_peak_fs]
+    while ind_peak_fs < len(first_sig) and ind_peak_ss < len(second_sig):
+        # Take the indexes of the peaks
+        peak_fs = first_sig[ind_peak_fs]
+        peak_ss = second_sig[ind_peak_ss]
+        if ind_peak_fs == len(first_sig) - 1:  # if this is the last peak,
+            peak_fs_next = sig1[-1]  # make up a last peak at the very end
+            last_peak = True
+        else:
             peak_fs_next = first_sig[ind_peak_fs + 1]
-            peak_ss = second_sig[ind_peak_ss]
-        else:  # Get the peak x values from the given x-axis
-            peak_fs = xaxis[first_sig[ind_peak_fs]]
-            peak_fs_next = xaxis[first_sig[ind_peak_fs + 1]]
-            peak_ss = xaxis[second_sig[ind_peak_ss]]
+        # If an x-axis is given, get the peak x values from it
+        if xaxis is not None:
+            peak_fs = xaxis[peak_fs]
+            peak_fs_next = xaxis[peak_fs_next]
+            peak_ss = xaxis[peak_ss]
+
         dist_intra_fs = peak_fs_next - peak_fs
         dist_inter = peak_ss - peak_fs
-
-        if dist_intra_fs < dist_inter:  # No SS peak in between two FS peaks
+        # No SS peak in between two FS peaks
+        if dist_intra_fs < dist_inter and not last_peak:
             ind_peak_fs += 1
-
-        else:  # There is one or more SS peak in between two FS peaks
+        # There is one or more SS peaks in between two FS peaks, or it's the last peak
+        else:
             dist_left = peak_ss - peak_fs
             dist_right = peak_ss - peak_fs_next
             if abs(dist_left) < abs(dist_right):
