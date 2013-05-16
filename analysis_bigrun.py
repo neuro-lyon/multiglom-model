@@ -123,7 +123,7 @@ for ind_rate in xrange(len(X_FFT)):
 
 # Plotting
 FFT_FIG, FFT_AXS = plt.subplots(1, 3, figsize=(9, 3))
-FFT_NORM = colors.normalize(0, 100)
+FFT_NORM = colors.normalize(np.amin(Z_FFT), np.amax(Z_FFT))
 plot_run(FFT_FIG, "FFT", FFT_AXS, Z_FFT, range(3), FFT_NORM, IMSHOW_EXTENT)
 
 
