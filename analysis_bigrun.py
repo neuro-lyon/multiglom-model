@@ -95,32 +95,6 @@ plot_run(STS_FIG, "STS", STS_AXS, Z_IDX, range(3, 6), STS_NORM, IMSHOW_EXTENT)
 
 
 """
-DEPHASAGE
-
-"""
-# PHI_ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
-#              ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
-#              ('results', '_v_attrs', 'phase_angles', 0, 1))
-# PHI = get_all_attrs(DB, PHI_ATTRS)
-# PHI.sort()
-# X_PHI = list(set([i[0] for i in PHI]))
-# X_PHI.sort()
-# Y_PHI = list(set([i[1] for i in PHI]))
-# Y_PHI.sort()
-
-# Z_PHI = np.zeros((len(X_PHI), len(Y_PHI)))
-# for ind_rate in xrange(len(X_PHI)):
-#     for ind_strength in xrange(len(Y_PHI)):
-#         Z_PHI[ind_rate][ind_strength] = PHI[to1d(ind_rate, ind_strength, len(X_PHI))][2]
-
-# PHI_FIG = plt.figure()
-# PHI_NORM = colors.normalize(np.amin(Z_PHI), np.amax(Z_PHI))
-# PHI_CS = plt.imshow(Z_PHI, origin="lower", interpolation="nearest",
-#                     norm=PHI_NORM, extent=(0, 1, 0, 1))
-# PHI_FIG.colorbar(PHI_CS)
-
-
-"""
 FFT MAX
 
 """
