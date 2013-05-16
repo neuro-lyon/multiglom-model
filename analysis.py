@@ -171,8 +171,8 @@ def peak_dist_index(sig1, sig2, xaxis=None):
 def get_dist(sig1, sig2, xaxis=None):
     """Return the distances between the peaks of two signals"""
     distances = []
-    max_sig1, _ = getmax(sig1)
-    max_sig2, _ = getmax(sig2)
+    max_sig1, _ = get_local_max(sig1)
+    max_sig2, _ = get_local_max(sig2)
     first_sig, second_sig = get_ordered_sig((max_sig1, max_sig2))
     ind_peak_fs = 0
     ind_peak_ss = 0
@@ -204,7 +204,7 @@ def get_dist(sig1, sig2, xaxis=None):
     return distances
 
 
-def getmax(sig):
+def get_local_max(sig):
     """Return local maxima of sig."""
     ind_max = []
     val_max = []
