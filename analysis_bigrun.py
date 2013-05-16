@@ -24,6 +24,7 @@ def get_all_min_max(array_list):
 
 def plot_run(fig, fig_title, axs, data, data_range, data_norm, axes_extent):
     """Plot a figure with 3 subplots (subpop 1, 2, pop)"""
+    fig.subplots_adjust(bottom=0.25)
     for ind_subplot, ind_data in enumerate(data_range):
         cs = axs[ind_subplot].imshow(data[ind_data],
                                      origin="lower",
@@ -32,7 +33,8 @@ def plot_run(fig, fig_title, axs, data, data_range, data_norm, axes_extent):
                                      extent=axes_extent,
                                      aspect="auto")
         axs[ind_subplot].set_title(fig_title)
-    fig.colorbar(cs, orientation="horizontal")
+    cb_axs = fig.add_axes([0.125, 0.1, 0.9 - 0.125, 0.03])
+    fig.colorbar(cs, cax=cb_axs, orientation="horizontal")
 
 
 """
