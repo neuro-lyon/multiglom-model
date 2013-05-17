@@ -168,31 +168,78 @@ def peak_dist_index(sig1, sig2, xaxis=None):
     return np.mean(peak_dist), np.std(peak_dist)
 
 
+def peak_dist_circ_index(sig1, sig2):
+    """Return the *circular* mean and std of the distances between peaks"""
+    # Make the distances directional
+    first_sig, _ = get_ordered_sig([sig1, sig2])
+    n_peaks = len(get_local_max(first_sig)[0])
+    mean_peak_dist = len(first_sig)/n_peaks
+    peak_dist = np.array(get_dist(sig1, sig2))
+    peak_dist = peak_dist*2.*np.pi/mean_peak_dist
+    # Apply circular statistcs to the directional distances
+    return circ_mean(peak_dist), circ_disp(peak_dist)
+
+
+def circ_disp(sig):
+    """Statistical circular dispertion
+
+    References
+    ----------
+    [1] http://cran.r-project.org/web/packages/CircStats/
+    """
+    n = len(sig)
+    scos = np.sum(np.cos(sig))
+    ssin = np.sum(np.sin(sig))
+    root = np.sqrt(scos*scos + ssin*ssin)
+    rbar = root/n
+    var  = 1 - rbar
+    return var
+
+
+def circ_mean(sig):
+    """Statistical circular mean
+
+    References
+    ----------
+    [1] http://cran.r-project.org/web/packages/CircStats/
+    """
+    sinr = np.sum(np.sin(sig))
+    cosr = np.sum(np.cos(sig))
+    return np.arctan2(sinr, cosr)
+
+
 def get_dist(sig1, sig2, xaxis=None):
     """Return the distances between the peaks of two signals"""
     distances = []
-    max_sig1, _ = getmax(sig1)
-    max_sig2, _ = getmax(sig2)
+    max_sig1, _ = get_local_max(sig1)
+    max_sig2, _ = get_local_max(sig2)
     first_sig, second_sig = get_ordered_sig((max_sig1, max_sig2))
     ind_peak_fs = 0
     ind_peak_ss = 0
+    last_peak = False
 
-    while ind_peak_fs < len(first_sig) - 1 and ind_peak_ss < len(second_sig):
-        if xaxis == None:  # Take the indexes as x-axis
-            peak_fs = first_sig[ind_peak_fs]
+    while ind_peak_fs < len(first_sig) and ind_peak_ss < len(second_sig):
+        # Take the indexes of the peaks
+        peak_fs = first_sig[ind_peak_fs]
+        peak_ss = second_sig[ind_peak_ss]
+        if ind_peak_fs == len(first_sig) - 1:  # if this is the last peak,
+            peak_fs_next = sig1[-1]  # make up a last peak at the very end
+            last_peak = True
+        else:
             peak_fs_next = first_sig[ind_peak_fs + 1]
-            peak_ss = second_sig[ind_peak_ss]
-        else:  # Get the peak x values from the given x-axis
-            peak_fs = xaxis[first_sig[ind_peak_fs]]
-            peak_fs_next = xaxis[first_sig[ind_peak_fs + 1]]
-            peak_ss = xaxis[second_sig[ind_peak_ss]]
+        # If an x-axis is given, get the peak x values from it
+        if xaxis is not None:
+            peak_fs = xaxis[peak_fs]
+            peak_fs_next = xaxis[peak_fs_next]
+            peak_ss = xaxis[peak_ss]
+
         dist_intra_fs = peak_fs_next - peak_fs
         dist_inter = peak_ss - peak_fs
-
-        if dist_intra_fs < dist_inter:  # No SS peak in between two FS peaks
+        # No SS peak in between two FS peaks
+        if dist_intra_fs < dist_inter and not last_peak:
             ind_peak_fs += 1
-
-        else:  # There is one or more SS peak in between two FS peaks
+        # There is one or more SS peaks in between two FS peaks, or it's the last peak
+        else:
             dist_left = peak_ss - peak_fs
             dist_right = peak_ss - peak_fs_next
             if abs(dist_left) < abs(dist_right):
@@ -204,7 +251,7 @@ def get_dist(sig1, sig2, xaxis=None):
     return distances
 
 
-def getmax(sig):
+def get_local_max(sig):
     """Return local maxima of sig."""
     ind_max = []
     val_max = []

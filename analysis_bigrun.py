@@ -22,6 +22,21 @@ def get_all_min_max(array_list):
     return (np.amin(big_arr), np.amax(big_arr))
 
 
+def plot_run(fig, fig_title, axs, data, data_range, data_norm, axes_extent):
+    """Plot a figure with 3 subplots (subpop 1, 2, pop)"""
+    fig.subplots_adjust(bottom=0.25)
+    for ind_subplot, ind_data in enumerate(data_range):
+        cs = axs[ind_subplot].imshow(data[ind_data],
+                                     origin="lower",
+                                     norm=data_norm,
+                                     interpolation="nearest",
+                                     extent=axes_extent,
+                                     aspect="auto")
+        axs[ind_subplot].set_title(fig_title)
+    cb_axs = fig.add_axes([0.125, 0.1, 0.9 - 0.125, 0.03])
+    fig.colorbar(cs, cax=cb_axs, orientation="horizontal")
+
+
 """
 Common Attributes
 
@@ -51,6 +66,8 @@ X_IDX.sort()
 Y_IDX = list(set([i[1] for i in IDX]))
 Y_IDX.sort()
 
+IMSHOW_EXTENT = (X_IDX[0], X_IDX[-1], Y_IDX[0], Y_IDX[-1])
+
 Z_IDX = []
 for i in xrange(6):
     Z_IDX.append(np.zeros((len(X_IDX), len(Y_IDX))))
@@ -67,52 +84,16 @@ for ind_rate in xrange(len(X_IDX)):
         Z_IDX[5][ind_rate][ind_strength] = tmp_sts['whole']
 
 # MPS plotting
-MPS_FIG, MPS_AXS = plt.subplots(1, 3)
+MPS_FIG, MPS_AXS = plt.subplots(1, 3, figsize=(9, 3))
 MPS_MIN_MAX = get_all_min_max([Z_IDX[i] for i in xrange(3)])
 MPS_NORM = colors.normalize(MPS_MIN_MAX[0], MPS_MIN_MAX[1])
-for i in xrange(3):
-    cs = MPS_AXS[i].imshow(Z_IDX[i], origin="lower", norm=MPS_NORM,
-                           interpolation="nearest", extent=(0, 1, 0, 1))
-    MPS_AXS[i].set_title("MPS")
-CAX = MPS_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
-MPS_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
+plot_run(MPS_FIG, "MPS", MPS_AXS, Z_IDX, range(3), MPS_NORM, IMSHOW_EXTENT)
 
 # STS plotting
-STS_FIG, STS_AXS = plt.subplots(1, 3)
+STS_FIG, STS_AXS = plt.subplots(1, 3, figsize=(9, 3))
 STS_MIN_MAX = get_all_min_max([Z_IDX[i] for i in xrange(3, 6)])
 STS_NORM = colors.normalize(STS_MIN_MAX[0], STS_MIN_MAX[1])
-for i in xrange(3):
-    cs = STS_AXS[i].imshow(Z_IDX[i + 3], origin="lower", norm=STS_NORM,
-                           interpolation="nearest", extent=(0, 1, 0, 1))
-    STS_AXS[i].set_title("STS")
-CAX = STS_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
-STS_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
-
-
-"""
-DEPHASAGE
-
-"""
-# PHI_ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
-#              ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
-#              ('results', '_v_attrs', 'phase_angles', 0, 1))
-# PHI = get_all_attrs(DB, PHI_ATTRS)
-# PHI.sort()
-# X_PHI = list(set([i[0] for i in PHI]))
-# X_PHI.sort()
-# Y_PHI = list(set([i[1] for i in PHI]))
-# Y_PHI.sort()
-
-# Z_PHI = np.zeros((len(X_PHI), len(Y_PHI)))
-# for ind_rate in xrange(len(X_PHI)):
-#     for ind_strength in xrange(len(Y_PHI)):
-#         Z_PHI[ind_rate][ind_strength] = PHI[to1d(ind_rate, ind_strength, len(X_PHI))][2]
-
-# PHI_FIG = plt.figure()
-# PHI_NORM = colors.normalize(np.amin(Z_PHI), np.amax(Z_PHI))
-# PHI_CS = plt.imshow(Z_PHI, origin="lower", interpolation="nearest",
-#                     norm=PHI_NORM, extent=(0, 1, 0, 1))
-# PHI_FIG.colorbar(PHI_CS)
+plot_run(STS_FIG, "STS", STS_AXS, Z_IDX, range(3, 6), STS_NORM, IMSHOW_EXTENT)
 
 
 """
@@ -141,13 +122,9 @@ for ind_rate in xrange(len(X_FFT)):
             Z_FFT[2][ind_rate][ind_strength] = tmp_fft['mean']
 
 # Plotting
-FFT_FIG, FFT_AXS = plt.subplots(1, 3)
-for i in xrange(3):
-    cs = FFT_AXS[i].imshow(Z_FFT[i], origin="lower", interpolation="nearest",
-                           norm=colors.normalize(0, 100), extent=(0, 1, 0, 1))
-    FFT_AXS[i].set_title("FFT")
-CAX = FFT_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
-FFT_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
+FFT_FIG, FFT_AXS = plt.subplots(1, 3, figsize=(9, 3))
+FFT_NORM = colors.normalize(np.amin(Z_FFT), np.amax(Z_FFT))
+plot_run(FFT_FIG, "FFT", FFT_AXS, Z_FFT, range(3), FFT_NORM, IMSHOW_EXTENT)
 
 
 """
@@ -185,18 +162,45 @@ for ind_rate in xrange(len(X_SR)):
         Z_SR[2][ind_rate][ind_strength] = nspikes[2]
 
 # Plotting
-SR_FIG, SR_AXS = plt.subplots(1, 3)
+SR_FIG, SR_AXS = plt.subplots(1, 3, figsize=(9, 3))
 SR_NORM = colors.normalize(np.amin(Z_SR), np.amax(Z_SR))
-for i in xrange(3):
-    cs = SR_AXS[i].imshow(Z_SR[i], origin="lower", interpolation="nearest",
-                           norm=SR_NORM, extent=(0, 1, 0, 1))
-    SR_AXS[i].set_title("Rates")
-CAX = SR_FIG.add_axes([0.12, 0.15, 0.8, 0.05])
-SR_FIG.colorbar(cs, cax=CAX, orientation="horizontal")
+plot_run(SR_FIG, "Spiking Rate", SR_AXS, Z_SR, range(3), SR_NORM, IMSHOW_EXTENT)
 
+
+"""
+Peak distances
+
+"""
+# Assuming only 2 subpops
+PD_ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
+            ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
+            ('results', '_v_attrs', 'peak_distances'))
+PD = get_all_attrs(DB, PD_ATTRS)
+PD.sort()
+X_PD = list(set(i[0] for i in PD))
+X_PD.sort()
+Y_PD = list(set(i[1] for i in PD))
+Y_PD.sort()
+
+START_TIME = SIMU_LENGTH/2.
+Z_PD = []
+for i in xrange(2):
+    Z_PD.append(np.zeros((len(X_PD), len(Y_PD))))
+for ind_rate in xrange(len(X_PD)):
+    for ind_strength in xrange(len(Y_PD)):
+        tmp_pd = PD[to1d(ind_rate, ind_strength, len(X_PD))][2][0][1]
+        Z_PD[0][ind_rate][ind_strength] = tmp_pd['mean']
+        Z_PD[1][ind_rate][ind_strength] = tmp_pd['disp']
+
+# Plotting
+PD_FIG, PD_AXS = plt.subplots(1, 2, figsize=(6, 3))
+PD_NORM = colors.normalize(np.amin(Z_PD), np.amax(Z_PD))
+plot_run(PD_FIG, "Peak Distances index", PD_AXS, Z_PD, range(2), PD_NORM, IMSHOW_EXTENT)
+
+
+"""
+Closing DB and finally plotting
+
+"""
 DB.close()
-
-
 plt.show()
-
-

@@ -237,18 +237,21 @@ def main(args):
         sts_whole_activity += monit_gr['s_syn'][subpop]  # TODO pas tres sur s'il faut ajouter ou concaténer
     sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral)
 
-    # Phase angle computation for inter-subpopulation
-    phase_angles = {}
+    # FFT Max index
+    fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])
+
+    # Peak distances index
+    peak_distances = {}
     if n_subpop > 1:
         for sub_i, sub_j in pairs(n_subpop):
-            sig1 = monit_gr['s_syn'][sub_i]
-            sig2 = monit_gr['s_syn'][sub_j]
-            x = arange(0, simu_length/second, pscommon['simu_dt']/second)
-            if not phase_angles.has_key(sub_i):
-                phase_angles[sub_i] = {}
-            phase_angles[sub_i][sub_j] = analysis.crosscorr_phase_angle(sig1, sig2, x)
-
-    fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])
+            sig1 = monit_gr['s_syn_self'][sub_i]
+            sig2 = monit_gr['s_syn_self'][sub_j]
+            if not peak_distances.has_key(sub_i):
+                peak_distances[sub_i] = {}
+            pd_index = analysis.peak_dist_circ_index(sig1, sig2)
+            peak_distances[sub_i][sub_j] = {}
+            peak_distances[sub_i][sub_j]['mean'] = pd_index[0]
+            peak_distances[sub_i][sub_j]['disp'] = pd_index[1]
 
     if not args.no_summary:
         print '\nParameters: using', args.psfile
@@ -259,8 +262,8 @@ def main(args):
         print 'Times:', simu_length, 'of simulation; dt =', defaultclock.dt, '.'
 
         print 'Indexes: STS =', sts_indexes, '\nMPS =', mps_indexes
-        print 'Phase angles between sub-population', phase_angles
         print 'FFT peaks (Hz):', fftmax
+        print 'Peak distances index:', peak_distances
 
     """
     Plotting
@@ -297,16 +300,23 @@ def main(args):
     array_spikes_it = np.array((monit_mt['spikes'].it[0],
                                 monit_mt['spikes'].it[1]))
     results = {}
+
+    mean_inputs = np.ndarray((n_glomeruli, monit_glom['g'].values.shape[1]))
+    for glom in xrange(n_glomeruli):
+        start_subpop = glom*n_mitral_per_subpop
+        stop_subpop = start_subpop + n_mitral_per_subpop
+        mean_inputs[glom] = np.mean(monit_glom['g'].values[start_subpop:stop_subpop], axis=0)
+
     results['data'] = {'spikes_it': (array_spikes_it,
                            "Spikes: one array for the neuron number, another one for the spike times."),
-                       'input': (monit_glom['g'].values,
-                           "Network input conductance value."),
+                       'input': (mean_inputs,
+                           "Mean network input conductance value for each glomerule."),
                        's_granule': (monit_gr['s'].values,
                            "Variable 's' of the granules."),
                        's_syn_self': (monit_gr['s_syn_self'].values,
                            "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations.")}
     results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax,
-                          'phase_angles': phase_angles}
+                          'peak_distances': peak_distances}
 
     return {'set': model.PARAMETERS, 'arrays': ps_arrays}, results
 
