@@ -168,6 +168,40 @@ def peak_dist_index(sig1, sig2, xaxis=None):
     return np.mean(peak_dist), np.std(peak_dist)
 
 
+def peak_dist_circ_index(sig1, sig2, xaxis=None):
+    """Return the *circular* mean and std of the distances between peaks"""
+    peak_dist = get_dist(sig1, sig2, xaxis)
+    return circ_mean(peak_dist), circ_disp(peak_dist)
+
+
+def circ_disp(sig):
+    """Statistical circular dispertion
+
+    References
+    ----------
+    [1] http://cran.r-project.org/web/packages/CircStats/
+    """
+    n = len(sig)
+    scos = np.sum(np.cos(sig))
+    ssin = np.sum(np.sin(sig))
+    root = np.sqrt(scos*scos + ssin*ssin)
+    rbar = root/n
+    var  = 1 - rbar
+    return var
+
+
+def circ_mean(sig):
+    """Statistical circular mean
+
+    References
+    ----------
+    [1] http://cran.r-project.org/web/packages/CircStats/
+    """
+    sinr = np.sum(np.sin(sig))
+    cosr = np.sum(np.cos(sig))
+    return np.arctan2(sinr, cosr)
+
+
 def get_dist(sig1, sig2, xaxis=None):
     """Return the distances between the peaks of two signals"""
     distances = []
