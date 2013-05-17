@@ -168,6 +168,37 @@ plot_run(SR_FIG, "Spiking Rate", SR_AXS, Z_SR, range(3), SR_NORM, IMSHOW_EXTENT)
 
 
 """
+Peak distances
+
+"""
+# Assuming only 2 subpops
+PD_ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
+            ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
+            ('results', '_v_attrs', 'peak_distances'))
+PD = get_all_attrs(DB, PD_ATTRS)
+PD.sort()
+X_PD = list(set(i[0] for i in PD))
+X_PD.sort()
+Y_PD = list(set(i[1] for i in PD))
+Y_PD.sort()
+
+START_TIME = SIMU_LENGTH/2.
+Z_PD = []
+for i in xrange(2):
+    Z_PD.append(np.zeros((len(X_PD), len(Y_PD))))
+for ind_rate in xrange(len(X_PD)):
+    for ind_strength in xrange(len(Y_PD)):
+        tmp_pd = PD[to1d(ind_rate, ind_strength, len(X_PD))][2][0][1]
+        Z_PD[0][ind_rate][ind_strength] = tmp_pd['mean']
+        Z_PD[1][ind_rate][ind_strength] = tmp_pd['disp']
+
+# Plotting
+PD_FIG, PD_AXS = plt.subplots(1, 2, figsize=(6, 3))
+PD_NORM = colors.normalize(np.amin(Z_PD), np.amax(Z_PD))
+plot_run(PD_FIG, "Peak Distances index", PD_AXS, Z_PD, range(2), PD_NORM, IMSHOW_EXTENT)
+
+
+"""
 Closing DB and finally plotting
 
 """
