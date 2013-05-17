@@ -168,9 +168,15 @@ def peak_dist_index(sig1, sig2, xaxis=None):
     return np.mean(peak_dist), np.std(peak_dist)
 
 
-def peak_dist_circ_index(sig1, sig2, xaxis=None):
+def peak_dist_circ_index(sig1, sig2):
     """Return the *circular* mean and std of the distances between peaks"""
-    peak_dist = get_dist(sig1, sig2, xaxis)
+    # Make the distances directional
+    first_sig, _ = get_ordered_sig([sig1, sig2])
+    n_peaks = len(get_local_max(first_sig)[0])
+    mean_peak_dist = len(first_sig)/n_peaks
+    peak_dist = np.array(get_dist(sig1, sig2))
+    peak_dist = peak_dist*2.*np.pi/mean_peak_dist
+    # Apply circular statistcs to the directional distances
     return circ_mean(peak_dist), circ_disp(peak_dist)
 
 
