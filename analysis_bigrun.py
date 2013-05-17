@@ -166,9 +166,10 @@ SR_FIG, SR_AXS = plt.subplots(1, 3, figsize=(9, 3))
 SR_NORM = colors.normalize(np.amin(Z_SR), np.amax(Z_SR))
 plot_run(SR_FIG, "Spiking Rate", SR_AXS, Z_SR, range(3), SR_NORM, IMSHOW_EXTENT)
 
+
+"""
+Closing DB and finally plotting
+
+"""
 DB.close()
-
-
 plt.show()
-
-
