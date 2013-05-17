@@ -8,10 +8,7 @@ from h5manager import *
 Script to plot osc vs rate curve coming from different set of simulations
 """
 
-#~ list_files=[['db_one_glom_N50_sig003_gI10.h5','db_one_glom_N50_sig003_gI20.h5','db_one_glom_N50_sig003_gI30.h5'],
-                #~ ['db_one_glom_N50_sig005_gI10.h5','db_one_glom_N50_sig005_gI20.h5','db_one_glom_N50_sig005_gI30.h5']]
-list_files=[['db_one_glom_N50_sig03_gI10.h5','db_one_glom_N50_sig03_gI20.h5','db_one_glom_N50_sig03_gI30.h5'],
-                ['db_one_glom_N50_sig03_gI10_gE1_4.h5','db_one_glom_N50_sig03_gI20_gE1_4.h5','db_one_glom_N50_sig03_gI30_gE1_4.h5']]
+list_files=[['db_one_glom_N100_sig035_gI20.h5','db_one_glom_N100_sig035_gI20_gE1_4.h5','db_one_glom_N100_sig035_gI20_gE3_5.h5']]
                 
 def get_data(db_filename):
     
@@ -66,7 +63,7 @@ for ind,sublist_files in enumerate(list_files):
     for num,db_filename in enumerate(sublist_files):
         all_gEin0,all_rates,all_freqs=get_data(db_filename)
         
-        ax.scatter(all_gEin0,all_freqs,color=cmap(num),label=db_filename)
+        ax.scatter(all_gEin0,all_rates,color=cmap(num),label=db_filename)
     ax.set_xlabel("g_Ein0")
     ax.set_ylabel("Network freq")
     ax.set_xlim(0,5.2)
