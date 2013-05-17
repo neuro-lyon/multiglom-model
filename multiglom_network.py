@@ -240,6 +240,19 @@ def main(args):
     # FFT Max index
     fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])
 
+    # Peak distances index
+    peak_distances = {}
+    if n_subpop > 1:
+        for sub_i, sub_j in pairs(n_subpop):
+            sig1 = monit_gr['s_syn_self'][sub_i]
+            sig2 = monit_gr['s_syn_self'][sub_j]
+            if not peak_distances.has_key(sub_i):
+                peak_distances[sub_i] = {}
+            pd_index = analysis.peak_dist_circ_index(sig1, sig2)
+            peak_distances[sub_i][sub_j] = {}
+            peak_distances[sub_i][sub_j]['mean'] = pd_index[0]
+            peak_distances[sub_i][sub_j]['disp'] = pd_index[1]
+
     if not args.no_summary:
         print '\nParameters: using', args.psfile
 
@@ -250,6 +263,7 @@ def main(args):
 
         print 'Indexes: STS =', sts_indexes, '\nMPS =', mps_indexes
         print 'FFT peaks (Hz):', fftmax
+        print 'Peak distances index:', peak_distances
 
     """
     Plotting
@@ -301,7 +315,8 @@ def main(args):
                            "Variable 's' of the granules."),
                        's_syn_self': (monit_gr['s_syn_self'].values,
                            "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations.")}
-    results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax}
+    results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax,
+                          'peak_distances': peak_distances}
 
     return {'set': model.PARAMETERS, 'arrays': ps_arrays}, results
 
