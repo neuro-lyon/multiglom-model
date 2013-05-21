@@ -172,7 +172,7 @@ def peak_dist_circ_index(sig1, sig2):
     """Return the *circular* mean and std of the distances between peaks"""
     # Make the distances directional
     first_sig, _ = get_ordered_sig([sig1, sig2])
-    n_peaks = len(get_local_max(first_sig)[0])
+    n_peaks = len(get_ind_local_max(first_sig))
     mean_peak_dist = len(first_sig)/n_peaks
     peak_dist = np.array(get_dist(sig1, sig2))
     peak_dist = peak_dist*2.*np.pi/mean_peak_dist
@@ -211,8 +211,8 @@ def circ_mean(sig):
 def get_dist(sig1, sig2, xaxis=None):
     """Return the distances between the peaks of two signals"""
     distances = []
-    max_sig1, _ = get_local_max(sig1)
-    max_sig2, _ = get_local_max(sig2)
+    max_sig1 = get_ind_local_max(sig1)
+    max_sig2 = get_ind_local_max(sig2)
     first_sig, second_sig = get_ordered_sig((max_sig1, max_sig2))
     ind_peak_fs = 0
     ind_peak_ss = 0
@@ -251,20 +251,9 @@ def get_dist(sig1, sig2, xaxis=None):
     return distances
 
 
-def get_local_max(sig):
-    """Return local maxima of sig."""
-    ind_max = []
-    val_max = []
-    last_slope_sign = sign(slope(0, 0, 1, sig[1]))
-
-    for ind, val in enumerate(sig[:-1]):
-        new_slope_sign = sign(slope(ind, val, ind + 1, sig[ind + 1]))
-        if new_slope_sign < last_slope_sign:  # we are at a local maximum
-            ind_max.append(ind)
-            val_max.append(val)
-        last_slope_sign = new_slope_sign
-
-    return ind_max, val_max
+def get_ind_local_max(sig):
+    """Return indexes of the local maxima of sig."""
+    return np.nonzero((np.diff(sig[:-1]) > 0) & (np.diff(sig[1:]) < 0))[0] + 1
 
 
 def get_ordered_sig(sig_list):
