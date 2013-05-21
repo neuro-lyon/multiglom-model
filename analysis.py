@@ -251,9 +251,23 @@ def get_dist(sig1, sig2, xaxis=None):
     return distances
 
 
-def get_ind_local_max(sig):
-    """Return indexes of the local maxima of sig."""
-    return np.nonzero((np.diff(sig[:-1]) > 0) & (np.diff(sig[1:]) < 0))[0] + 1
+def get_ind_local_max(sig, treshold_ratio=0.25):
+    """Return indexes of the local maxima of sig.
+
+    Parameters
+    ----------
+    sig : list or np.array
+        signal to get the local maxima from
+    treshold_ratio : float
+        ratio relative to the distance median to keep the peaks,
+        e.g. if the distance median is 10 and the ratio is 0.25 then only
+        peak distances above 2.5 will be kept.
+    """
+    peak_indexes =  np.nonzero((np.diff(sig[:-1]) > 0) & (np.diff(sig[1:]) < 0))[0] + 1
+    peak_distances = np.diff(peak_indexes)
+    peak_dist_median = np.median(peak_distances)
+    suptreshold_peaks = (peak_distances > treshold_ratio*peak_dist_median)
+    return peak_indexes[suptreshold_peaks]
 
 
 def get_ordered_sig(sig_list):
