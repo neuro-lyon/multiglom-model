@@ -195,8 +195,14 @@ for ind_rate in xrange(len(X_PD)):
 # Plotting
 PD_FIG, PD_AXS = plt.subplots(1, 2, figsize=(6, 3))
 PD_NORM = colors.normalize(np.amin(Z_PD), np.amax(Z_PD))
-plot_run(PD_FIG, "Peak Distances index", PD_AXS, Z_PD, range(2), PD_NORM, IMSHOW_EXTENT)
-
+for ind_subplot, ind_data in enumerate(range(2)):
+    cs = PD_AXS[ind_subplot].imshow(Z_PD[ind_data],
+                                 origin="lower",
+                                 interpolation="nearest",
+                                 extent=IMSHOW_EXTENT,
+                                 aspect="auto")
+    PD_AXS[ind_subplot].set_title("Peak Distances index")
+    PD_FIG.colorbar(cs, ax=PD_AXS[ind_subplot], orientation="horizontal")
 
 """
 Closing DB and finally plotting
