@@ -24,6 +24,7 @@ def get_all_min_max(array_list):
 
 def plot_run(fig, fig_title, axs, data, data_range, data_norm, axes_extent):
     """Plot a figure with 3 subplots (subpop 1, 2, pop)"""
+    fig.suptitle(fig_title)
     fig.subplots_adjust(bottom=0.25)
     for ind_subplot, ind_data in enumerate(data_range):
         cs = axs[ind_subplot].imshow(data[ind_data],
@@ -32,7 +33,6 @@ def plot_run(fig, fig_title, axs, data, data_range, data_norm, axes_extent):
                                      interpolation="nearest",
                                      extent=axes_extent,
                                      aspect="auto")
-        axs[ind_subplot].set_title(fig_title)
     cb_axs = fig.add_axes([0.125, 0.1, 0.9 - 0.125, 0.03])
     fig.colorbar(cs, cax=cb_axs, orientation="horizontal")
 
@@ -201,7 +201,11 @@ for ind_subplot, ind_data in enumerate(range(2)):
                                  interpolation="nearest",
                                  extent=IMSHOW_EXTENT,
                                  aspect="auto")
-    PD_AXS[ind_subplot].set_title("Peak Distances index")
+    if ind_subplot == 0:
+        index_type = "mean"
+    elif ind_subplot == 1:
+        index_type = "disp"
+    PD_AXS[ind_subplot].set_title("Peak Distances index (%s)" % index_type )
     PD_FIG.colorbar(cs, ax=PD_AXS[ind_subplot], orientation="horizontal")
 
 """
