@@ -196,11 +196,16 @@ for ind_rate in xrange(len(X_PD)):
 PD_FIG, PD_AXS = plt.subplots(1, 2, figsize=(6, 3))
 PD_NORM = colors.normalize(np.amin(Z_PD), np.amax(Z_PD))
 for ind_subplot, ind_data in enumerate(range(2)):
+    if ind_subplot == 0:  # if it's the mean, which is circular
+        color = "hsv"  # use the hsv colormap, which is circular
+    else:
+        color = None
     cs = PD_AXS[ind_subplot].imshow(Z_PD[ind_data],
                                  origin="lower",
                                  interpolation="nearest",
                                  extent=IMSHOW_EXTENT,
-                                 aspect="auto")
+                                 aspect="auto",
+                                 cmap=color)
     if ind_subplot == 0:
         index_type = "mean"
     elif ind_subplot == 1:
