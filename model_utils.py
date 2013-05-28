@@ -11,10 +11,12 @@ import numpy as np
 from brian import StateMonitor, SpikeMonitor
 from utils import path_to_modline
 
+
 def set_model_ps(filepath, dicname='PARAMETERS'):
     """Set the model parameters given the parameter set in `filepath`."""
     psmod = importlib.import_module(path_to_modline(filepath))
     model.PARAMETERS = getattr(psmod, dicname)
+
 
 def intrapop_connections(n_mitral, n_granule, n_subpop, n_mitral_per_subpop):
     """Connection matrix for intra sub-population connections."""
@@ -24,6 +26,7 @@ def intrapop_connections(n_mitral, n_granule, n_subpop, n_mitral_per_subpop):
         stop  = start + n_mitral_per_subpop
         resmat[start:stop, i_subpop] = 1.
     return resmat
+
 
 def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpop, inter_conn_rate, inter_conn_strength, homeostasy=False):
     """
@@ -50,7 +53,6 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
             newconn = np.zeros((n_mitral_per_subpop, 1))
             for i in xrange(nlinks):
                 newconn[i] = inter_conn_strength[mtpop][grpop]
-            np.random.shuffle(newconn)
             start = mtpop*n_mitral_per_subpop
             stop  = start + n_mitral_per_subpop
             res_mat[start:stop, grpop] = newconn[:, 0]
@@ -66,6 +68,7 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
         res_mat_norm = init_total/res_mat.sum(axis=0)
         res_mat = res_mat*res_mat_norm
         return res_mat, tr_res_mat
+
 
 def monit(pop, params, reclist=True, spikes=False):
     """Returns a dictionnary of monitors for the population."""
