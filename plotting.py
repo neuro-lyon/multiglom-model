@@ -6,30 +6,7 @@ from brian.stdunits import *
 from brian.units import *
 
 
-def raster_plot(spike_monitor, n_subpop):
-    """Raster plot with a different color for each sub-population."""
-    n_neurons = len(spike_monitor.spiketimes)
-    n_neuron_per_subpop = n_neurons/n_subpop
-    colors = get_colorlist(n_subpop)
-    plt.figure()
-    for subpop in xrange(n_subpop):
-        subpop_color = colors[subpop]
-        for neur in xrange(n_neuron_per_subpop):
-            abs_neuron = neur + subpop*n_neuron_per_subpop
-            spikes = spike_monitor[abs_neuron]
-            plt.plot(spikes/msecond, [abs_neuron]*len(spikes), ' .',
-                     color=subpop_color, mew=0)
-    margin = 0.01
-    x_overplot = margin*spike_monitor.clock.end
-    y_overplot = margin*n_neurons
-    plt.xlim((-x_overplot)/msecond,
-             (spike_monitor.clock.end + x_overplot)/msecond)
-    plt.ylim(-y_overplot, n_neurons + y_overplot)
-    plt.xlabel("time (ms)")
-    plt.ylabel("neuron number")
-
-
-def raster_plot_interco(spikes_i, spikes_t, connection_matrix):
+def raster_plot(spikes_i, spikes_t, connection_matrix):
     """Raster plot with focus on interconnection neurons.
 
     Parameters
@@ -79,6 +56,16 @@ def raster_plot_interco(spikes_i, spikes_t, connection_matrix):
                 plt.plot(spikes, [downline]*len(spikes), ' .',
                          color=subpop_color, mew=0)
                 downline += 1
+
+    # Some plotting enhancement
+    margin = 0.01
+    x_overplot = margin*spikes_t[-1]
+    y_overplot = margin*n_mitral
+    plt.xlim((-x_overplot), (spikes_t[-1] + x_overplot))
+    plt.ylim(-y_overplot, n_mitral + y_overplot)
+    plt.suptitle("Raster plot")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Neuron number")
 
 
 def get_colorlist(n_colors, cmap_name="Paired"):

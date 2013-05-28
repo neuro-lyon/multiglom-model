@@ -143,7 +143,7 @@ def main(args):
     inter_conn_rate = pscommon['inter_conn_rate']
     inter_conn_strength = pscommon['inter_conn_strength']
     homeostasy = pscommon['homeostasy']
-    mtgr_connections,grmt_connections = mutils.interpop_connections(mtgr_connections, n_mitral, n_subpop,
+    mtgr_connections, grmt_connections = mutils.interpop_connections(mtgr_connections, n_mitral, n_subpop,
                                             n_mitral_per_subpop, inter_conn_rate, inter_conn_strength,homeostasy)
     # Mitral--Granule interactions
     @network_operation(when='start')
@@ -273,7 +273,8 @@ def main(args):
     """
     if not args.no_plot:
         # Raster plot
-        plotting.raster_plot(monit_mt['spikes'], n_subpop)
+        spikes_it = monit_mt['spikes'].it
+        plotting.raster_plot(spikes_it[0], spikes_it[1], mtgr_connections)
         # Membrane potentials
         if not rec_neurons:  # if we only have a couple of recorded neurons
             plotting.memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule)

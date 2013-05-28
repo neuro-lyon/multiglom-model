@@ -11,7 +11,7 @@ import tables
 from numpy import allclose
 
 import h5manager as h5m
-from plotting import granule_pop_figure, raster_plot_interco
+from plotting import granule_pop_figure, raster_plot
 from analysis import fftmax
 
 DB_FILENAME = "data/db30x30_beta_homeostasis.h5"
@@ -77,7 +77,7 @@ for rate in SELECTED_RATES:
         REDO_FFTMAX.append(fftmax(signal, 2, dt))
 
         spikes_it = simu[7].read()
-        raster_plot_interco(spikes_it[0], spikes_it[1], mtgr_connections)
+        raster_plot(spikes_it[0], spikes_it[1], mtgr_connections)
 
         print 'rate:', rate, 'strength:', strength, REDO_FFTMAX
 plt.show()
