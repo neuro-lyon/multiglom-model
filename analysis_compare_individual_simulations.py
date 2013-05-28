@@ -11,7 +11,7 @@ import tables
 from numpy import allclose
 
 import h5manager as h5m
-from plotting import granule_pop_figure
+from plotting import granule_pop_figure, raster_plot_interco
 from analysis import fftmax
 
 DB_FILENAME = "data/db30x30_beta_homeostasis.h5"
@@ -26,6 +26,7 @@ ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
          ('results', 's_syn_self'),
          ('results', '_v_attrs'),
          ('results', 'spikes_it'),
+         ('paramset', 'arrays', 'mtgr_connections'),
 )
 ALL_SIMU_ATTRS = h5m.get_all_attrs(DB, ATTRS)
 ALL_SIMU_ATTRS.sort()
@@ -69,15 +70,14 @@ for rate in SELECTED_RATES:
         gr_s_syn_self = simu[5].read()
         times = simu[2].read()
         dt = float(simu[3])
+        mtgr_connections = simu[8].read()
         granule_pop_figure(gr_s, gr_s_syn_self, times, dt)
 
         signal = SignalRepack(gr_s, times)
         REDO_FFTMAX.append(fftmax(signal, 2, dt))
 
         spikes_it = simu[7].read()
-        plt.figure()
-        plt.title("rate: "+str(rate)+", strength: "+str(strength))
-        plt.plot(spikes_it[1], spikes_it[0], ' .', mew=0)
+        raster_plot_interco(spikes_it[0], spikes_it[1], mtgr_connections)
 
         print 'rate:', rate, 'strength:', strength, REDO_FFTMAX
 plt.show()

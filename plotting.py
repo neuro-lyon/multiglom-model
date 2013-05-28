@@ -29,6 +29,57 @@ def raster_plot(spike_monitor, n_subpop):
     plt.ylabel("neuron number")
 
 
+def raster_plot_interco(spikes_i, spikes_t, connection_matrix):
+    """Raster plot with focus on interconnection neurons.
+
+    Parameters
+    ----------
+    spikes_i: array
+        spike times
+    spikes_t: array
+        neuron number associated with spike time
+    connection_matrix: array
+        connection matrix of size (M mitrales, G granules)
+    """
+    plt.figure()
+    bin_connection_matrix = (connection_matrix > 0)
+    n_mitral, n_subpop = connection_matrix.shape
+    n_mitral_per_subpop = n_mitral/n_subpop
+
+    # Make a mapping, neuron: {spike times}
+    spike_map = {}
+    for neur, time in zip(spikes_i, spikes_t):
+        if spike_map.has_key(neur):
+            spike_map[int(neur)].append(time)
+        else:
+            spike_map[int(neur)] = [time]
+
+    # Plotting
+    colors = get_colorlist(n_subpop)
+    for ind_subpop in xrange(n_subpop):
+        subpop_start = ind_subpop*n_mitral_per_subpop
+        subpop_stop  = subpop_start + n_mitral_per_subpop
+        subpop_color = colors[ind_subpop]
+        downline = subpop_start
+        upline   = subpop_stop - 1
+        for ind_neuron in xrange(subpop_start, subpop_stop):
+            neur_connections = bin_connection_matrix[ind_neuron]
+            # Getting the neuron spike times, if it spiked
+            if spike_map.has_key(ind_neuron):
+                spikes = spike_map[ind_neuron]
+            else:
+                spikes = []
+            # Plotting the spikes for that neuron
+            if neur_connections.all():  # if the neuron is connected to all granule
+                plt.plot(spikes, [upline]*len(spikes), ' .',
+                         color=subpop_color, mew=0)
+                upline -= 1
+            else:
+                plt.plot(spikes, [downline]*len(spikes), ' .',
+                         color=subpop_color, mew=0)
+                downline += 1
+
+
 def get_colorlist(n_colors, cmap_name="Paired"):
     """Get a list of `n_colors` color from a matplotlib colormap."""
     colors = []
