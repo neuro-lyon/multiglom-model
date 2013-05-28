@@ -87,9 +87,13 @@ for rate in SELECTED_RATES:
         # Membrane potential
         if PLOT_MEMB_POT:
             memb_potentials = simu[9].read()
+            labels = ("Mean. non-interco.", "Mean. interco")
             plt.figure()
-            for memb_pot in memb_potentials:
-                plt.plot(memb_pot)
+            for ind_mp, memb_pot in enumerate(memb_potentials):
+                label = labels[ind_mp % 2]
+                label += " glom #" + str(ind_mp/2)
+                plt.plot(times, memb_pot, label=label)
+                plt.legend()
             plt.xlabel("Time (s)")
             plt.ylabel("Membrane potential (V)")
 
