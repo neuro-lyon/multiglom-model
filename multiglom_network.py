@@ -302,11 +302,28 @@ def main(args):
                                 monit_mt['spikes'].it[1]))
     results = {}
 
+    # Mean inputs
     mean_inputs = np.ndarray((n_glomeruli, monit_glom['g'].values.shape[1]))
     for glom in xrange(n_glomeruli):
         start_subpop = glom*n_mitral_per_subpop
         stop_subpop = start_subpop + n_mitral_per_subpop
         mean_inputs[glom] = np.mean(monit_glom['g'].values[start_subpop:stop_subpop], axis=0)
+
+    # Mean membrane potentials
+    mean_memb_pot = np.ndarray((n_glomeruli*2, monit_mt['V'].values.shape[1]))
+    interco_neurons = np.array(map(lambda n: True if n[0] and n[1] else False,
+                               mtgr_connections))
+    for glom in xrange(n_glomeruli):
+        start_subpop = glom*n_mitral_per_subpop
+        stop_subpop = start_subpop + n_mitral_per_subpop
+        # Get subpopulation membrane potentials and interconnected neurons
+        subpop_memb_pot = monit_mt['V'].values[start_subpop:stop_subpop]
+        subpop_interco_neurons = interco_neurons[start_subpop:stop_subpop]
+        # Compute one mean for interconnected neurons and another for the other neurons
+        mean_pop = np.mean(subpop_memb_pot[~subpop_interco_neurons], axis=0)
+        mean_pop_interco = np.mean(subpop_memb_pot[subpop_interco_neurons], axis=0)
+        mean_memb_pot[glom*2] = mean_pop
+        mean_memb_pot[glom*2 + 1] = mean_pop_interco
 
     results['data'] = {'spikes_it': (array_spikes_it,
                            "Spikes: one array for the neuron number, another one for the spike times."),
@@ -315,7 +332,9 @@ def main(args):
                        's_granule': (monit_gr['s'].values,
                            "Variable 's' of the granules."),
                        's_syn_self': (monit_gr['s_syn_self'].values,
-                           "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations.")}
+                           "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations."),
+                       'mean_memb_pot': (mean_memb_pot,
+                            "Mean membrane potential. For each subpop: one mean for the interconnected neurons and one mean for the non-interconnected neurons.")}
     results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax,
                           'peak_distances': peak_distances}
 
