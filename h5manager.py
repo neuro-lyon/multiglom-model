@@ -133,5 +133,8 @@ def get_group_attr(group, attr_path):
         if type(res) == type({}):
             res = res.get(attr)
         else:
-            res = getattr(res, attr)
+            try:
+                res = getattr(res, attr)
+            except tables.NoSuchNodeError, e:
+                print e
     return res

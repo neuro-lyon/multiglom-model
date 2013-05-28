@@ -9,6 +9,7 @@ scatter plot to compare the simulations.
 import matplotlib.pyplot as plt
 import tables
 from numpy import allclose
+from sys import argv
 
 import h5manager as h5m
 from plotting import granule_pop_figure, raster_plot
@@ -17,8 +18,10 @@ from analysis import fftmax
 DB_FILENAME = "data/db30x30_beta_homeostasis.h5"
 DB = tables.openFile(DB_FILENAME)
 
+PLOT_MEMB_POT = len(argv) > 1 and argv[1] == "--plot-mp"
+
 # Get all simulation data
-ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
+ATTRS = [('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
          ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
          ('paramset', 'arrays', 'times'),
          ('paramset', '_v_attrs', 'Common', 'simu_dt'),
@@ -27,7 +30,10 @@ ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
          ('results', '_v_attrs'),
          ('results', 'spikes_it'),
          ('paramset', 'arrays', 'mtgr_connections'),
-)
+]
+if PLOT_MEMB_POT:
+    ATTRS.append(('results', 'mean_memb_pot'))
+
 ALL_SIMU_ATTRS = h5m.get_all_attrs(DB, ATTRS)
 ALL_SIMU_ATTRS.sort()
 
@@ -66,6 +72,7 @@ for rate in SELECTED_RATES:
             print "selecting the first one."
         simu = filtered_simu[0]
 
+        # Granule plot
         gr_s = simu[4].read()
         gr_s_syn_self = simu[5].read()
         times = simu[2].read()
@@ -73,11 +80,22 @@ for rate in SELECTED_RATES:
         mtgr_connections = simu[8].read()
         granule_pop_figure(gr_s, gr_s_syn_self, times, dt)
 
-        signal = SignalRepack(gr_s, times)
-        REDO_FFTMAX.append(fftmax(signal, 2, dt))
-
+        # Raster plot
         spikes_it = simu[7].read()
         raster_plot(spikes_it[0], spikes_it[1], mtgr_connections)
+
+        # Membrane potential
+        if PLOT_MEMB_POT:
+            memb_potentials = simu[9].read()
+            plt.figure()
+            for memb_pot in memb_potentials:
+                plt.plot(memb_pot)
+            plt.xlabel("Time (s)")
+            plt.ylabel("Membrane potential (V)")
+
+        # FFT max peak
+        signal = SignalRepack(gr_s, times)
+        REDO_FFTMAX.append(fftmax(signal, 2, dt))
 
         print 'rate:', rate, 'strength:', strength, REDO_FFTMAX
 plt.show()
