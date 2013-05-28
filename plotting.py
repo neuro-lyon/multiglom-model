@@ -71,8 +71,9 @@ def raster_plot_interco(spikes_i, spikes_t, connection_matrix):
                 spikes = []
             # Plotting the spikes for that neuron
             if neur_connections.all():  # if the neuron is connected to all granule
+                dark_color = [i/2. for i in subpop_color[:-1]]
                 plt.plot(spikes, [upline]*len(spikes), ' .',
-                         color=subpop_color, mew=0)
+                         color=dark_color, mew=0)
                 upline -= 1
             else:
                 plt.plot(spikes, [downline]*len(spikes), ' .',
