@@ -26,6 +26,7 @@ Script Overview
 8. Plots
 
 """
+import brian_no_units
 from brian import *
 
 
