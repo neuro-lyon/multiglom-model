@@ -57,7 +57,7 @@ def filename_to_h5(filename):
     return filename if filename.endswith('.h5') else filename + '.h5'
 
 
-def collect_h5_to_db(dirpath, dbpath, output=False):
+def collect_h5_to_db(dirpath, dbpath, output=True):
     """Collects all HDF5 in dirpath and put them into the big HDF5 DB"""
     h5files = listdir_filter(dirpath, lambda fname: fname[-3:] == '.h5')
     try:
