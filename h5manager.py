@@ -14,7 +14,19 @@ def init_data_h5(filename):
 
 
 def write_simu_data(filename, info, parameters, results):
-    """Create a HDF5 file for new simulation"""
+    """Create a HDF5 file for new simulation
+
+    Parameters
+    ----------
+    filename: str
+        simulation filename
+    info: dict
+        simulation information
+    parameters: dict
+        simulation parameters
+    results: dict
+        simuation results
+    """
     with tables.openFile(filename, 'a') as f:
         # Put info into the HDF5 root
         for attr in info:
