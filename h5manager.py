@@ -2,7 +2,6 @@
 
 import tables
 import os
-from os import path
 from utils import listdir_filter
 
 
