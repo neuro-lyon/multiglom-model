@@ -40,6 +40,7 @@ def main(args):
     import analysis
     import plotting
     from utils import print_dict, pairs
+    from scipy.signal import resample
 
     from model.glomerule import Glomerule
     from model.mitral_cells import MitralCells
@@ -326,16 +327,28 @@ def main(args):
         mean_memb_pot[glom*2] = mean_pop
         mean_memb_pot[glom*2 + 1] = mean_pop_interco
 
-    results['data'] = {'spikes_it': (array_spikes_it,
-                           "Spikes: one array for the neuron number, another one for the spike times."),
-                       'input': (mean_inputs,
-                           "Mean network input conductance value for each glomerule."),
-                       's_granule': (monit_gr['s'].values,
-                           "Variable 's' of the granules."),
-                       's_syn_self': (monit_gr['s_syn_self'].values,
-                           "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations."),
-                       'mean_memb_pot': (mean_memb_pot,
-                            "Mean membrane potential. For each subpop: one mean for the interconnected neurons and one mean for the non-interconnected neurons.")}
+    results['data'] = {'spikes_it': [array_spikes_it,
+                           "Spikes: one array for the neuron number, another one for the spike times."],
+                       'input': [mean_inputs,
+                           "Mean network input conductance value for each glomerule."],
+                       's_granule': [monit_gr['s'].values,
+                           "Variable 's' of the granules."],
+                       's_syn_self': [monit_gr['s_syn_self'].values,
+                           "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations."],
+                       'mean_memb_pot': [mean_memb_pot,
+                            "Mean membrane potential. For each subpop: one mean for the interconnected neurons and one mean for the non-interconnected neurons."]}
+
+    # Resample some result signals
+    new_dt = 5e-4  # in second
+    do_not_resample = ('spikes_it')  # list of array names to NOT resample
+    for signal in results['data']:
+        if signal not in do_not_resample:
+            raw_signal = results['data'][signal][0]
+            n_points = simu_length/new_dt
+            resampled_signal = resample(raw_signal, n_points, axis=1)
+            results['data'][signal][0] = resampled_signal
+
+
     results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax,
                           'peak_distances': peak_distances}
 
