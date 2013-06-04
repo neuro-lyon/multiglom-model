@@ -294,9 +294,7 @@ def main(args):
 
     """
     # Add parameters
-    ps_arrays = {'times': (monit_gr['s'].times,
-                           "Times value as an array, from t0 to end, step=dt"),
-                 'mtgr_connections': (mtgr_connections,
+    ps_arrays = {'mtgr_connections': (mtgr_connections,
                             "Connection matrix from mitral (rows) to granules (columns)")}
 
     # Add results
