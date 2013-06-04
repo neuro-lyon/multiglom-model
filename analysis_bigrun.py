@@ -6,9 +6,10 @@ import tables
 
 from h5manager import get_all_attrs
 from utils import to1d
+from arg_parsers import ANABIGRUN_PARSER
 
-
-FILENAME='data/db30x30_two_glom_beta_new_ps_interco_strength0_1_interco_rate0_1.h5'
+ARGS = ANABIGRUN_PARSER.parse_args()
+FILENAME = ARGS.data_file
 DB = tables.openFile(FILENAME)
 
 

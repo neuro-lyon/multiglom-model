@@ -9,16 +9,18 @@ scatter plot to compare the simulations.
 import matplotlib.pyplot as plt
 import tables
 from numpy import allclose
-from sys import argv
 
 import h5manager as h5m
 from plotting import granule_pop_figure, raster_plot
 from analysis import fftmax
+from arg_parsers import ANACOMP_PARSER
 
-DB_FILENAME = "data/db30x30_beta_homeostasis.h5"
+ARGS = ANACOMP_PARSER.parse_args()
+
+DB_FILENAME = ARGS.data_file
 DB = tables.openFile(DB_FILENAME)
 
-PLOT_MEMB_POT = len(argv) > 1 and argv[1] == "--plot-mp"
+PLOT_MEMB_POT = ARGS.plot_mp
 
 # Get all simulation data
 ATTRS = [('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
