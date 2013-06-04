@@ -20,8 +20,8 @@ PARAMETERS = {
     },
 'Input':
     {'tau_Ein'  : 3*msecond,
-    'g_Ein0'    : 1*siemens*meter**-2,
-    'sigma_Ein' : 0.35*siemens*meter**-2
+    'g_Ein0'    : 1.5*siemens*meter**-2,
+    'sigma_Ein' : 0.15*siemens*meter**-2
     },
 'InputOscillation':
     {'f'    : 2*Hz,
