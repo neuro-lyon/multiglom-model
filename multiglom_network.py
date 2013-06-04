@@ -361,4 +361,4 @@ if __name__ == '__main__':
     args = SIM_PARSER.parse_args()
 
     # Run script
-    main(args)
+    ps, res = main(args)
