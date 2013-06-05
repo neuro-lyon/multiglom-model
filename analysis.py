@@ -29,19 +29,19 @@ if ps:
     TAU  = PSIN['tau_Ein']
 
 
-def sts(netw_act, spikes, start, stop, keep_ratio=1./2):
+def sts(netw_act, spikes, neur_start, neur_stop, sig_start, time_start):
     """
     Returns the STS index [1] for the given network activity.
 
     Parameters
     ----------
-    netw_act : brian.StateMonitor.values
-        Signal that represents the network activity in one variable.
-    spikes : brian.SpikeMonitor
-        Set of spikes during the simulation.
-    start : int
+    netw_act: brian.StateMonitor.values
+        signal that represents the network activity in one variable
+    spikes: brian.SpikeMonitor
+        set of spikes during the simulation
+    neur_start: int
         neuron index left border for the slice of neuron we want
-    stop : int
+    neur_stop: int
         neuron index right border
 
     References
@@ -49,12 +49,12 @@ def sts(netw_act, spikes, start, stop, keep_ratio=1./2):
     [1] Brunel & Wang, 2003
 
     """
-    sig_size = len(netw_act)
-    cut_sig = netw_act[sig_size*(1 - keep_ratio):]
+    cut_sig = netw_act[sig_start:]
     # Then compute the autocorrelation at zero time.
     autocorr = autocorr_zero(cut_sig)
     # Finally, normalize it by nu*tau
-    nu = get_nspikes(spikes, keep_ratio, start, stop)/(spikes.clock.t*keep_ratio)
+    nspikes = get_nspikes(spikes, time_start, neur_start, neur_stop)
+    nu = nspikes/(spikes.clock.end - time_start)
     return float(autocorr/(nu*TAU))  # float() to not return a Quantity object
 
 
@@ -64,12 +64,10 @@ def autocorr_zero(signal):
     return np.sqrt(np.mean((signal - mean_sig)*(signal - mean_sig)))
 
 
-def get_nspikes(spikes, keep_ratio, start, stop):
+def get_nspikes(spikes, time_treshold, start, stop):
     """Returns the number of spikes, keeping only the last portion of the
     simulation."""
     nspikes = 0
-    # Convert time to second because times in `spikes` are in second
-    time_treshold = (spikes.clock.t/second)*keep_ratio
     for neur in xrange(start, stop):
         for spike_time in spikes[neur]:
             if spike_time > time_treshold:

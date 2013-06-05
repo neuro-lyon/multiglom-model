@@ -222,12 +222,16 @@ def main(args):
     fftmax = {}
     mps_indexes['whole'] = analysis.mps(monit_mt['V'], 0, n_mitral)
     gr_s_syn_whole = np.zeros(monit_gr['s_syn'][0].shape)
+    burnin = pscommon['burnin']
+    times = monit_gr['s'].times
+    sig_start = where(times > burnin)[0][0]
+
 
     # MPS and STS computation for subpopulation
     for subpop in xrange(n_subpop):
         start = subpop*n_mitral_per_subpop
         stop  = start + n_mitral_per_subpop
-        sts = analysis.sts(monit_gr['s_syn'][subpop], monit_mt['spikes'], start, stop)
+        sts = analysis.sts(monit_gr['s_syn'][subpop], monit_mt['spikes'], start, stop, sig_start, burnin)
         sts_indexes[subpop] = sts
         gr_s_syn_whole += monit_gr['s_syn'][subpop]
         mps = analysis.mps(monit_mt['V'], start, stop)
@@ -237,7 +241,7 @@ def main(args):
     sts_whole_activity = np.zeros(monit_gr['s_syn'][0].shape)
     for subpop in xrange(n_subpop):
         sts_whole_activity += monit_gr['s_syn'][subpop]  # TODO pas tres sur s'il faut ajouter ou concaténer
-    sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral)
+    sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral, sig_start, burnin)
 
     # FFT Max index
     fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])

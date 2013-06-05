@@ -16,7 +16,8 @@ PARAMETERS = {
                              1: {0: INTERCO_RATE}},
     'inter_conn_strength' : {0: {1: INTERCO_STRENGTH},
                              1: {0: INTERCO_STRENGTH}},
-    'homeostasy': False
+    'homeostasy': False,
+    'burnin': 1.  # period of the signal to discard for index computation
     },
 'Input':
     {'tau_Ein'  : 3*msecond,
