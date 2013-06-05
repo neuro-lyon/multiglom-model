@@ -217,14 +217,15 @@ def main(args):
         print 'Full set of parameters:'
         print_dict(model.PARAMETERS)
 
-    sts_indexes = {}
-    mps_indexes = {}
-    fftmax = {}
-    mps_indexes['whole'] = analysis.mps(monit_mt['V'], 0, n_mitral)
-    gr_s_syn_whole = np.zeros(monit_gr['s_syn'][0].shape)
     burnin = pscommon['burnin']
     times = monit_gr['s'].times
     sig_start = where(times > burnin)[0][0]
+
+    sts_indexes = {}
+    mps_indexes = {}
+    fftmax = {}
+    mps_indexes['whole'] = analysis.mps(monit_mt['V'], 0, n_mitral, sig_start)
+    gr_s_syn_whole = np.zeros(monit_gr['s_syn'][0].shape)
 
 
     # MPS and STS computation for subpopulation
@@ -234,7 +235,7 @@ def main(args):
         sts = analysis.sts(monit_gr['s_syn'][subpop], monit_mt['spikes'], start, stop, sig_start, burnin)
         sts_indexes[subpop] = sts
         gr_s_syn_whole += monit_gr['s_syn'][subpop]
-        mps = analysis.mps(monit_mt['V'], start, stop)
+        mps = analysis.mps(monit_mt['V'], start, stop, sig_start)
         mps_indexes[subpop] = mps
 
     # STS for the whole population

@@ -75,7 +75,7 @@ def get_nspikes(spikes, time_treshold, start, stop):
     return nspikes
 
 
-def mps(memb_pot, start, stop, keep_ratio=1./2):
+def mps(memb_pot, start, stop, sig_start):
     """
     Returns the MPS index [1] of the given network.
 
@@ -85,8 +85,6 @@ def mps(memb_pot, start, stop, keep_ratio=1./2):
         Membrane potential for a whole category (eg. mitral) of neurons.
     start, stop : int
         indices of the first and last neuron to take
-    keep_ratio : float
-        portion of the signal to keep (right part is kept, left is dismissed)
 
     References
     ----------
@@ -94,8 +92,7 @@ def mps(memb_pot, start, stop, keep_ratio=1./2):
 
     """
     res = 0.
-    cut_index = len(memb_pot.values[0])*(1 - keep_ratio)
-    all_corr = np.corrcoef(memb_pot.values[start:stop, cut_index:])
+    all_corr = np.corrcoef(memb_pot.values[start:stop, sig_start:])
     nneur = stop - start
     ncomb = comb(nneur, 2, exact=True)
     assert ncomb > 0, \
