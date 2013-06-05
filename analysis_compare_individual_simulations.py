@@ -82,7 +82,7 @@ for rate in SELECTED_RATES:
         times = linspace(0., simu[2], len(gr_s[0]))
         sig_start = where(times > BURNIN)[0][0]
         mtgr_connections = simu[8].read()
-        granule_pop_figure(gr_s, gr_s_syn_self, times, simu_dt)
+        granule_pop_figure(gr_s, gr_s_syn_self, times, simu_dt, BURNIN)
 
         # Raster plot
         spikes_it = simu[7].read()

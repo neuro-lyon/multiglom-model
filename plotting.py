@@ -2,6 +2,7 @@
 
 from matplotlib import pyplot as plt, cm as cmap
 from scipy.fftpack import fft, fftfreq
+from numpy import where
 from brian.stdunits import *
 from brian.units import *
 
@@ -99,10 +100,10 @@ def memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule):
 
 def granule_figure(monit_gr, pscommon):
     """Wraper to the granule figure."""
-    granule_pop_figure(monit_gr['s'].values, monit_gr['s_syn_self'].values, monit_gr['s'].times, pscommon['simu_dt'])
+    granule_pop_figure(monit_gr['s'].values, monit_gr['s_syn_self'].values, monit_gr['s'].times, pscommon['simu_dt'], pscommon['burnin'])
 
 
-def granule_pop_figure(gr_s, gr_s_syn_self, times, dt):
+def granule_pop_figure(gr_s, gr_s_syn_self, times, dt, burnin):
     """Plot a figure describing the granule activity, useful to see population synchrony."""
     plt.figure()
     n_granule = len(gr_s)
@@ -126,10 +127,10 @@ def granule_pop_figure(gr_s, gr_s_syn_self, times, dt):
     sub_s_syn_self.set_ylabel('s_syn_self granule')
 
     # FFT max granules
-    keep_ratio=0.5
     sub_fft = plt.subplot(2, 1, 2)
     fft_max_freq = 200
-    ntimes = int(len(times)*(1. - keep_ratio))
+    sig_start = where(times > burnin)[0][0]
+    ntimes = len(times[sig_start:])
     freqs = fftfreq(ntimes, dt)
     fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
     for num_granule in xrange(n_granule):
