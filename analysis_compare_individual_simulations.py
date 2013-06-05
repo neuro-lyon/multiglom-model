@@ -8,7 +8,7 @@ scatter plot to compare the simulations.
 
 import matplotlib.pyplot as plt
 import tables
-from numpy import allclose, linspace
+from numpy import allclose, linspace, where
 
 import h5manager as h5m
 from plotting import granule_pop_figure, raster_plot
@@ -59,6 +59,7 @@ class SignalRepack:
 def get_interco(simu, interco_rate, interco_strength):
     return deq(simu[0], interco_rate, 0.02) and deq(simu[1], interco_strength, 0.02)
 
+BURNIN = 1.
 SELECTED_RATES = [20, 25]
 SELECTED_STRENGTH = [6]
 REDO_FFTMAX = []
@@ -79,6 +80,7 @@ for rate in SELECTED_RATES:
         gr_s_syn_self = simu[5].read()
         simu_dt = float(simu[3])
         times = linspace(0., simu[2], len(gr_s[0]))
+        sig_start = where(times > BURNIN)[0][0]
         mtgr_connections = simu[8].read()
         granule_pop_figure(gr_s, gr_s_syn_self, times, simu_dt)
 
@@ -101,7 +103,7 @@ for rate in SELECTED_RATES:
 
         # FFT max peak
         signal = SignalRepack(gr_s, times)
-        REDO_FFTMAX.append(fftmax(signal, 2, simu_dt))
+        REDO_FFTMAX.append(fftmax(signal, 2, simu_dt, sig_start))
 
         print 'rate:', rate, 'strength:', strength, REDO_FFTMAX
 plt.show()

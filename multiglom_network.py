@@ -245,7 +245,7 @@ def main(args):
     sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral, sig_start, burnin)
 
     # FFT Max index
-    fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])
+    fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'], sig_start)
 
     # Peak distances index
     peak_distances = {}

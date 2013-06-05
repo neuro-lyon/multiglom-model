@@ -105,11 +105,10 @@ def mps(memb_pot, start, stop, sig_start):
     return res/ncomb
 
 
-def fftmax(signal, n_subpop, simu_dt, fft_max_freq=200, keep_ratio=1./2):
+def fftmax(signal, n_subpop, simu_dt, sig_start, fft_max_freq=200):
     """Return the peak in the FFT frequency of the signal values."""
     res = {}
-    ntimes = int(len(signal.times)*(1 - keep_ratio))
-    # Cut the signal values to keep_ratio
+    ntimes = int(len(signal.times[sig_start:]))
     cut_signal = signal.values[:, ntimes:]
 
     freqs = fftfreq(ntimes, simu_dt)
