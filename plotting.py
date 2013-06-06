@@ -134,7 +134,7 @@ def granule_pop_figure(gr_s, gr_s_syn_self, times, dt, burnin):
     freqs = fftfreq(ntimes, dt)
     fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
     for num_granule in xrange(n_granule):
-        fft_sig = abs(fft(gr_s[num_granule][ntimes:] - (gr_s[num_granule][ntimes:]).mean())[:fft_max_freq_index])
+        fft_sig = abs(fft(gr_s[num_granule][sig_start:] - (gr_s[num_granule][sig_start:]).mean())[:fft_max_freq_index])
         sub_fft.plot(freqs[:fft_max_freq_index], fft_sig,
             label="FFT on granule #" + str(num_granule) + " s")
     sub_fft.legend()
