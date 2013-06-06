@@ -78,11 +78,12 @@ for rate in SELECTED_RATES:
         # Granule plot
         gr_s = simu[4].read()
         gr_s_syn_self = simu[5].read()
-        simu_dt = float(simu[3])
-        times = linspace(0., simu[2], len(gr_s[0]))
+        simu_length = simu[2]
+        resample_dt = simu_length/len(gr_s[1])
+        times = linspace(0., simu_length, len(gr_s[0]))
         sig_start = where(times > BURNIN)[0][0]
         mtgr_connections = simu[8].read()
-        granule_pop_figure(gr_s, gr_s_syn_self, times, simu_dt, BURNIN)
+        granule_pop_figure(gr_s, gr_s_syn_self, times, resample_dt, BURNIN)
 
         # Raster plot
         spikes_it = simu[7].read()
@@ -103,7 +104,7 @@ for rate in SELECTED_RATES:
 
         # FFT max peak
         signal = SignalRepack(gr_s, times)
-        REDO_FFTMAX.append(fftmax(signal, 2, simu_dt, sig_start))
+        REDO_FFTMAX.append(fftmax(signal, 2, resample_dt, sig_start))
 
         print 'rate:', rate, 'strength:', strength, REDO_FFTMAX
 plt.show()
