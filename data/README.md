@@ -1,10 +1,20 @@
 -   `db30x30_new_gamma_non_homeo.h5` (2013-06-07)
 
-    Gamma simulation without homeostatic connection.
+    Gamma simulation *without* homeostatic connections.
 
     Parameters changed were:
     - interco. rate: 0 to 1, 30 steps
     - interco. strength: 0 to 0.1, 30 steps
+
+
+-   `db30x30_new_gamma_homeo.h5` (2013-06-07)
+
+    Gamma simulation with homeostatic connections.
+
+    Parameters changed were:
+    - interco. rate: 0 to 1, 30 steps
+    - interco. strength: 0 to 0.1, 30 steps
+
 
 -   `db10x10_new_gamma_homeo.h5`
 
