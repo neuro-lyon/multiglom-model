@@ -170,7 +170,8 @@ for ind_rate in xrange(len(X_SR)):
             subpop_interco_neurons = []
             subpop_non_interco_neurons = []
             for ind_neur in xrange(neuron_range[0], neuron_range[1]):
-                if bin_connection_matrix[ind_neur].all():
+                # Check if the neuron is connected to more than one granule
+                if bin_connection_matrix[ind_neur].sum() > 1:
                     subpop_interco_neurons.append(ind_neur)
                 else:
                     subpop_non_interco_neurons.append(ind_neur)
@@ -203,7 +204,7 @@ for ind_rate in xrange(len(X_SR)):
         Z_SR[2][ind_rate][ind_strength] = nspikes[2]
 
         # Compute spiking rate for all pop and split interco. and non-interco. neurons
-        all_interco_mask = bin_connection_matrix.all(axis=1)
+        all_interco_mask = (bin_connection_matrix.sum(axis=1) > 1)
         all_interco_neur = np.where(all_interco_mask)[0]
         interco_mask = np.in1d(SPIKES_IT[0], all_interco_neur)
 

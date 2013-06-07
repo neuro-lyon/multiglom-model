@@ -48,7 +48,7 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
             else:
                 spikes = []
             # Plotting the spikes for that neuron
-            if neur_connections.all():  # if the neuron is connected to all granule
+            if neur_connections.sum() > 1:  # if the neuron is connected to more than one granule
                 dark_color = [i/2. for i in subpop_color[:-1]]
                 plt.plot(spikes, [upline]*len(spikes), ' .',
                          color=dark_color, mew=0)
