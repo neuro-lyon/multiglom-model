@@ -316,8 +316,8 @@ def main(args):
 
     # Mean membrane potentials
     mean_memb_pot = np.ndarray((n_glomeruli*2, monit_mt['V'].values.shape[1]))
-    interco_neurons = np.array(map(lambda n: True if n[0] and n[1] else False,
-                               mtgr_connections))
+    bin_interco_matrix = (mtgr_connections > 0.)
+    interco_neurons = (bin_interco_matrix.sum(axis=1) > 1)
     for glom in xrange(n_glomeruli):
         start_subpop = glom*n_mitral_per_subpop
         stop_subpop = start_subpop + n_mitral_per_subpop
