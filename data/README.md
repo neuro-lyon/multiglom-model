@@ -1,3 +1,11 @@
+-   `db40_beta_fig_netw_freq.h5` (2013-06-10)
+
+    Beta simulation to reproduce the Fig. 5 of Fourcaud-2011.
+
+    Parameters were:
+    - `g_Ein0`: 0.01 to 2.5
+
+
 -   `db30x30_new_gamma_non_homeo.h5` (2013-06-07)
 
     Gamma simulation *without* homeostatic connections.
