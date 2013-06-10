@@ -1,12 +1,27 @@
+- `db40_gamma_1pop_fig_netw_freq.h5` (2013-06-10)
+
+    Same as `db40_beta_1pop_fig_netw_freq.h5` but in the gamma regime.
+
+
+- `db40_beta_1pop_fig_netw_freq.h5` (2013-06-10)
+
+    Beta simulation, same as `db40_beta_fig_netw_freq.h5` but with ONE
+    population.
+
+
 -   `db40_gamma_fig_netw_freq.h5` (2013-06-10)
 
     Gamma simulation, same as `db40_beta_fig_netw_freq.h5`, but with gamma
     parameters.
 
+    Dummy simulation as *TWO POPULATIONS* were simulated.
+
 
 -   `db40_beta_fig_netw_freq.h5` (2013-06-10)
 
     Beta simulation to reproduce the Fig. 5 of Fourcaud-2011.
+
+    Dummy simulation as *TWO POPULATIONS* were simulated.
 
     Parameters were:
     - `g_Ein0`: 0.01 to 2.5
