@@ -1,3 +1,9 @@
+-   `db40_gamma_fig_netw_freq.h5` (2013-06-10)
+
+    Gamma simulation, same as `db40_beta_fig_netw_freq.h5`, but with gamma
+    parameters.
+
+
 -   `db40_beta_fig_netw_freq.h5` (2013-06-10)
 
     Beta simulation to reproduce the Fig. 5 of Fourcaud-2011.
