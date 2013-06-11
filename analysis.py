@@ -54,8 +54,11 @@ def sts(netw_act, spikes, neur_start, neur_stop, sig_start, time_start):
     autocorr = autocorr_zero(cut_sig)
     # Finally, normalize it by nu*tau
     nspikes = get_nspikes(spikes, time_start, neur_start, neur_stop)
-    nu = nspikes/(spikes.clock.end - time_start)
-    return float(autocorr/(nu*TAU))  # float() to not return a Quantity object
+    if nspikes == 0:
+        return 0  # No spikes to compute STS, so return the minimum
+    else:
+        nu = nspikes/(spikes.clock.end - time_start)
+        return float(autocorr/(nu*TAU))
 
 
 def autocorr_zero(signal):
