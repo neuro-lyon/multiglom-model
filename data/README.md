@@ -1,3 +1,10 @@
+- `db40_beta_1pop_fig_netw_freq_multiproc.h5` (2013-06-11)
+
+    Beta simulation to plot the freq/rates figure.
+
+    This time it is done with multiprocessing and without bug.
+
+
 - `db40_gamma_1pop_fig_netw_freq.h5` (2013-06-10)
 
     Same as `db40_beta_1pop_fig_netw_freq.h5` but in the gamma regime.
@@ -7,6 +14,8 @@
 
     Beta simulation, same as `db40_beta_fig_netw_freq.h5` but with ONE
     population.
+
+    *BUGED* because done without multiprocessing, using a bad hack.
 
 
 -   `db40_gamma_fig_netw_freq.h5` (2013-06-10)
