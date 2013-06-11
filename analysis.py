@@ -70,12 +70,12 @@ def autocorr_zero(signal):
 def get_nspikes(spikes, time_treshold, start, stop):
     """Returns the number of spikes, keeping only the last portion of the
     simulation."""
-    nspikes = 0
-    for neur in xrange(start, stop):
-        for spike_time in spikes[neur]:
-            if spike_time > time_treshold:
-                nspikes += 1
-    return nspikes
+    spike_neurons = spikes.it[0]
+    spike_times = spikes.it[1]
+    neurons_mask = (spike_neurons >= start) & (spike_neurons < stop)
+    times_mask = (spike_times > time_treshold)
+    good_spikes = neurons_mask & times_mask
+    return good_spikes.sum()
 
 
 def mps(memb_pot, start, stop, sig_start):
