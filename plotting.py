@@ -60,9 +60,13 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
 
     # Some plotting enhancement
     margin = 0.01
-    x_overplot = margin*spikes_t[-1]
+    if len(spikes_t) > 0:
+        spikes_t_last = spikes_t[-1]
+    else:
+        spikes_t_last = 0.
+    x_overplot = margin*spikes_t_last
     y_overplot = margin*n_mitral
-    plt.xlim((-x_overplot), (spikes_t[-1] + x_overplot))
+    plt.xlim((-x_overplot), (spikes_t_last + x_overplot))
     plt.ylim(-y_overplot, n_mitral + y_overplot)
     plt.suptitle("Raster plot")
     plt.xlabel("Time (s)")
