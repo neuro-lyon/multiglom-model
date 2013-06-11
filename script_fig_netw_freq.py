@@ -63,7 +63,7 @@ def get_spiking_rate(spike_times, n_mitral, simu_length, burnin):
 
 def main():
     # Get the data
-    filename_beta = "data/db40_beta_1pop_fig_netw_freq.h5"
+    filename_beta = "data/db40_beta_1pop_fig_netw_freq_multiproc.h5"
     filename_gamma = "data/db40_gamma_1pop_fig_netw_freq.h5"
 
     # Build network frequency figure
