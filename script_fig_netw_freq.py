@@ -39,7 +39,7 @@ def plot_freqs(db_filename, point_color, label):
     burnin = ps_common['burnin']
 
     # Compute the spiking rate for each simulation
-    sim_values = np.ndarray((len(attrs), len(attrs[0])))
+    sim_values = np.ndarray((len(attrs), 2))
     for ind_simu, simu in enumerate(attrs):
         spike_times = simu[0].read()[1]
         sim_values[ind_simu][0] = get_spiking_rate(spike_times, n_mitral,
