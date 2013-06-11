@@ -58,7 +58,7 @@ def plot_freqs(db_filename, point_color, label):
 def get_spiking_rate(spike_times, n_mitral, simu_length, burnin):
     """Return the spiking rate for the whole population."""
     time_mask = (spike_times > burnin)
-    return time_mask.sum()/(n_mitral*simu_length)
+    return 1.*time_mask.sum()/(n_mitral*(simu_length - burnin))
 
 
 def main():
