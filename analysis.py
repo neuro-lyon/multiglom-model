@@ -109,7 +109,7 @@ def fftmax(signal, n_subpop, simu_dt, sig_start, fft_max_freq=200):
     """Return the peak in the FFT frequency of the signal values."""
     res = {}
     ntimes = int(len(signal.times[sig_start:]))
-    cut_signal = signal.values[:, ntimes:]
+    cut_signal = signal.values[:, sig_start:]
 
     freqs = fftfreq(ntimes, simu_dt)
     fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
