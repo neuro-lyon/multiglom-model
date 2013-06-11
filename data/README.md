@@ -10,7 +10,7 @@
     Same as `db40_beta_1pop_fig_netw_freq.h5` but in the gamma regime.
 
 
-- `db40_beta_1pop_fig_netw_freq.h5` (2013-06-10)
+- `db40_beta_1pop_fig_netw_freq_BUGGY.h5` (2013-06-10)
 
     Beta simulation, same as `db40_beta_fig_netw_freq.h5` but with ONE
     population.
