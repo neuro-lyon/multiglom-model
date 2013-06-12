@@ -104,7 +104,7 @@ def memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule):
 
 def granule_figure(monit_gr, pscommon):
     """Wraper to the granule figure."""
-    granule_pop_figure(monit_gr['s'].values, monit_gr['s_syn_self'].values, monit_gr['s'].times, pscommon['simu_dt'], pscommon['burnin'])
+    granule_pop_figure(monit_gr['s'].values, monit_gr['s_syn_self'].values, monit_gr['s'].times, pscommon['resample_dt'], pscommon['burnin'])
 
 
 def granule_pop_figure(gr_s, gr_s_syn_self, times, dt, burnin):

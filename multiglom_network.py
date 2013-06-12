@@ -181,9 +181,10 @@ def main(args):
 
     # Simulation monitors
     rec_neurons = True  # Must be set to True if we want accurate MPS and STS
-    monit_glom = mutils.monit(glom.pop, glom_ps, reclist=rec_neurons)
-    monit_mt   = mutils.monit(mt.pop, mt_ps, reclist=rec_neurons, spikes=True)
-    monit_gr   = mutils.monit(gr.pop, gr_ps)
+    timestep = int(pscommon['resample_dt']/pscommon['simu_dt'])
+    monit_glom = mutils.monit(glom.pop, glom_ps, timestep, reclist=rec_neurons)
+    monit_mt   = mutils.monit(mt.pop, mt_ps, timestep, reclist=rec_neurons, spikes=True)
+    monit_gr   = mutils.monit(gr.pop, gr_ps, timestep)
 
 
     """
@@ -245,7 +246,7 @@ def main(args):
     sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral, sig_start, burnin)
 
     # FFT Max index
-    fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'], sig_start)
+    fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['resample_dt'], sig_start)
 
     # Peak distances index
     peak_distances = {}
@@ -340,17 +341,6 @@ def main(args):
                            "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations."],
                        'mean_memb_pot': [mean_memb_pot,
                             "Mean membrane potential. For each subpop: one mean for the interconnected neurons and one mean for the non-interconnected neurons."]}
-
-    # Resample some result signals
-    new_dt = 5e-4  # in second
-    do_not_resample = ('spikes_it')  # list of array names to NOT resample
-    for signal in results['data']:
-        if signal not in do_not_resample:
-            raw_signal = results['data'][signal][0]
-            n_points = simu_length/new_dt
-            resampled_signal = resample(raw_signal, n_points, axis=1)
-            results['data'][signal][0] = resampled_signal
-
 
     results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax,
                           'peak_distances': peak_distances}

@@ -70,11 +70,11 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
         return res_mat, tr_res_mat
 
 
-def monit(pop, params, reclist=True, spikes=False):
+def monit(pop, params, timestep, reclist=True, spikes=False):
     """Returns a dictionnary of monitors for the population."""
     res = {}
     for pname in params:
-        res[pname] = StateMonitor(pop, pname, record=reclist)
+        res[pname] = StateMonitor(pop, pname, record=reclist, timestep=timestep)
     if spikes:
         res['spikes'] = SpikeMonitor(pop, record=True)
     return res
