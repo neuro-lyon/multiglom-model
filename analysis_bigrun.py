@@ -46,7 +46,6 @@ COMMON_ATTRS = (('paramset', '_v_attrs', 'Common'),)
 COMMON = get_all_attrs(DB, COMMON_ATTRS)
 COMMON = COMMON[0][0]
 SIMU_LENGTH = float(COMMON['simu_length'])
-SIMU_DT = COMMON['simu_dt']
 N_MITRAL = COMMON['N_mitral']
 N_SUBPOP = COMMON['N_subpop']
 N_MITRAL_PER_SUBPOP = N_MITRAL/N_SUBPOP
