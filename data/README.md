@@ -1,16 +1,25 @@
-- `db40_beta_1pop_fig_netw_freq_multiproc.h5` (2013-06-11)
+-   `db40_beta_6pop_strength.h5` (2013-06-13)
+
+    Beta simulation with 6 populations, connected in a ring.
+    Each population is connected equally to the 5 other populations.
+    A population is not connected to itself.
+
+    Parameters changed: interco_strength: from 0.01 to 1., 30 steps
+
+
+-   `db40_beta_1pop_fig_netw_freq_multiproc.h5` (2013-06-11)
 
     Beta simulation to plot the freq/rates figure.
 
     This time it is done with multiprocessing and without bug.
 
 
-- `db40_gamma_1pop_fig_netw_freq.h5` (2013-06-10)
+-   `db40_gamma_1pop_fig_netw_freq.h5` (2013-06-10)
 
     Same as `db40_beta_1pop_fig_netw_freq.h5` but in the gamma regime.
 
 
-- `db40_beta_1pop_fig_netw_freq_BUGGY.h5` (2013-06-10)
+-   `db40_beta_1pop_fig_netw_freq_BUGGY.h5` (2013-06-10)
 
     Beta simulation, same as `db40_beta_fig_netw_freq.h5` but with ONE
     population.
