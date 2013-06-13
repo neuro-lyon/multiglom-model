@@ -144,3 +144,13 @@ def granule_pop_figure(gr_s, gr_s_syn_self, times, dt, burnin):
     sub_fft.legend()
     sub_fft.set_xlabel("granule s frequency (Hz)")
     sub_fft.set_ylabel('Power')
+
+
+def plot_single_simulation(spikes_i, spikes_t, connection_matrix,
+                           s_granule, s_syn_self, times, dt, burnin):
+    """Plot figures for a single simulation"""
+    # Raster plot
+    raster_plot(spikes_i, spikes_t, connection_matrix)
+    # Granule figure
+    granule_pop_figure(s_granule, s_syn_self, times, dt, burnin)
+    plt.show()
