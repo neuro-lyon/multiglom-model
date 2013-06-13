@@ -94,18 +94,15 @@ def mps(memb_pot, start, stop, sig_start):
     [1] Brunel & Wang, 2003
 
     """
-    res = 0.
     all_corr = np.corrcoef(memb_pot.values[start:stop, sig_start:])
     nneur = stop - start
     ncomb = comb(nneur, 2, exact=True)
     assert ncomb > 0, \
         "No mitral combination are possible, are you using 1 mitral?"
-
-    for i in xrange(nneur):
-        for j in xrange(i + 1, nneur):
-                res += all_corr[i][j]
-
-    return res/ncomb
+    # Compute the sum of all neuron combinations, that is, get the lower
+    # triangle of all_corr without the diagonal (k=-1)
+    sum_comb_corr = np.tril(all_corr, k=-1).sum()
+    return sum_comb_corr/ncomb
 
 
 def fftmax(signal, n_subpop, signal_dt, sig_start, fft_max_freq=200):
