@@ -67,7 +67,7 @@ def gen_parameters(template_file, params, output_dir):
 
             change_dict_key(template, var_key, var_value*var_unit)
 
-            fname += '__'.join([_.replace('*', '') for _ in var_key])
+            fname += '__'.join([str(changed_var).replace('*', '') for changed_var in var_key])
             fname += '_' + str(comb[ind_var]).replace('.', '_') + '_'
         fname += '.py'
 
@@ -90,7 +90,7 @@ def get_template(template_file, varname="PARAMETERS"):
 
 
 def change_dict_key(dic, path, new_value, anykey='*'):
-    """Change0 *in place* the dictionnary key value to new_value.
+    """Change *in place* the dictionnary key value to new_value.
 
     If key is '*', then change all dictionnary key values to new_value.
     """
