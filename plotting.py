@@ -2,6 +2,7 @@
 
 from matplotlib import pyplot as plt, cm as cmap
 from scipy.fftpack import fft, fftfreq
+from numpy import where
 from brian.stdunits import *
 from brian.units import *
 
@@ -47,7 +48,7 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
             else:
                 spikes = []
             # Plotting the spikes for that neuron
-            if neur_connections.all():  # if the neuron is connected to all granule
+            if neur_connections.sum() > 1:  # if the neuron is connected to more than one granule
                 dark_color = [i/2. for i in subpop_color[:-1]]
                 plt.plot(spikes, [upline]*len(spikes), ' .',
                          color=dark_color, mew=0)
@@ -59,9 +60,13 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
 
     # Some plotting enhancement
     margin = 0.01
-    x_overplot = margin*spikes_t[-1]
+    if len(spikes_t) > 0:
+        spikes_t_last = spikes_t[-1]
+    else:
+        spikes_t_last = 0.
+    x_overplot = margin*spikes_t_last
     y_overplot = margin*n_mitral
-    plt.xlim((-x_overplot), (spikes_t[-1] + x_overplot))
+    plt.xlim((-x_overplot), (spikes_t_last + x_overplot))
     plt.ylim(-y_overplot, n_mitral + y_overplot)
     plt.suptitle("Raster plot")
     plt.xlabel("Time (s)")
@@ -99,10 +104,10 @@ def memb_plot_figure(monit_mt, monit_gr, rec_neurons, n_granule):
 
 def granule_figure(monit_gr, pscommon):
     """Wraper to the granule figure."""
-    granule_pop_figure(monit_gr['s'].values, monit_gr['s_syn_self'].values, monit_gr['s'].times, pscommon['simu_dt'])
+    granule_pop_figure(monit_gr['s'].values, monit_gr['s_syn_self'].values, monit_gr['s'].times, pscommon['resample_dt'], pscommon['burnin'])
 
 
-def granule_pop_figure(gr_s, gr_s_syn_self, times, dt):
+def granule_pop_figure(gr_s, gr_s_syn_self, times, dt, burnin):
     """Plot a figure describing the granule activity, useful to see population synchrony."""
     plt.figure()
     n_granule = len(gr_s)
@@ -126,16 +131,26 @@ def granule_pop_figure(gr_s, gr_s_syn_self, times, dt):
     sub_s_syn_self.set_ylabel('s_syn_self granule')
 
     # FFT max granules
-    keep_ratio=0.5
     sub_fft = plt.subplot(2, 1, 2)
     fft_max_freq = 200
-    ntimes = int(len(times)*(1. - keep_ratio))
+    sig_start = where(times > burnin)[0][0]
+    ntimes = len(times[sig_start:])
     freqs = fftfreq(ntimes, dt)
     fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
     for num_granule in xrange(n_granule):
-        fft_sig = abs(fft(gr_s[num_granule][ntimes:] - (gr_s[num_granule][ntimes:]).mean())[:fft_max_freq_index])
+        fft_sig = abs(fft(gr_s[num_granule][sig_start:] - (gr_s[num_granule][sig_start:]).mean())[:fft_max_freq_index])
         sub_fft.plot(freqs[:fft_max_freq_index], fft_sig,
             label="FFT on granule #" + str(num_granule) + " s")
     sub_fft.legend()
     sub_fft.set_xlabel("granule s frequency (Hz)")
     sub_fft.set_ylabel('Power')
+
+
+def plot_single_simulation(spikes_i, spikes_t, connection_matrix,
+                           s_granule, s_syn_self, times, dt, burnin):
+    """Plot figures for a single simulation"""
+    # Raster plot
+    raster_plot(spikes_i, spikes_t, connection_matrix)
+    # Granule figure
+    granule_pop_figure(s_granule, s_syn_self, times, dt, burnin)
+    plt.show()

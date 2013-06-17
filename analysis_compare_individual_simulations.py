@@ -8,22 +8,24 @@ scatter plot to compare the simulations.
 
 import matplotlib.pyplot as plt
 import tables
-from numpy import allclose
-from sys import argv
+from numpy import allclose, linspace, where
 
 import h5manager as h5m
 from plotting import granule_pop_figure, raster_plot
 from analysis import fftmax
+from arg_parsers import ANACOMP_PARSER
 
-DB_FILENAME = "data/db30x30_beta_homeostasis.h5"
+ARGS = ANACOMP_PARSER.parse_args()
+
+DB_FILENAME = ARGS.data_file
 DB = tables.openFile(DB_FILENAME)
 
-PLOT_MEMB_POT = len(argv) > 1 and argv[1] == "--plot-mp"
+PLOT_MEMB_POT = ARGS.plot_mp
 
 # Get all simulation data
 ATTRS = [('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
          ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
-         ('paramset', 'arrays', 'times'),
+         ('paramset', '_v_attrs', 'Common', 'simu_length'),
          ('paramset', '_v_attrs', 'Common', 'simu_dt'),
          ('results', 's_granule'),
          ('results', 's_syn_self'),
@@ -57,6 +59,7 @@ class SignalRepack:
 def get_interco(simu, interco_rate, interco_strength):
     return deq(simu[0], interco_rate, 0.02) and deq(simu[1], interco_strength, 0.02)
 
+BURNIN = 1.
 SELECTED_RATES = [20, 25]
 SELECTED_STRENGTH = [6]
 REDO_FFTMAX = []
@@ -75,10 +78,12 @@ for rate in SELECTED_RATES:
         # Granule plot
         gr_s = simu[4].read()
         gr_s_syn_self = simu[5].read()
-        times = simu[2].read()
-        dt = float(simu[3])
+        simu_length = simu[2]
+        resample_dt = simu_length/len(gr_s[1])
+        times = linspace(0., simu_length, len(gr_s[0]))
+        sig_start = where(times > BURNIN)[0][0]
         mtgr_connections = simu[8].read()
-        granule_pop_figure(gr_s, gr_s_syn_self, times, dt)
+        granule_pop_figure(gr_s, gr_s_syn_self, times, resample_dt, BURNIN)
 
         # Raster plot
         spikes_it = simu[7].read()
@@ -99,7 +104,7 @@ for rate in SELECTED_RATES:
 
         # FFT max peak
         signal = SignalRepack(gr_s, times)
-        REDO_FFTMAX.append(fftmax(signal, 2, dt))
+        REDO_FFTMAX.append(fftmax(signal, 2, resample_dt, sig_start))
 
         print 'rate:', rate, 'strength:', strength, REDO_FFTMAX
 plt.show()

@@ -181,9 +181,10 @@ def main(args):
 
     # Simulation monitors
     rec_neurons = True  # Must be set to True if we want accurate MPS and STS
-    monit_glom = mutils.monit(glom.pop, glom_ps, reclist=rec_neurons)
-    monit_mt   = mutils.monit(mt.pop, mt_ps, reclist=rec_neurons, spikes=True)
-    monit_gr   = mutils.monit(gr.pop, gr_ps)
+    timestep = int(pscommon['resample_dt']/pscommon['simu_dt'])
+    monit_glom = mutils.monit(glom.pop, glom_ps, timestep, reclist=rec_neurons)
+    monit_mt   = mutils.monit(mt.pop, mt_ps, timestep, reclist=rec_neurons, spikes=True)
+    monit_gr   = mutils.monit(gr.pop, gr_ps, timestep)
 
 
     """
@@ -217,30 +218,35 @@ def main(args):
         print 'Full set of parameters:'
         print_dict(model.PARAMETERS)
 
+    burnin = pscommon['burnin']
+    times = monit_gr['s'].times
+    sig_start = where(times > burnin)[0][0]
+
     sts_indexes = {}
     mps_indexes = {}
     fftmax = {}
-    mps_indexes['whole'] = analysis.mps(monit_mt['V'], 0, n_mitral)
+    mps_indexes['whole'] = analysis.mps(monit_mt['V'], 0, n_mitral, sig_start)
     gr_s_syn_whole = np.zeros(monit_gr['s_syn'][0].shape)
+
 
     # MPS and STS computation for subpopulation
     for subpop in xrange(n_subpop):
         start = subpop*n_mitral_per_subpop
         stop  = start + n_mitral_per_subpop
-        sts = analysis.sts(monit_gr['s_syn'][subpop], monit_mt['spikes'], start, stop)
+        sts = analysis.sts(monit_gr['s_syn'][subpop], monit_mt['spikes'], start, stop, sig_start, burnin)
         sts_indexes[subpop] = sts
         gr_s_syn_whole += monit_gr['s_syn'][subpop]
-        mps = analysis.mps(monit_mt['V'], start, stop)
+        mps = analysis.mps(monit_mt['V'], start, stop, sig_start)
         mps_indexes[subpop] = mps
 
     # STS for the whole population
     sts_whole_activity = np.zeros(monit_gr['s_syn'][0].shape)
     for subpop in xrange(n_subpop):
         sts_whole_activity += monit_gr['s_syn'][subpop]  # TODO pas tres sur s'il faut ajouter ou concaténer
-    sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral)
+    sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral, sig_start, burnin)
 
     # FFT Max index
-    fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['simu_dt'])
+    fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['resample_dt'], sig_start)
 
     # Peak distances index
     peak_distances = {}
@@ -294,9 +300,7 @@ def main(args):
 
     """
     # Add parameters
-    ps_arrays = {'times': (monit_gr['s'].times,
-                           "Times value as an array, from t0 to end, step=dt"),
-                 'mtgr_connections': (mtgr_connections,
+    ps_arrays = {'mtgr_connections': (mtgr_connections,
                             "Connection matrix from mitral (rows) to granules (columns)")}
 
     # Add results
@@ -313,8 +317,8 @@ def main(args):
 
     # Mean membrane potentials
     mean_memb_pot = np.ndarray((n_glomeruli*2, monit_mt['V'].values.shape[1]))
-    interco_neurons = np.array(map(lambda n: True if n[0] and n[1] else False,
-                               mtgr_connections))
+    bin_interco_matrix = (mtgr_connections > 0.)
+    interco_neurons = (bin_interco_matrix.sum(axis=1) > 1)
     for glom in xrange(n_glomeruli):
         start_subpop = glom*n_mitral_per_subpop
         stop_subpop = start_subpop + n_mitral_per_subpop
@@ -337,17 +341,6 @@ def main(args):
                            "Variable 's_syn' for the granule, without  integrating the mitral 's' from other subpopulations."],
                        'mean_memb_pot': [mean_memb_pot,
                             "Mean membrane potential. For each subpop: one mean for the interconnected neurons and one mean for the non-interconnected neurons."]}
-
-    # Resample some result signals
-    new_dt = 5e-4  # in second
-    do_not_resample = ('spikes_it')  # list of array names to NOT resample
-    for signal in results['data']:
-        if signal not in do_not_resample:
-            raw_signal = results['data'][signal][0]
-            n_points = simu_length/new_dt
-            resampled_signal = resample(raw_signal, n_points, axis=1)
-            results['data'][signal][0] = resampled_signal
-
 
     results['indexes'] = {'MPS': mps_indexes, 'STS': sts_indexes, 'FFTMAX': fftmax,
                           'peak_distances': peak_distances}

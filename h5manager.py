@@ -2,7 +2,10 @@
 
 import tables
 import os
+import numpy as np
+
 from utils import listdir_filter
+from plotting import plot_single_simulation
 
 
 def init_data_h5(filename):
@@ -149,3 +152,30 @@ def get_group_attr(group, attr_path):
             except tables.NoSuchNodeError, e:
                 print e
     return res
+
+
+def plot_simulation(simu):
+    """Plot standard figures to get some insight into a specific simulation.
+
+    Parameters
+    ----------
+    simu: tables.group.Group
+        simulation to look into
+    """
+    # Get the data
+    spikes_it = simu.results.spikes_it.read()
+    s_granule = simu.results.s_granule.read()
+    s_syn_self = simu.results.s_syn_self.read()
+
+    # Get the parameters
+    pscommon = simu.paramset._v_attrs['Common']
+    signal_dt = pscommon['resample_dt']
+    simu_length = pscommon['simu_length']
+    n_time_points = s_syn_self.shape[1]
+    times = np.linspace(0, simu_length, n_time_points)
+    connection_matrix = simu.paramset.arrays.mtgr_connections.read()
+    burnin = pscommon['burnin']
+
+    # Call the plot wrapper
+    plot_single_simulation(spikes_it[0], spikes_it[1], connection_matrix,
+                           s_granule, s_syn_self, times, signal_dt, burnin)

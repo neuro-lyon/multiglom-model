@@ -6,9 +6,10 @@ import tables
 
 from h5manager import get_all_attrs
 from utils import to1d
+from arg_parsers import ANABIGRUN_PARSER
 
-
-FILENAME='data/db30x30_two_glom_beta_new_ps_interco_strength0_1_interco_rate0_1.h5'
+ARGS = ANABIGRUN_PARSER.parse_args()
+FILENAME = ARGS.data_file
 DB = tables.openFile(FILENAME)
 
 
@@ -44,8 +45,7 @@ Common Attributes
 COMMON_ATTRS = (('paramset', '_v_attrs', 'Common'),)
 COMMON = get_all_attrs(DB, COMMON_ATTRS)
 COMMON = COMMON[0][0]
-SIMU_LENGTH = COMMON['simu_length']
-SIMU_DT = COMMON['simu_dt']
+SIMU_LENGTH = float(COMMON['simu_length'])
 N_MITRAL = COMMON['N_mitral']
 N_SUBPOP = COMMON['N_subpop']
 N_MITRAL_PER_SUBPOP = N_MITRAL/N_SUBPOP
@@ -133,7 +133,8 @@ Spiking Rate
 """
 SR_ATTRS = (('paramset', '_v_attrs', 'Common', 'inter_conn_rate', 0, 1),
             ('paramset', '_v_attrs', 'Common', 'inter_conn_strength', 0, 1),
-            ('results', 'spikes_it'))
+            ('results', 'spikes_it'),
+            ('paramset', 'arrays', 'mtgr_connections'),)
 SR = get_all_attrs(DB, SR_ATTRS)
 SR.sort()
 X_SR = list(set(i[0] for i in SR))
@@ -141,31 +142,99 @@ X_SR.sort()
 Y_SR = list(set(i[1] for i in SR))
 Y_SR.sort()
 
-START_TIME = SIMU_LENGTH/2.
+START_TIME = 1.
 Z_SR = []
+Z_SR_DIFF = []
 SPIKES_IT = np.array([])
 for i in xrange(3):
     Z_SR.append(np.zeros((len(X_SR), len(Y_SR))))
+for i in xrange(6):
+    Z_SR_DIFF.append(np.zeros((len(X_SR), len(Y_SR))))
+
 for ind_rate in xrange(len(X_SR)):
     for ind_strength in xrange(len(Y_SR)):
-        SPIKES_IT = np.array(SR[to1d(ind_rate, ind_strength, len(X_SR))][2])
+        ind_simu = to1d(ind_rate, ind_strength, len(X_SR))
+        SPIKES_IT = np.array(SR[ind_simu][2])
+        mtgr_connections = SR[ind_simu][3].read()
+        bin_connection_matrix = (mtgr_connections > 0.)
         nspikes = []
+
         for pop in xrange(N_SUBPOP):
-            neuron_range=[pop*N_MITRAL_PER_SUBPOP, (pop + 1)*N_MITRAL_PER_SUBPOP]
-            valid_spikes=(SPIKES_IT[0,:]>=neuron_range[0])&(SPIKES_IT[0,:]<neuron_range[1])
-            valid_times = (SPIKES_IT[1,valid_spikes] > float(START_TIME))
+            neuron_range = [pop*N_MITRAL_PER_SUBPOP, (pop + 1)*N_MITRAL_PER_SUBPOP]
+            valid_spikes = (SPIKES_IT[0, :] >= neuron_range[0]) & (SPIKES_IT[0, :] < neuron_range[1])
+            valid_times = (SPIKES_IT[1, valid_spikes] > float(START_TIME))
             nspikes.append(valid_times.sum()/(N_MITRAL_PER_SUBPOP*(SIMU_LENGTH - START_TIME)))
+
+            # interco. vs non-interco. neurons
+            subpop_interco_neurons = []
+            subpop_non_interco_neurons = []
+            for ind_neur in xrange(neuron_range[0], neuron_range[1]):
+                # Check if the neuron is connected to more than one granule
+                if bin_connection_matrix[ind_neur].sum() > 1:
+                    subpop_interco_neurons.append(ind_neur)
+                else:
+                    subpop_non_interco_neurons.append(ind_neur)
+            # Get the spikes of the neurons
+            time_mask = SPIKES_IT[1] >= START_TIME
+            interco_mask = np.in1d(SPIKES_IT[0], subpop_interco_neurons)
+            non_interco_mask = np.in1d(SPIKES_IT[0], subpop_non_interco_neurons)
+            nspikes_interco = (time_mask & interco_mask).sum()
+            nspikes_non_interco = (time_mask & non_interco_mask).sum()
+            # Derive the spiking rates
+            n_mitrals_interco = len(subpop_interco_neurons)
+            n_mitrals_non_interco = len(subpop_non_interco_neurons)
+            time_window = (SIMU_LENGTH - START_TIME)
+            if n_mitrals_interco != 0:
+                interco_sr = nspikes_interco/(n_mitrals_interco*time_window)
+            else:
+                interco_sr = 0
+            if n_mitrals_non_interco != 0:
+                non_interco_sr = nspikes_non_interco/(n_mitrals_non_interco*time_window)
+            else:
+                non_interco_sr = 0
+            Z_SR_DIFF[pop][ind_rate][ind_strength] = interco_sr
+            Z_SR_DIFF[pop + N_SUBPOP + 1][ind_rate][ind_strength] = non_interco_sr
+
         nspikes_whole = 1.*(SPIKES_IT[1,:] >= START_TIME).sum()/(N_MITRAL * (SIMU_LENGTH - START_TIME))
         nspikes.append(nspikes_whole)
+
         Z_SR[0][ind_rate][ind_strength] = nspikes[0]
         Z_SR[1][ind_rate][ind_strength] = nspikes[1]
         Z_SR[2][ind_rate][ind_strength] = nspikes[2]
+
+        # Compute spiking rate for all pop and split interco. and non-interco. neurons
+        all_interco_mask = (bin_connection_matrix.sum(axis=1) > 1)
+        all_interco_neur = np.where(all_interco_mask)[0]
+        interco_mask = np.in1d(SPIKES_IT[0], all_interco_neur)
+
+        all_non_interco_neur = np.where(~all_interco_mask)[0]
+        non_interco_mask = np.in1d(SPIKES_IT[0], all_non_interco_neur)
+
+        time_mask = SPIKES_IT[1] >= START_TIME
+        nspikes_interco = (time_mask & interco_mask).sum()
+        nspikes_non_interco = (time_mask & non_interco_mask).sum()
+
+        if len(all_interco_neur) != 0:
+            interco_sr = nspikes_interco/(len(all_interco_neur)*(SIMU_LENGTH - START_TIME))
+        else:
+            interco_sr = 0
+        if len(all_non_interco_neur) != 0:
+            non_interco_sr = nspikes_non_interco/(len(all_non_interco_neur)*(SIMU_LENGTH - START_TIME))
+        else:
+            non_interco_sr = 0
+
+        Z_SR_DIFF[N_SUBPOP][ind_rate][ind_strength] = interco_sr
+        Z_SR_DIFF[2*N_SUBPOP + 1][ind_rate][ind_strength] = non_interco_sr
 
 # Plotting
 SR_FIG, SR_AXS = plt.subplots(1, 3, figsize=(9, 3))
 SR_NORM = colors.normalize(np.amin(Z_SR), np.amax(Z_SR))
 plot_run(SR_FIG, "Spiking Rate", SR_AXS, Z_SR, range(3), SR_NORM, IMSHOW_EXTENT)
-
+# Plotting Spiking Rate for interco. and non-interco. neurons
+SR_DIFF_FIG, SR_DIFF_AXS = plt.subplots(1, 6)
+SR_DIFF_NORM = colors.normalize(np.amin(Z_SR_DIFF), np.amax(Z_SR_DIFF))
+plot_run(SR_DIFF_FIG, "Spiking Rate (interco. vs non-interco.)", SR_DIFF_AXS,
+         Z_SR_DIFF, range(6), SR_DIFF_NORM, IMSHOW_EXTENT)
 
 """
 Peak distances
@@ -194,17 +263,19 @@ for ind_rate in xrange(len(X_PD)):
 
 # Plotting
 PD_FIG, PD_AXS = plt.subplots(1, 2, figsize=(6, 3))
-PD_NORM = colors.normalize(np.amin(Z_PD), np.amax(Z_PD))
 for ind_subplot, ind_data in enumerate(range(2)):
     if ind_subplot == 0:  # if it's the mean, which is circular
         color = "hsv"  # use the hsv colormap, which is circular
+        pd_norm = colors.normalize(-np.pi, np.pi)
     else:
         color = None
+        pd_norm = colors.normalize(np.amin(Z_PD[1]), np.amax(Z_PD[1]))
     cs = PD_AXS[ind_subplot].imshow(Z_PD[ind_data],
                                  origin="lower",
                                  interpolation="nearest",
                                  extent=IMSHOW_EXTENT,
                                  aspect="auto",
+                                 norm=pd_norm,
                                  cmap=color)
     if ind_subplot == 0:
         index_type = "mean"

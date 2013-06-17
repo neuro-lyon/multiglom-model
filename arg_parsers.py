@@ -12,3 +12,10 @@ MULTISIM_PARSER = ArgumentParser(description="Run simulations in parallel.")
 MULTISIM_PARSER.add_argument('nproc', type=int)
 MULTISIM_PARSER.add_argument('pset_dir')
 MULTISIM_PARSER.add_argument('--testing', action='store_true')
+
+ANACOMP_PARSER = ArgumentParser(description="Compare individual simulations against one another.")
+ANACOMP_PARSER.add_argument('data_file')
+ANACOMP_PARSER.add_argument('--plot-mp', action='store_true')
+
+ANABIGRUN_PARSER = ArgumentParser(description="Compare all simulations for a given dataset.")
+ANABIGRUN_PARSER.add_argument('data_file')

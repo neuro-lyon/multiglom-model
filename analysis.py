@@ -29,19 +29,19 @@ if ps:
     TAU  = PSIN['tau_Ein']
 
 
-def sts(netw_act, spikes, start, stop, keep_ratio=1./2):
+def sts(netw_act, spikes, neur_start, neur_stop, sig_start, time_start):
     """
     Returns the STS index [1] for the given network activity.
 
     Parameters
     ----------
-    netw_act : brian.StateMonitor.values
-        Signal that represents the network activity in one variable.
-    spikes : brian.SpikeMonitor
-        Set of spikes during the simulation.
-    start : int
+    netw_act: brian.StateMonitor.values
+        signal that represents the network activity in one variable
+    spikes: brian.SpikeMonitor
+        set of spikes during the simulation
+    neur_start: int
         neuron index left border for the slice of neuron we want
-    stop : int
+    neur_stop: int
         neuron index right border
 
     References
@@ -49,13 +49,16 @@ def sts(netw_act, spikes, start, stop, keep_ratio=1./2):
     [1] Brunel & Wang, 2003
 
     """
-    sig_size = len(netw_act)
-    cut_sig = netw_act[sig_size*(1 - keep_ratio):]
+    cut_sig = netw_act[sig_start:]
     # Then compute the autocorrelation at zero time.
     autocorr = autocorr_zero(cut_sig)
     # Finally, normalize it by nu*tau
-    nu = get_nspikes(spikes, keep_ratio, start, stop)/(spikes.clock.t*keep_ratio)
-    return float(autocorr/(nu*TAU))  # float() to not return a Quantity object
+    nspikes = get_nspikes(spikes, time_start, neur_start, neur_stop)
+    if nspikes == 0:
+        return 0  # No spikes to compute STS, so return the minimum
+    else:
+        nu = nspikes/(spikes.clock.end - time_start)
+        return float(autocorr/(nu*TAU))
 
 
 def autocorr_zero(signal):
@@ -64,20 +67,18 @@ def autocorr_zero(signal):
     return np.sqrt(np.mean((signal - mean_sig)*(signal - mean_sig)))
 
 
-def get_nspikes(spikes, keep_ratio, start, stop):
+def get_nspikes(spikes, time_treshold, start, stop):
     """Returns the number of spikes, keeping only the last portion of the
     simulation."""
-    nspikes = 0
-    # Convert time to second because times in `spikes` are in second
-    time_treshold = (spikes.clock.t/second)*keep_ratio
-    for neur in xrange(start, stop):
-        for spike_time in spikes[neur]:
-            if spike_time > time_treshold:
-                nspikes += 1
-    return nspikes
+    spike_neurons = spikes.it[0]
+    spike_times = spikes.it[1]
+    neurons_mask = (spike_neurons >= start) & (spike_neurons < stop)
+    times_mask = (spike_times > time_treshold)
+    good_spikes = neurons_mask & times_mask
+    return good_spikes.sum()
 
 
-def mps(memb_pot, start, stop, keep_ratio=1./2):
+def mps(memb_pot, start, stop, sig_start):
     """
     Returns the MPS index [1] of the given network.
 
@@ -87,37 +88,30 @@ def mps(memb_pot, start, stop, keep_ratio=1./2):
         Membrane potential for a whole category (eg. mitral) of neurons.
     start, stop : int
         indices of the first and last neuron to take
-    keep_ratio : float
-        portion of the signal to keep (right part is kept, left is dismissed)
 
     References
     ----------
     [1] Brunel & Wang, 2003
 
     """
-    res = 0.
-    cut_index = len(memb_pot.values[0])*(1 - keep_ratio)
-    all_corr = np.corrcoef(memb_pot.values[start:stop, cut_index:])
+    all_corr = np.corrcoef(memb_pot.values[start:stop, sig_start:])
     nneur = stop - start
     ncomb = comb(nneur, 2, exact=True)
     assert ncomb > 0, \
         "No mitral combination are possible, are you using 1 mitral?"
-
-    for i in xrange(nneur):
-        for j in xrange(i + 1, nneur):
-                res += all_corr[i][j]
-
-    return res/ncomb
+    # Compute the sum of all neuron combinations, that is, get the lower
+    # triangle of all_corr without the diagonal (k=-1)
+    sum_comb_corr = np.tril(all_corr, k=-1).sum()
+    return sum_comb_corr/ncomb
 
 
-def fftmax(signal, n_subpop, simu_dt, fft_max_freq=200, keep_ratio=1./2):
+def fftmax(signal, n_subpop, signal_dt, sig_start, fft_max_freq=200):
     """Return the peak in the FFT frequency of the signal values."""
     res = {}
-    ntimes = int(len(signal.times)*(1 - keep_ratio))
-    # Cut the signal values to keep_ratio
-    cut_signal = signal.values[:, ntimes:]
+    ntimes = int(len(signal.times[sig_start:]))
+    cut_signal = signal.values[:, sig_start:]
 
-    freqs = fftfreq(ntimes, simu_dt)
+    freqs = fftfreq(ntimes, signal_dt)
     fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
 
     # Compute FFT for each subpopulation
