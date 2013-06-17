@@ -82,6 +82,11 @@ if __name__ == '__main__':
     npool = int(ceil(1.*len(simu_args)/args.nproc))
     for i in range(npool):
         pool = Pool(processes=args.nproc)
-        pool.map(new_simu, simu_args[i*args.nproc:(i+1)*args.nproc])
+        try:
+            pool.map(new_simu, simu_args[i*args.nproc:(i+1)*args.nproc])
+        except Exception, e:
+            print "WARNING:", e
+            print "SIMULATION %s TO %s MIGHT BE INVALID" % (i*args.nproc,
+                                                           (i+1)*args.nproc)
         pool.close()
     print "End simul"
