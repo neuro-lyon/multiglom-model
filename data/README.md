@@ -1,3 +1,11 @@
+-   `db50_beta_6pop_strength_newtopo.h5` (2013-06-17)
+
+    Beta simulation with 6 populations connected in a ring.
+    FIX TOPOLOGY: a column is now connected to itself.
+
+    Parameters changed: interco_strength: from 0. to 1., 50 steps
+
+
 -   `db40_beta_6pop_strength.h5` (2013-06-13)
 
     Beta simulation with 6 populations, connected in a ring.
