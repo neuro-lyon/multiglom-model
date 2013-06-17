@@ -226,27 +226,23 @@ def main(args):
     mps_indexes = {}
     fftmax = {}
     mps_indexes['whole'] = analysis.mps(monit_mt['V'], 0, n_mitral, sig_start)
-    gr_s_syn_whole = np.zeros(monit_gr['s_syn'][0].shape)
-
+    gr_s_syn_self_whole = np.zeros(monit_gr['s_syn_self'][0].shape)
 
     # MPS and STS computation for subpopulation
     for subpop in xrange(n_subpop):
         start = subpop*n_mitral_per_subpop
-        stop  = start + n_mitral_per_subpop
-        sts = analysis.sts(monit_gr['s_syn'][subpop], monit_mt['spikes'], start, stop, sig_start, burnin)
+        stop = start + n_mitral_per_subpop
+        sts = analysis.sts(monit_gr['s_syn_self'][subpop], monit_mt['spikes'], start, stop, sig_start, burnin)
         sts_indexes[subpop] = sts
-        gr_s_syn_whole += monit_gr['s_syn'][subpop]
+        gr_s_syn_self_whole += monit_gr['s_syn_self'][subpop]
         mps = analysis.mps(monit_mt['V'], start, stop, sig_start)
         mps_indexes[subpop] = mps
 
     # STS for the whole population
-    sts_whole_activity = np.zeros(monit_gr['s_syn'][0].shape)
-    for subpop in xrange(n_subpop):
-        sts_whole_activity += monit_gr['s_syn'][subpop]  # TODO pas tres sur s'il faut ajouter ou concaténer
-    sts_indexes['whole'] = analysis.sts(sts_whole_activity, monit_mt['spikes'], 0, n_mitral, sig_start, burnin)
+    sts_indexes['whole'] = analysis.sts(gr_s_syn_self_whole, monit_mt['spikes'], 0, n_mitral, sig_start, burnin)
 
     # FFT Max index
-    fftmax = analysis.fftmax(monit_gr['s'], n_subpop, pscommon['resample_dt'], sig_start)
+    fftmax = analysis.fftmax(monit_gr['s_syn_self'], n_subpop, pscommon['resample_dt'], sig_start)
 
     # Peak distances index
     peak_distances = {}
