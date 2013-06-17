@@ -11,12 +11,13 @@ Currently adapted for single glomerulus simulation
 # Path for parameter files must be created with "__init__.py" in it
 paramfile_path='runs/one_glom/'
 nproc=12
-db_filename="db_one_glom_N50_sig03_gI10_gE1_4.h5"
-
+db_filename="dbtest_one_glom_N100_sig0035_gI20_gE3_5.h5"
+#~ db_filename="db_one_glom_N100_sig035_gI20_gE1_4.h5"
 
 # General controls
 make_sim=True
 plot_results=True
+multiproc=True
 
 # Fine simulation controls
 clean_dir=make_sim
@@ -40,26 +41,26 @@ if gen_param:
             {'range': [1],
              'unit': 1},
             ('Common', 'N_mitral'): 
-            {'range': [50],
+            {'range': [100],
              'unit': 1},
              ('Common', 'simu_length'): 
             {'range': [2000],
              'unit': msecond},
             ('Input', 'g_Ein0'):
-            {'range': linspace(start=0.1, stop=5., num=40),
+            {'range': linspace(start=0.1, stop=2.5, num=12),
              'unit': siemens*meter**-2},
             ('Input', 'sigma_Ein'):
-            {'range': [0.3],
+            {'range': [0.035],
              'unit': siemens*meter**-2},
             ('Synapse', 'g_I'):
-            {'range': [10.],
+            {'range': [20.],
              'unit': siemens*meter**-2},
             ('Synapse', 'g_E'):
-            {'range': [1.4],
+            {'range': [3.5],
              'unit': siemens*meter**-2},
     }
 
-    gen_parameters('paramsets/std_gamma_1glom.py', d, paramfile_path)
+    gen_parameters('paramsets/std_beta_1glom.py', d, paramfile_path)
     print "Params generated"
 
 if run_simul:
@@ -74,15 +75,20 @@ if run_simul:
     # Run the simulation with each parameter set
     args = []
     for ind, psfile in enumerate(psfiles):
-        args.append((psfile, ind, len(psfiles)))
+        args.append((psfile, ind, len(psfiles),False))
         #~ new_simu(args[-1])
 
     print "Start simul"
-    npool=int(ceil(1.*len(args)/nproc))
-    for i in range(npool):
-        pool = Pool(processes=nproc)
-        pool.map(new_simu, args[i*nproc:(i+1)*nproc])
-        pool.close()
+    if multiproc:
+        npool=int(ceil(1.*len(args)/nproc))
+        for i in range(npool):
+            pool = Pool(processes=nproc)
+            pool.map(new_simu, args[i*nproc:(i+1)*nproc])
+            pool.close()
+    else:
+        for i,arg in enumerate(args):
+            print "simu : ",i,"/",len(args)
+            new_simu(arg)
     print "End simul"
     
 if collect_db:
@@ -101,7 +107,7 @@ if plot_results:
     DB = tables.openFile(db_filename)
 
     # Plot full results for a list of simul
-    list_plot=[0,1,2] # index of simulation to plot
+    list_plot=[1,10,21] # index of simulation to plot
     ATTRS = (('paramset', '_v_attrs', 'Input', 'g_Ein0'),
                  ('results', 'spikes_it'),
                  ('results', 's_granule'),
