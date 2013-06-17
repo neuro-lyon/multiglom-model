@@ -14,6 +14,7 @@ PARAMETERS = {
     'N_mitral'    : N_SUBPOP*50*F,
     'inter_conn_rate'     : {},
     'inter_conn_strength' : {},
+    'homeostasy' : False,
     },
 'Input':
     {'tau_Ein'  : 3*msecond,
