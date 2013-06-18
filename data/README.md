@@ -1,3 +1,13 @@
+-   `db50_beta_6pop_strength_newtopo2.h5` (2013-06-18
+
+    Beta simulation with 6 connected populations in a ring.
+    FIX (AGAIN) TOPOLOGY: strength for self connection are now different than
+    strength to other population.
+
+    Parameters changed:
+    - `inter_conn_strength` (non-self-connections) from 0.01 to 1., 50 steps
+
+
 -   `db50_beta_6pop_strength_newtopo.h5` (2013-06-17)
 
     Beta simulation with 6 populations connected in a ring.
