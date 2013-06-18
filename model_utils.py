@@ -36,12 +36,12 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
 
     """
     if homeostasy:
-        init_total=1.*mat_connections.sum(axis=0)
-        tr_init_total=1.*mat_connections.sum(axis=1)
+        init_total = 1.*mat_connections.sum(axis=0)
+        tr_init_total = 1.*mat_connections.sum(axis=1)
 
     res_mat = mat_connections
     n_granule = n_subpop
-    subpop_start=zeros((n_subpop)) # which is the first non interconnected mitral from each subpop
+    subpop_start = zeros((n_subpop)) # which is the first non interconnected mitral from each subpop
     for mtpop in inter_conn_rate:
         assert mtpop >= 0 and mtpop < n_subpop, \
             "Incorrect mitral sub-population number "+str(mtpop)+" for inter-connectivity."
@@ -54,11 +54,11 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
             newconn = np.zeros((n_mitral_per_subpop, 1))
             for i in xrange(nlinks):
                 try:
-                    newconn[i+subpop_start[mtpop]] = inter_conn_strength[mtpop][grpop]
+                    newconn[i + subpop_start[mtpop]] = inter_conn_strength[mtpop][grpop]
                 except:
                     print "Likely, too much connections to have no overlap, rewrite the code !"
                     exit(1)
-            subpop_start[mtpop]+=nlinks
+            subpop_start[mtpop] += nlinks
             start = mtpop*n_mitral_per_subpop
             stop  = start + n_mitral_per_subpop
             res_mat[start:stop, grpop] = newconn[:, 0]

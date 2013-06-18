@@ -55,7 +55,7 @@ def gen_parameters(template_file, params, output_dir):
 
     # Iterate on the cartesian product of the ranges to create new sets
     index=0
-    for comb in itertools.product(*range_list):      
+    for comb in itertools.product(*range_list):
         index+=1
         fname = 'parset'+str(0)*(5-len(str(index)))+str(index)+"__" # assume less than 10000 parameters sets
 
@@ -76,7 +76,7 @@ def gen_parameters(template_file, params, output_dir):
             f.writelines(["from brian.stdunits import *\n",
                           "from brian.units import *\n"])
             f.write('PARAMETERS = ' + str(template) + '\n')
-            
+
 
     # Put a __init__.py to make the modules importable
     f = open(path.join(output_dir, '__init__.py'), 'w')
@@ -141,39 +141,38 @@ def gen_conn_strengthes(template_file, intra_strength=[1.],inter_strength=[0.], 
     """Generate paramsets where only connections have beeh changed
     """
     template_init = get_template(template_file)
-    interconnec=template_init['Common']['inter_conn_strength']
+    interconnec = template_init['Common']['inter_conn_strength']
 
     # Iterate on the cartesian product of the connection ranges to create new sets
-    index=0
-    for comb in itertools.product(intra_strength,inter_strength):      
-        index+=1
+    index = 0
+    for comb in itertools.product(intra_strength, inter_strength):
+        index += 1
         fname = 'parset'+str(0)*(5-len(str(index)))+str(index)+"__" # assume less than 10000 parameters sets
-        
+
         for source in interconnec.keys():
             for target in interconnec[source].keys():
-                if source==target:
-                    interconnec[source][target]=comb[0]
+                if source == target:
+                    interconnec[source][target] = comb[0]
                 else:
-                    interconnec[source][target]=comb[1]
-                    
-        
+                    interconnec[source][target] = comb[1]
+
         fname += '__intra_conn_strength_'+str(comb[0])
         fname += '__inter_conn_strength_'+str(comb[1])
         fname += '.py'
 
         # Write the new parameter set to a file
-        template=template_init
-        template['Common']['inter_conn_strength']=interconnec
+        template = template_init
+        template['Common']['inter_conn_strength'] = interconnec
         with open(path.join(output_dir, fname), 'w') as f:
             f.writelines(["from brian.stdunits import *\n",
                           "from brian.units import *\n"])
             f.write('PARAMETERS = ' + str(template) + '\n')
-            
+
 
     # Put a __init__.py to make the modules importable
     f = open(path.join(output_dir, '__init__.py'), 'w')
     f.close()
-        
+
 
 
 from brian import *
@@ -185,5 +184,4 @@ if __name__ == '__main__':
             {'range': linspace(start=0., stop=1, num=10),
              'unit': 1}
     }
-    #~ gen_parameters('paramsets/std_beta.py', d, 'runs/interco10x10/beta')
     gen_conn_strengthes('paramsets/std_beta_6glom_ring.py', intra_strength=[1.],inter_strength=linspace(0.,1.,41), output_dir='runs/')
