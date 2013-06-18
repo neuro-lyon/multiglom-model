@@ -3,7 +3,7 @@ from brian.units import *
 
 F = 1
 N_SUBPOP = 6
-INTERCO_RATE = 1.
+INTERCO_RATE = .2
 INTERCO_STRENGTH = 0.
 
 PARAMETERS = {
@@ -13,37 +13,37 @@ PARAMETERS = {
      'resample_dt': 0.5*msecond,
      'N_subpop'    : N_SUBPOP,
      'N_mitral'    : N_SUBPOP*100*F,
-     'inter_conn_rate': {0: {0: INTERCO_RATE,
+     'inter_conn_rate': {0: {0: 1.,
                              1: INTERCO_RATE,
                              2: INTERCO_RATE,
                              3: INTERCO_RATE,
                              4: INTERCO_RATE,
                              5: INTERCO_RATE},
-                         1: {1: INTERCO_RATE,
+                         1: {1: 1.,
                              0: INTERCO_RATE,
                              2: INTERCO_RATE,
                              3: INTERCO_RATE,
                              4: INTERCO_RATE,
                              5: INTERCO_RATE},
-                         2: {2: INTERCO_RATE,
+                         2: {2: 1.,
                              0: INTERCO_RATE,
                              1: INTERCO_RATE,
                              3: INTERCO_RATE,
                              4: INTERCO_RATE,
                              5: INTERCO_RATE},
-                         3: {3: INTERCO_RATE,
+                         3: {3: 1.,
                              0: INTERCO_RATE,
                              1: INTERCO_RATE,
                              2: INTERCO_RATE,
                              4: INTERCO_RATE,
                              5: INTERCO_RATE},
-                         4: {4: INTERCO_RATE,
+                         4: {4: 1.,
                              0: INTERCO_RATE,
                              1: INTERCO_RATE,
                              2: INTERCO_RATE,
                              3: INTERCO_RATE,
                              5: INTERCO_RATE},
-                         5: {5: INTERCO_RATE,
+                         5: {5: 1.,
                              0: INTERCO_RATE,
                              1: INTERCO_RATE,
                              2: INTERCO_RATE,
