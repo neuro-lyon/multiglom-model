@@ -178,10 +178,7 @@ def gen_conn_strengthes(template_file, intra_strength=[1.],inter_strength=[0.], 
 from brian import *
 if __name__ == '__main__':
     d = {('Common', 'inter_conn_strength', '*', '*'):
-            {'range': linspace(start=0., stop=1., num=10),
+            {'range': linspace(start=0.01, stop=1., num=50),
              'unit': 1},
-         ('Common', 'inter_conn_rate', '*', '*'):
-            {'range': linspace(start=0., stop=1, num=10),
-             'unit': 1}
     }
-    gen_conn_strengthes('paramsets/std_beta_6glom_ring.py', intra_strength=[1.],inter_strength=linspace(0.,1.,41), output_dir='runs/')
+    gen_conn_strengthes('paramsets/std_beta_6glom_ring.py', intra_strength=[1.], inter_strength=linspace(0.01, 1., 50), output_dir='runs/6glom_ring_strength_beta_newtopo')
