@@ -55,8 +55,9 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
             for i in xrange(nlinks):
                 try:
                     newconn[i + subpop_start[mtpop]] = inter_conn_strength[mtpop][grpop]
-                except:
+                except Exception, e:
                     print "Likely, too much connections to have no overlap, rewrite the code !"
+                    print "EXCEPTION:", e
                     exit(1)
             subpop_start[mtpop] += nlinks
             start = mtpop*n_mitral_per_subpop
