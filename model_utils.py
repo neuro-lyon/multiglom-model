@@ -41,7 +41,7 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
 
     res_mat = mat_connections
     n_granule = n_subpop
-    subpop_start = zeros((n_subpop)) # which is the first non interconnected mitral from each subpop
+    subpop_start = np.zeros((n_subpop)) # which is the first non interconnected mitral from each subpop
     for mtpop in inter_conn_rate:
         assert mtpop >= 0 and mtpop < n_subpop, \
             "Incorrect mitral sub-population number "+str(mtpop)+" for inter-connectivity."
