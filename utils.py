@@ -156,8 +156,8 @@ def gen_conn_strengthes(template_file, intra_strength=[1.],inter_strength=[0.], 
                 else:
                     interconnec[source][target] = comb[1]
 
-        fname += '__intra_conn_strength_'+str(comb[0])
-        fname += '__inter_conn_strength_'+str(comb[1])
+        fname += '__intra_conn_strength_'+str(comb[0]).replace('.', '_')
+        fname += '__inter_conn_strength_'+str(comb[1]).replace('.', '_')
         fname += '.py'
 
         # Write the new parameter set to a file
