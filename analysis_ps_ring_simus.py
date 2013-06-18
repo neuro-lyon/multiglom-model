@@ -35,7 +35,18 @@ def main(dbfile):
     plt.plot(res_indexes[:, 0], res_indexes[:, 2], '.', label="STS (whole)")
     plt.plot(res_indexes[:, 0], res_indexes[:, 3], '.', label="FFTMAX (mean)")
     plt.legend()
+    plt.ion()
     plt.show()
+    plt.ioff()
+    
+
+    # Get simulations to plot
+    plot_simus = raw_input("Plot simulations #").split(' ')
+    if plot_simus != ['']:
+         for psimu in plot_simus:
+             simu = simus[int(psimu)]
+             hm.plot_simulation(simu)
+
 
     db.close()
 
