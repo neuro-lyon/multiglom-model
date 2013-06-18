@@ -44,23 +44,24 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
         assert mtpop >= 0 and mtpop < n_subpop, \
             "Incorrect mitral sub-population number "+str(mtpop)+" for inter-connectivity."
         for grpop in inter_conn_rate[mtpop]:
-            assert grpop >= 0 and grpop < n_granule, \
-                "Incorrect granule sub-population number "+str(grpop)+" for inter-connectivity."
-            conn = inter_conn_rate[mtpop][grpop]
-            assert conn >= 0 and conn <= 1, "Connectivity must be in [0, 1]."
-            nlinks = int(n_mitral_per_subpop*conn)
-            newconn = np.zeros((n_mitral_per_subpop, 1))
-            for i in xrange(nlinks):
-                try:
-                    newconn[i + subpop_start[mtpop]] = inter_conn_strength[mtpop][grpop]
-                except Exception, e:
-                    print "Likely, too much connections to have no overlap, rewrite the code !"
-                    print "EXCEPTION:", e
-                    exit(1)
-            subpop_start[mtpop] += nlinks
-            start = mtpop*n_mitral_per_subpop
-            stop  = start + n_mitral_per_subpop
-            res_mat[start:stop, grpop] = newconn[:, 0]
+            if grpop != mtpop:
+                assert grpop >= 0 and grpop < n_granule, \
+                    "Incorrect granule sub-population number "+str(grpop)+" for inter-connectivity."
+                conn = inter_conn_rate[mtpop][grpop]
+                assert conn >= 0 and conn <= 1, "Connectivity must be in [0, 1]."
+                nlinks = int(n_mitral_per_subpop*conn)
+                newconn = np.zeros((n_mitral_per_subpop, 1))
+                for i in xrange(nlinks):
+                    try:
+                        newconn[i + subpop_start[mtpop]] = inter_conn_strength[mtpop][grpop]
+                    except Exception, e:
+                        print "Likely, too much connections to have no overlap, rewrite the code !"
+                        print "EXCEPTION:", e
+                        exit(1)
+                subpop_start[mtpop] += nlinks
+                start = mtpop*n_mitral_per_subpop
+                stop  = start + n_mitral_per_subpop
+                res_mat[start:stop, grpop] = newconn[:, 0]
     
     if not(homeostasy):
         return res_mat, res_mat.transpose()
