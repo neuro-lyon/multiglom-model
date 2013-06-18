@@ -32,8 +32,6 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
     """
     Adds inter sub-population connections.
 
-    Changes on the connection matrix are done in place.
-
     """
     if homeostasy:
         init_total = 1.*mat_connections.sum(axis=0)
