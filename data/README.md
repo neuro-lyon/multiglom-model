@@ -1,4 +1,10 @@
--   `db50_beta_6pop_strength_newtopo2.h5` (2013-06-18
+ -  `db50_gamma_6pop_strength_newtopo2.h5` (2013-06-18)
+
+    Gamma simulation with 6 connected populations in a ring.
+    Same as `db50_beta_6pop_strength_newtopo2.h5` but in Gamma.
+
+
+-   `db50_beta_6pop_strength_newtopo2.h5` (2013-06-18)
 
     Beta simulation with 6 connected populations in a ring.
     FIX (AGAIN) TOPOLOGY: strength for self connection are now different than
