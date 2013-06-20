@@ -1,3 +1,10 @@
+"""
+Analyse simulation with ring topology.
+Plot syncrhony variables against interconnection strength.
+
+"""
+
+
 import h5manager as hm
 import tables
 import matplotlib.pyplot as plt
