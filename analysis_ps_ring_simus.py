@@ -36,6 +36,9 @@ def main(dbfile):
     for i_simu, simu in enumerate(simus):
         for i_index, get_index in enumerate(get_indexes):
             res_indexes[i_simu, i_index] = get_index(simu)
+    # Sort index array on `strength` index
+    indsort = res_indexes[:, 0].argsort()
+    res_indexes = res_indexes[indsort, :]
 
     # Plot the res_indexes against interconnection strength
     plt.figure()
