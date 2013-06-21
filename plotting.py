@@ -1,10 +1,12 @@
 # -*- coding:utf-8 -*-
 
+
 from matplotlib import pyplot as plt, cm as cmap
-from scipy.fftpack import fft, fftfreq
 from numpy import where
 from brian.stdunits import *
 from brian.units import *
+from matplotlib.mlab import psd
+from pylab import detrend_mean
 
 
 def raster_plot(spikes_i, spikes_t, connection_matrix):
@@ -134,13 +136,13 @@ def granule_pop_figure(gr_s, gr_s_syn_self, times, dt, burnin):
     sub_fft = plt.subplot(2, 1, 2)
     fft_max_freq = 200
     sig_start = where(times > burnin)[0][0]
-    ntimes = len(times[sig_start:])
-    freqs = fftfreq(ntimes, dt)
-    fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
     for num_granule in xrange(n_granule):
-        fft_sig = abs(fft(gr_s[num_granule][sig_start:] - (gr_s[num_granule][sig_start:]).mean())[:fft_max_freq_index])
-        sub_fft.plot(freqs[:fft_max_freq_index], fft_sig,
-            label="FFT on granule #" + str(num_granule) + " s")
+        power, freqs = psd(gr_s[num_granule][sig_start:], Fs=int(1/dt),
+                       NFFT=int(0.5/dt), noverlap=int(0.25/dt),
+                       detrend=detrend_mean)
+        ind_max_freq = where(freqs <= fft_max_freq)[0][-1]
+        sub_fft.plot(freqs[:ind_max_freq], power[:ind_max_freq],
+                     label="FFT on granule #" + str(num_granule) + " s")
     sub_fft.legend()
     sub_fft.set_xlabel("granule s frequency (Hz)")
     sub_fft.set_ylabel('Power')

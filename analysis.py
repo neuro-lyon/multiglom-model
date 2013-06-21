@@ -17,9 +17,10 @@ import numpy as np
 from model import PARAMETERS as ps
 
 from scipy.misc import comb
-from scipy.fftpack import fft, fftfreq
 from scipy.signal import resample
 from scipy import argmax
+from matplotlib.mlab import psd
+from pylab import detrend_mean
 
 from brian.stdunits import *
 from brian.units import *
@@ -105,26 +106,25 @@ def mps(memb_pot, start, stop, sig_start):
     return sum_comb_corr/ncomb
 
 
-def fftmax(signal, n_subpop, signal_dt, sig_start, fft_max_freq=200):
+def fftmax(signal, n_subpop, signal_dt, sig_start):
     """Return the peak in the FFT frequency of the signal values."""
     res = {}
     ntimes = int(len(signal.times[sig_start:]))
     cut_signal = signal.values[:, sig_start:]
 
-    freqs = fftfreq(ntimes, signal_dt)
-    fft_max_freq_index = next(f for f in xrange(len(freqs)) if freqs[f] > fft_max_freq)
-
     # Compute FFT for each subpopulation
     for unit in xrange(n_subpop):
-        fft_sig = abs(fft(cut_signal[unit]-(cut_signal[unit]).mean())[:fft_max_freq_index])
-        ind_max_freq = argmax(fft_sig)
-        res[unit] = freqs[ind_max_freq]
+        power, freqs = psd(cut_signal[unit, :], Fs=int(1/signal_dt),
+                       NFFT=int(0.5/signal_dt), noverlap=int(0.25/signal_dt),
+                       detrend=detrend_mean)
+        res[unit] = freqs[argmax(power)]
 
     # Compute FFT for the whole population by the mean of activities
     mean_signal = np.mean(cut_signal, axis=0)
-    fft_sig = abs(fft(mean_signal - mean_signal.mean())[:fft_max_freq_index])
-    ind_max_freq = argmax(fft_sig)
-    res['mean'] = freqs[ind_max_freq]
+    power, freqs = psd(mean_signal, Fs=int(1/signal_dt),
+                   NFFT=int(0.5/signal_dt), noverlap=int(0.25/signal_dt),
+                   detrend=detrend_mean)
+    res['mean'] = freqs[argmax(power)]
 
     return res
 
