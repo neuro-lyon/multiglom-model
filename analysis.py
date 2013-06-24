@@ -120,7 +120,11 @@ def fftmax(signal, n_subpop, signal_dt, sig_start):
         res[unit] = freqs[argmax(power)]
 
     # Compute FFT for the whole population by the mean of activities
-    res['mean'] = np.mean(res.values())
+    mean_signal = np.mean(cut_signal, axis=0)
+    power, freqs = psd(mean_signal, Fs=int(1/signal_dt),
+                   NFFT=int(0.5/signal_dt), noverlap=int(0.25/signal_dt),
+                   detrend=detrend_mean)
+    res['mean'] = freqs[argmax(power)]
 
     return res
 
