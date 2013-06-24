@@ -1,4 +1,21 @@
- -  `db50_gamma_6pop_strength_newtopo2.h5` (2013-06-18)
+-   `db50_beta_6pop_strength_newtopo2_redo2.h5` (2013-06-21)
+    Beta simulation like `db50_beta_6pop_strength_newtopo2.h5` but takes
+    into account the new FFT computation using the Welch's method.
+
+
+-   `db50_beta_6pop_strength_newtopo2_redo.h5` (2013-06-21)
+    Beta simulation that redo exactly `db50_beta_6pop_strength_newtopo2.h5`.
+
+
+-   `db2_long_beta_2.h5` (2013-06-21)
+    Beta simulation to check bistability.
+
+    Two simulations of 10 s were done:
+    - rate 0.85, strength 0.055
+    - rate 0.80, strength 0.06
+
+
+-   `db50_gamma_6pop_strength_newtopo2.h5` (2013-06-18)
 
     Gamma simulation with 6 connected populations in a ring.
     Same as `db50_beta_6pop_strength_newtopo2.h5` but in Gamma.
