@@ -1,3 +1,9 @@
+-   `db50_beta_6pop_strength_fixmean.h5` (2013-06-24)
+    Beta simulation with a new FFTmax mean computation.
+    This new mean computation is now outdated, so these simulations should not
+    be taken into account.
+
+
 -   `db50_beta_6pop_strength_newtopo2_redo2.h5` (2013-06-21)
     Beta simulation like `db50_beta_6pop_strength_newtopo2.h5` but takes
     into account the new FFT computation using the Welch's method.
