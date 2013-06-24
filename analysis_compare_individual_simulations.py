@@ -78,7 +78,7 @@ for rate in SELECTED_RATES:
         # Granule plot
         gr_s = simu[4].read()
         gr_s_syn_self = simu[5].read()
-        simu_length = simu[2]
+        simu_length = float(simu[2])
         resample_dt = simu_length/len(gr_s[1])
         times = linspace(0., simu_length, len(gr_s[0]))
         sig_start = where(times > BURNIN)[0][0]
