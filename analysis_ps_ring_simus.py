@@ -73,7 +73,7 @@ def main(dbfile):
     index_names = ("strength", "MPS", "STS", "FFTMAX",
                    "Peak Dist mean (mean)", "Peak Dist mean (disp)",
                    "Peak Dist disp (mean)", "Peak Dist disp (disp)",
-                   "Spinking rate")
+                   "Spiking rate")
 
     # Get simulation indexes for each simulation
     res_indexes = np.ndarray((len(simus), len(get_indexes)))
@@ -89,6 +89,7 @@ def main(dbfile):
         sorted_simulations.append(simus[sorted_index])
 
     # Plot the res_indexes against interconnection strength
+    plt.ion()
     plt.figure()
     # Plot standard indexes
     data = {1: "MPS (whole)",
@@ -108,14 +109,14 @@ def main(dbfile):
     plt.show()
 
     # Get simulations to plot
-    plot_simus = raw_input("Plot simulations #").split(' ')
-    if plot_simus != ['']:
-        for psimu in plot_simus:
-            simu = sorted_simulations[int(psimu)]
-            for index_name, index_fun in zip(index_names, get_indexes):
-                print index_name, index_fun(simu)
-            print "\n"
-            hm.plot_simulation(simu)
+    psimu = raw_input("Plot simulation #")
+    while psimu != "":
+        simu = sorted_simulations[int(psimu)]
+        for index_name, index_fun in zip(index_names, get_indexes):
+            print index_name, index_fun(simu)
+        print "\n"
+        hm.plot_simulation(simu)
+        psimu = raw_input("Plot simulation #")
 
     db.close()
 
