@@ -21,7 +21,8 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
     connection_matrix: array
         connection matrix of size (M mitrales, G granules)
     """
-    plt.figure()
+    # Raster plot
+    rasterp = plt.subplot(2, 1, 1)
     bin_connection_matrix = (connection_matrix > 0)
     n_mitral, n_subpop = connection_matrix.shape
     n_mitral_per_subpop = n_mitral/n_subpop
@@ -51,12 +52,12 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
                 spikes = []
             # Plotting the spikes for that neuron
             if neur_connections.sum() > 1:  # if the neuron is connected to more than one granule
-                dark_color = [i/2. for i in subpop_color[:-1]]
-                plt.plot(spikes, [upline]*len(spikes), ' .',
+                dark_color = [i/1.5 for i in subpop_color[:-1]]
+                rasterp.plot(spikes, [upline]*len(spikes), ' .',
                          color=dark_color, mew=0)
                 upline -= 1
             else:
-                plt.plot(spikes, [downline]*len(spikes), ' .',
+                rasterp.plot(spikes, [downline]*len(spikes), ' .',
                          color=subpop_color, mew=0)
                 downline += 1
 
@@ -68,11 +69,18 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
         spikes_t_last = 0.
     x_overplot = margin*spikes_t_last
     y_overplot = margin*n_mitral
-    plt.xlim((-x_overplot), (spikes_t_last + x_overplot))
-    plt.ylim(-y_overplot, n_mitral + y_overplot)
+    rasterp.set_xlim((-x_overplot), (spikes_t_last + x_overplot))
+    rasterp.set_ylim(-y_overplot, n_mitral + y_overplot)
+    rasterp.set_xlabel("Time (s)")
+    rasterp.set_ylabel("Neuron number")
+
+    # Raster histogram
+    rasterhisto = plt.subplot(2, 1, 2, sharex=rasterp)
+    nbins = spikes_t[-1] // 5e-3  # make bins of 5 ms
+    rasterhisto.hist(spikes_t, bins=nbins)
+    rasterhisto.set_xlabel("Time (s)")
+    rasterhisto.set_ylabel("Number of spikes")
     plt.suptitle("Raster plot")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Neuron number")
 
 
 def get_colorlist(n_colors, cmap_name="Paired"):
