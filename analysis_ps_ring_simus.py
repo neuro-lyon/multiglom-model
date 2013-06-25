@@ -60,12 +60,20 @@ def main(dbfile):
         _, disp = get_peakdist_disp(simu)
         return disp
 
+    def get_spiking_rate(simu):
+        spikes_it = hm.get_group_attr(simu, ('results', 'spikes_it')).read()
+        nspikes = spikes_it.shape[1]
+        simu_length = hm.get_group_attr(simu, ('paramset', '_v_attrs', 'Common', 'simu_length'))
+        return nspikes/float(simu_length)
+
     get_indexes = (get_strength, get_mps, get_sts, get_fftmax,
                    get_peakdist_mean_mean, get_peakdist_mean_disp,
-                   get_peakdist_disp_mean, get_peakdist_disp_disp)
+                   get_peakdist_disp_mean, get_peakdist_disp_disp,
+                   get_spiking_rate)
     index_names = ("strength", "MPS", "STS", "FFTMAX",
-                    "Peak Dist mean (mean)", "Peak Dist mean (disp)",
-                    "Peak Dist disp (mean)", "Peak Dist disp (disp")
+                   "Peak Dist mean (mean)", "Peak Dist mean (disp)",
+                   "Peak Dist disp (mean)", "Peak Dist disp (disp)",
+                   "Spinking rate")
 
     # Get simulation indexes for each simulation
     res_indexes = np.ndarray((len(simus), len(get_indexes)))
@@ -85,7 +93,8 @@ def main(dbfile):
     # Plot standard indexes
     data = {1: "MPS (whole)",
             2: "STS (whole)",
-            3: "FFTMAX (mean)",}
+            3: "FFTMAX (mean) (Hz)",
+            8: "Spiking rate (spikes/sec)"}
     for iplot in data:
         plt.plot(res_indexes[:, 0], res_indexes[:, iplot], '.', label=data[iplot])
     # Plot peak dist index
@@ -93,6 +102,8 @@ def main(dbfile):
                  fmt=".", label="Peak Dist (mean)")
     plt.errorbar(res_indexes[:, 0], res_indexes[:, 6], yerr=res_indexes[:, 7],
                  fmt=".", label="Peak Dist (disp)")
+    # Add some plot information
+    plt.xlabel("Interconnection strength")
     plt.legend()
     plt.show()
 
@@ -103,6 +114,7 @@ def main(dbfile):
             simu = sorted_simulations[int(psimu)]
             for index_name, index_fun in zip(index_names, get_indexes):
                 print index_name, index_fun(simu)
+            print "\n"
             hm.plot_simulation(simu)
 
     db.close()
