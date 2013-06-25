@@ -5,6 +5,7 @@ Plot syncrhony variables against interconnection strength.
 """
 
 
+import utils
 import h5manager as hm
 import tables
 import matplotlib.pyplot as plt
@@ -29,7 +30,39 @@ def main(dbfile):
     def get_fftmax(simu):
         return hm.get_group_attr(simu, ('results', '_v_attrs', 'FFTMAX', 'mean'))
 
-    get_indexes = (get_strength, get_mps, get_sts, get_fftmax)
+    def get_peakdist(simu):
+        peakdist = hm.get_group_attr(simu, ('results', '_v_attrs', 'peak_distances'))
+        peakdist_means = utils.get_dict_values(peakdist, 2, "mean")
+        peakdist_disps = utils.get_dict_values(peakdist, 2, "disp")
+        return peakdist_means, peakdist_disps
+
+    def get_peakdist_mean(simu):
+        means, _ = get_peakdist(simu)
+        return np.mean(means), np.std(means)
+
+    def get_peakdist_mean_mean(simu):
+        mean, _ = get_peakdist_mean(simu)
+        return mean
+
+    def get_peakdist_mean_disp(simu):
+        _, disp = get_peakdist_mean(simu)
+        return disp
+
+    def get_peakdist_disp(simu):
+        _, disps = get_peakdist(simu)
+        return np.mean(disps), np.std(disps)
+    
+    def get_peakdist_disp_mean(simu):
+        mean, _ = get_peakdist_disp(simu)
+        return mean
+
+    def get_peakdist_disp_disp(simu):
+        _, disp = get_peakdist_disp(simu)
+        return disp
+
+    get_indexes = (get_strength, get_mps, get_sts, get_fftmax,
+                   get_peakdist_mean_mean, get_peakdist_mean_disp,
+                   get_peakdist_disp_mean, get_peakdist_disp_disp)
 
     # Get simulation indexes for each simulation
     res_indexes = np.ndarray((len(simus), len(get_indexes)))
@@ -42,9 +75,17 @@ def main(dbfile):
 
     # Plot the res_indexes against interconnection strength
     plt.figure()
-    plt.plot(res_indexes[:, 0], res_indexes[:, 1], '.', label="MPS (whole)")
-    plt.plot(res_indexes[:, 0], res_indexes[:, 2], '.', label="STS (whole)")
-    plt.plot(res_indexes[:, 0], res_indexes[:, 3], '.', label="FFTMAX (mean)")
+    # Plot standard indexes
+    data = {1: "MPS (whole)",
+            2: "STS (whole)",
+            3: "FFTMAX (mean)",}
+    for iplot in data:
+        plt.plot(res_indexes[:, 0], res_indexes[:, iplot], '.', label=data[iplot])
+    # Plot peak dist index
+    plt.errorbar(res_indexes[:, 0], res_indexes[:, 4], yerr=res_indexes[:, 5],
+                 fmt=".", label="Peak Dist (mean)")
+    plt.errorbar(res_indexes[:, 0], res_indexes[:, 6], yerr=res_indexes[:, 7],
+                 fmt=".", label="Peak Dist (disp)")
     plt.legend()
     plt.show()
 

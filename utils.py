@@ -115,6 +115,25 @@ def change_dict_key(dic, path, new_value, anykey='*'):
     return dic
 
 
+def get_dict_values(dic, level, key):
+    """Return all the values that have a key `key` at the level `level`"""
+
+    # Recursive function to reach the dictionnary values
+    def rec_get_dict_values(dic, level, key, res):
+        # Stop case
+        if level == 0:
+            if key in dic:
+                res.append(dic[key])
+        # Recursion
+        else:
+            for k in dic:
+                rec_get_dict_values(dic[k], level - 1, key, res)
+        return res
+
+    # Call the recursive function and initialize the results as en empty list
+    return rec_get_dict_values(dic, level, key, [])
+
+
 def pairs(n, no_ident=True):
     """All possible pairs (i, j) with i and j < n"""
     list_pairs = []
