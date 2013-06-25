@@ -1,6 +1,21 @@
+-   `db250_beta_6pop_strength_narrow.h5` (2013-06-25)
+    Beta simulation like db250_beta_6pop_strength.h5 but this time the
+    interconnection strength was taken from 0.001 to 0.2, 250 steps.
+
+
+-   `db250_gamma_6pop_strength.h5` (2013-06-25)
+    Gamma bigrun like db50_gamma_6pop_strength_newtopo2, but with 250
+    simulations.
+
+
+-   `db250_beta_6pop_strength.h5` (2013-06-25)
+    Beta bigrun like db50_beta_6pop_strength_newtopo2, but with 250
+    simulations.
+
+
 -   `db50_beta_6pop_strength_fixmean.h5` (2013-06-24)
     Beta simulation with a new FFTmax mean computation.
-    This new mean computation is now outdated, so these simulations should not
+    This new mean computation is now OUTDATED, so these simulations should not
     be taken into account.
 
 
