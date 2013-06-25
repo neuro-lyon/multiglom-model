@@ -22,6 +22,7 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
         connection matrix of size (M mitrales, G granules)
     """
     # Raster plot
+    plt.figure()
     rasterp = plt.subplot(2, 1, 1)
     bin_connection_matrix = (connection_matrix > 0)
     n_mitral, n_subpop = connection_matrix.shape
@@ -71,7 +72,6 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
     y_overplot = margin*n_mitral
     rasterp.set_xlim((-x_overplot), (spikes_t_last + x_overplot))
     rasterp.set_ylim(-y_overplot, n_mitral + y_overplot)
-    rasterp.set_xlabel("Time (s)")
     rasterp.set_ylabel("Neuron number")
 
     # Raster histogram
