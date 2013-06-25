@@ -63,6 +63,9 @@ def main(dbfile):
     get_indexes = (get_strength, get_mps, get_sts, get_fftmax,
                    get_peakdist_mean_mean, get_peakdist_mean_disp,
                    get_peakdist_disp_mean, get_peakdist_disp_disp)
+    index_names = ("strength", "MPS", "STS", "FFTMAX",
+                    "Peak Dist mean (mean)", "Peak Dist mean (disp)",
+                    "Peak Dist disp (mean)", "Peak Dist disp (disp")
 
     # Get simulation indexes for each simulation
     res_indexes = np.ndarray((len(simus), len(get_indexes)))
@@ -72,6 +75,10 @@ def main(dbfile):
     # Sort index array on `strength` index
     indsort = res_indexes[:, 0].argsort()
     res_indexes = res_indexes[indsort, :]
+    # Sort simulations accordingly
+    sorted_simulations = []
+    for sorted_index in indsort:
+        sorted_simulations.append(simus[sorted_index])
 
     # Plot the res_indexes against interconnection strength
     plt.figure()
@@ -92,9 +99,11 @@ def main(dbfile):
     # Get simulations to plot
     plot_simus = raw_input("Plot simulations #").split(' ')
     if plot_simus != ['']:
-         for psimu in plot_simus:
-             simu = simus[int(psimu)]
-             hm.plot_simulation(simu)
+        for psimu in plot_simus:
+            simu = sorted_simulations[int(psimu)]
+            for index_name, index_fun in zip(index_names, get_indexes):
+                print index_name, index_fun(simu)
+            hm.plot_simulation(simu)
 
     db.close()
 
