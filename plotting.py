@@ -23,7 +23,7 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
     """
     # Raster plot
     plt.figure()
-    rasterp = plt.subplot(2, 1, 1)
+    rasterp = plt.subplot2grid((4, 1), (0, 0), rowspan=3)
     bin_connection_matrix = (connection_matrix > 0)
     n_mitral, n_subpop = connection_matrix.shape
     n_mitral_per_subpop = n_mitral/n_subpop
@@ -75,7 +75,7 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
     rasterp.set_ylabel("Neuron number")
 
     # Raster histogram
-    rasterhisto = plt.subplot(2, 1, 2, sharex=rasterp)
+    rasterhisto = plt.subplot2grid((4, 1), (3, 0), sharex=rasterp)
     nbins = spikes_t[-1] // 5e-3  # make bins of 5 ms
     rasterhisto.hist(spikes_t, bins=nbins)
     rasterhisto.set_xlabel("Time (s)")
