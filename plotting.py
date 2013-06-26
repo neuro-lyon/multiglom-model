@@ -84,7 +84,7 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
 
 
 def get_colorlist(n_colors, cmap_name="Paired"):
-    """Get a list of `n_colors` color from a matplotlib colormap."""
+    """Get a list of `n_colors` colors from a matplotlib colormap."""
     colors = []
     colormap = cmap.get_cmap(cmap_name)
     assert colormap != None, cmap_name + " is not a valid colormap name."
@@ -123,7 +123,7 @@ def granule_pop_figure(gr_s, gr_s_syn_self, times, dt, burnin):
     n_granule = len(gr_s)
 
     # Granule s
-    sub_s = plt.subplot(2, 2, 1)
+    sub_s = plt.subplot2grid((4, 4), (0, 0), rowspan=2, colspan=3)
     for num_granule in xrange(n_granule):
         sub_s.plot(times/msecond, gr_s[num_granule],
             label="s granule #" + str(num_granule))
@@ -132,7 +132,8 @@ def granule_pop_figure(gr_s, gr_s_syn_self, times, dt, burnin):
     sub_s.set_ylabel('s granule')
 
     # Granule s_syn_self
-    sub_s_syn_self = plt.subplot(2, 2, 2, sharex=sub_s)
+    sub_s_syn_self = plt.subplot2grid((4, 4), (2, 0), rowspan=2, colspan=3,
+                                      sharex=sub_s)
     for num_granule in xrange(n_granule):
         sub_s_syn_self.plot(times/msecond, gr_s_syn_self[num_granule],
             label="s_syn_self granule #" + str(num_granule))
@@ -141,7 +142,7 @@ def granule_pop_figure(gr_s, gr_s_syn_self, times, dt, burnin):
     sub_s_syn_self.set_ylabel('s_syn_self granule')
 
     # FFT max granules
-    sub_fft = plt.subplot(2, 1, 2)
+    sub_fft = plt.subplot2grid((4, 4), (0, 3), rowspan=4, colspan=1)
     fft_max_freq = 200
     sig_start = where(times > burnin)[0][0]
     for num_granule in xrange(n_granule):
