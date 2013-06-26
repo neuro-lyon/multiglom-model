@@ -201,15 +201,6 @@
 -   `db30x30gamma.h5`:
 
 
--   `db30x30_two_glom_beta_new_ps_interco_strength0_1_interco_rate0_1.h5`
-
-    Another big run in the Beta regime and varying the interconnection rate and
-    strength from 0 to 1 with 30 values each.
-
-    This big run uses the new parameter definition for the Beta regime
-    (git rev: `f51ff4b361decf32589e7193c5bc5b6b8b0078eb`)
-
-
 -   `db5x5beta.h5`:
 
 
