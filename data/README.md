@@ -1,3 +1,11 @@
+-   `db30x30_beta_homeostasis_large.h5` (2013-06-27)
+    Beta simulation with homeostasis.
+
+    Parameters:
+    - interco strength: from 0 to 1, 30 steps
+    - interco rate: from 0 to 1, 30 steps
+
+
 -   `db250_beta_6pop_strength_nonhomeo.h5` (2013-06-26)
     Beta simulation like `db250_beta_6pop_strength.h5` but without homeostasis.
 
