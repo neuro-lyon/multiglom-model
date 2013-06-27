@@ -80,7 +80,14 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
     rasterhisto.hist(spikes_t, bins=nbins)
     rasterhisto.set_xlabel("Time (s)")
     rasterhisto.set_ylabel("Number of spikes")
+
     plt.suptitle("Raster plot")
+
+    # Connection matrix plot
+    plt.figure()
+    plt.imshow(connection_matrix, interpolation="nearest", extent=(0, 1, 0, 1),
+               vmin=0, vmax=1)
+    plt.colorbar()
 
 
 def get_colorlist(n_colors, cmap_name="Paired"):
