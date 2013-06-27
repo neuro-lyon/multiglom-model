@@ -1,3 +1,8 @@
+-   `db30x30_beta_non_homeo_large.h5` (2013-06-27)
+    Beta simulation like `db30x30_beta_homeostasis_large.h5` but without
+    the homeostasis.
+
+
 -   `db30x30_beta_homeostasis_large.h5` (2013-06-27)
     Beta simulation with homeostasis.
 
