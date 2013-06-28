@@ -894,7 +894,7 @@ PARAMETERS = {
                               17: INTERCO_STRENGTH,
                               18: INTERCO_STRENGTH,
                               19: INTERCO_STRENGTH,
-                              20: INTERCO_STRENGTH}}
+                              20: INTERCO_STRENGTH}},
      'homeostasy': True,
      'burnin': 1.  # period of the signal to discard for index computation
     },
