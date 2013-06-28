@@ -1,3 +1,11 @@
+-   `db30x30_gamma_homeostasis.h5` (2013-06-28)
+    Gamma simulation with homeostasis, with 2 glomeruli.
+
+    Parameters:
+    - interco strength: from 0 to 1, 30 steps
+    - interco rate: from 0 to 1, 30 steps
+
+
 -   `db30x30_beta_non_homeo_large.h5` (2013-06-27)
     Beta simulation like `db30x30_beta_homeostasis_large.h5` but without
     the homeostasis.
