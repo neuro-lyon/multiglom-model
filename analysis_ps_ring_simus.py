@@ -63,8 +63,9 @@ def main(dbfile):
     def get_spiking_rate(simu):
         spikes_it = hm.get_group_attr(simu, ('results', 'spikes_it')).read()
         nspikes = spikes_it.shape[1]
+        nneurons = hm.get_group_attr(simu, ('paramset', '_v_attrs', 'Common', 'N_mitral')) 
         simu_length = hm.get_group_attr(simu, ('paramset', '_v_attrs', 'Common', 'simu_length'))
-        return nspikes/float(simu_length)
+        return nspikes/float(simu_length)/nneurons
 
     get_indexes = (get_strength, get_mps, get_sts, get_fftmax,
                    get_peakdist_mean_mean, get_peakdist_mean_disp,
@@ -95,7 +96,7 @@ def main(dbfile):
     data = {1: "MPS (whole)",
             2: "STS (whole)",
             3: "FFTMAX (mean) (Hz)",
-            8: "Spiking rate (spikes/sec)"}
+            8: "Spiking rate (spikes/sec/neuron)"}
     for iplot in data:
         plt.plot(res_indexes[:, 0], res_indexes[:, iplot], '.', label=data[iplot])
     # Plot peak dist index
