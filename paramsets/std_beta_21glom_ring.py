@@ -2,7 +2,7 @@ from brian.stdunits import *
 from brian.units import *
 
 F = 1
-N_SUBPOP = 6
+N_SUBPOP = 21
 INTERCO_RATE = .2
 INTERCO_STRENGTH= 0.4
 
