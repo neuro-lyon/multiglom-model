@@ -11,6 +11,13 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   model
+
+   analyses
+
+   utilities
+
+   scripts
 
 
 Indices and tables
