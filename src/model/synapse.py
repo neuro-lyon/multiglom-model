@@ -6,22 +6,25 @@ from brian.stdunits import *
 
 from model import PARAMETERS as ps
 
-N_subpop = ps['Common']['N_subpop']
+# If the model parameters have been initialized
+if ps != None:
+    N_subpop = ps['Common']['N_subpop']
 
-PSSYN = ps['Synapse']
-V_E      = PSSYN['V_E']
-V_act_E  = PSSYN['V_act_E']
-g_E      = PSSYN['g_E']
-sigma_E  = PSSYN['sigma_E']
-alpha_E  = PSSYN['alpha_E']
-beta_E   = PSSYN['beta_E']
+    PSSYN = ps['Synapse']
+    V_E      = PSSYN['V_E']
+    V_act_E  = PSSYN['V_act_E']
+    g_E      = PSSYN['g_E']
+    sigma_E  = PSSYN['sigma_E']
+    alpha_E  = PSSYN['alpha_E']
+    beta_E   = PSSYN['beta_E']
 
-V_I      = PSSYN['V_I']
-V_act_I  = PSSYN['V_act_I']
-g_I      = PSSYN['g_I']
-sigma_I  = PSSYN['sigma_I']
-alpha_I  = PSSYN['alpha_I']
-beta_I   = PSSYN['beta_I']
+    V_I      = PSSYN['V_I']
+    V_act_I  = PSSYN['V_act_I']
+    g_I      = PSSYN['g_I']
+    sigma_I  = PSSYN['sigma_I']
+    alpha_I  = PSSYN['alpha_I']
+    beta_I   = PSSYN['beta_I']
+
 
 class Synapse:
     """Synapse, from mitral cells to granule cells."""

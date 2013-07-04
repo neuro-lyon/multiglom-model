@@ -4,14 +4,16 @@ from brian import *
 
 from model import PARAMETERS as ps
 
-PSIN = ps['Input']
-tau_Ein   = PSIN['tau_Ein']
-g_Ein0    = PSIN['g_Ein0']
-sigma_Ein = PSIN['sigma_Ein']
+# If the model parameters have been initialized
+if ps != None:
+    PSIN = ps['Input']
+    tau_Ein   = PSIN['tau_Ein']
+    g_Ein0    = PSIN['g_Ein0']
+    sigma_Ein = PSIN['sigma_Ein']
 
-PSINOSC = ps['InputOscillation']
-f    = PSINOSC['f']
-C    = PSINOSC['C']
+    PSINOSC = ps['InputOscillation']
+    f    = PSINOSC['f']
+    C    = PSINOSC['C']
 
 
 class Glomerule:

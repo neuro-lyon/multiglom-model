@@ -6,13 +6,15 @@ from brian.stdunits import *
 
 from model import PARAMETERS as ps
 
-PSMT = ps['Mitral']
-V_t = PSMT['V_t']
-V_r = PSMT['V_r']
-t_refract = PSMT['t_refract']
-C_m  = PSMT['C_m']
-g_L = PSMT['g_L']
-E_L = PSMT['E_L']
+# If the model parameters have been initialized
+if ps != None:
+    PSMT = ps['Mitral']
+    V_t = PSMT['V_t']
+    V_r = PSMT['V_r']
+    t_refract = PSMT['t_refract']
+    C_m  = PSMT['C_m']
+    g_L = PSMT['g_L']
+    E_L = PSMT['E_L']
 
 class MitralCells:
     """Population of mitral cells."""

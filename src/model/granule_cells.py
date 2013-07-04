@@ -6,12 +6,14 @@ from brian.stdunits import *
 
 from model import PARAMETERS as ps
 
-PSGR = ps['Granule']
-C_m  = PSGR['C_m']
-g_L  = PSGR['g_L']
-E_L  = PSGR['E_L']
-g_SD = PSGR['g_SD']
-g_DS = PSGR['g_DS']
+# If the model parameters have been initialized
+if ps != None:
+    PSGR = ps['Granule']
+    C_m  = PSGR['C_m']
+    g_L  = PSGR['g_L']
+    E_L  = PSGR['E_L']
+    g_SD = PSGR['g_SD']
+    g_DS = PSGR['g_DS']
 
 class GranuleCells:
     """Population of granule cells."""
