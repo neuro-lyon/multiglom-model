@@ -1,13 +1,10 @@
 # -*- coding:utf-8 -*-
 
 """
-Analysis
-========
-
 Provides different functions to analyse the neuronal network activity.
 
-Synchronization
----------------
+Synchronization indexes:
+
 - Spike Train Synchrony (STS) index
 - Membrane Potential Synchrony (MPS) index
 - FFT peak
@@ -36,14 +33,16 @@ def sts(netw_act, spikes, neur_start, neur_stop, sig_start, time_start):
 
     Parameters
     ----------
-    netw_act: brian.StateMonitor.values
+    netw_act : brian.StateMonitor.values
         signal that represents the network activity in one variable
-    spikes: brian.SpikeMonitor
+    spikes : brian.SpikeMonitor
         set of spikes during the simulation
-    neur_start: int
+    neur_start : int
         neuron index left border for the slice of neuron we want
-    neur_stop: int
+    neur_stop : int
         neuron index right border
+    sig_start : int
+        index of the signal where we want to start (eg. for burnin)
 
     References
     ----------
@@ -89,6 +88,8 @@ def mps(memb_pot, start, stop, sig_start):
         Membrane potential for a whole category (eg. mitral) of neurons.
     start, stop : int
         indices of the first and last neuron to take
+    sig_start : int
+        index of the signal where we want to start
 
     References
     ----------
@@ -140,8 +141,9 @@ def crosscorr_phase_angle(sig1, sig2, x, max_length=10000):
         another signal of length L
     x : array
         time axis for the signals sig1 and sig2
-    max_length : int
-        maximum length for the signals, signals are resampled otherwise
+    max_length : int, optional
+        Maximum length for the signals, signals are resampled otherwise.
+        Default is 10 000.
     """
     assert len(sig1) == len(sig2) == len(x), \
         "The signals don't have the same length."

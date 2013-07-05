@@ -30,16 +30,21 @@ def print_dict(dictio, level=0):
 def gen_parameters(template_file, params, output_dir):
     """Generate parameter sets from a template.
 
-    template: filename with a dictionnary of parameters in it
-    params: dictionnary of parameters with start, stop, step and unit
-    output_dir: directory to put the created parameter sets in
+    template_file : filename
+        File with a dictionnary of parameters in it
+    params : dict
+        Dictionnary of parameters with start, stop, step and unit
+    output_dir : str
+        Directory to put the created parameter sets in
 
-    Example of params:
-    params = {('Input', 'g_Ein0'): {'range': linspace(start=0, stop=1, num=4),
-                                    'unit': siemens*meter**-2},
-              ('Common', 'inter_conn_rate', '*', '*'): {'range': linspace(start=0.2, stop=0.8, num=2),
-                                                        'unit': 1}
-    }
+    Examples
+    --------
+    >>> from brian import *
+    >>> params = {('Input', 'g_Ein0'): {'range': linspace(start=0, stop=1, num=4),
+    ...                                 'unit': siemens*meter**-2},
+    ...           ('Common', 'inter_conn_rate', '*', '*'): {'range': linspace(start=0.2, stop=0.8, num=2),
+    ...                                                     'unit': 1}
+    ... }
     """
     template = get_template(template_file)
 
@@ -157,8 +162,7 @@ def to1d(x, y, lenx):
 
 
 def gen_conn_strengthes(template_file, intra_strength=[1.],inter_strength=[0.], output_dir='./'):
-    """Generate paramsets where only connections have beeh changed
-    """
+    """Generate paramsets where only connections have been changed"""
     template_init = get_template(template_file)
     interconnec = template_init['Common']['inter_conn_strength']
 

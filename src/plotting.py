@@ -91,7 +91,7 @@ def raster_plot(spikes_i, spikes_t, connection_matrix):
 
 
 def get_colorlist(n_colors, cmap_name="Paired"):
-    """Get a list of `n_colors` colors from a matplotlib colormap."""
+    """Get a list of n_colors colors from a matplotlib colormap."""
     colors = []
     colormap = cmap.get_cmap(cmap_name)
     assert colormap != None, cmap_name + " is not a valid colormap name."

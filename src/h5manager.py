@@ -1,5 +1,10 @@
 # -*- coding:utf-8 -*-
 
+"""
+Provide useful functions to deal with HDF5 files.
+
+"""
+
 import tables
 import os
 import numpy as np
@@ -54,7 +59,7 @@ def write_simu_data(filename, info, parameters, results):
 
 
 def file_exists(filename):
-    """Check if a file `filename` exists."""
+    """Check if a file exists"""
     file_exists = False
     try:
         fd = os.open(filename, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0644)
@@ -72,7 +77,17 @@ def filename_to_h5(filename):
 
 
 def collect_h5_to_db(dirpath, dbpath, output=True):
-    """Collects all HDF5 in dirpath and put them into the big HDF5 DB"""
+    """Collects all HDF5 of a directory and put them into a big HDF5 file.
+
+    Parameters
+    ----------
+    dirpath : str
+        Directory where the HDF5 files are
+    dbpath : str
+        Filename of the resulting HDF5 file
+    output : bool, optional
+        True to output progress. Default is True.
+    """
     h5files = listdir_filter(dirpath, lambda fname: fname[-3:] == '.h5')
     try:
         h5files.remove(dbpath)  # In case db is in the same directory
@@ -129,7 +144,14 @@ def get_all_attrs(db, attrs_path):
     Parameters
     ----------
     db : tables.file.File
+        HDF5 file with the simulation to get the attributes
     attrs_path : 2-D list
+        List of path of attributes to get in the db
+
+    Returns
+    -------
+    list
+        Attributes that we wanted from the db
     """
     groups_attrs = []
     for group in get_first_level_groups(db.root):

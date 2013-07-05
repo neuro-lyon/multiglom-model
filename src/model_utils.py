@@ -13,13 +13,38 @@ from utils import path_to_modline
 
 
 def set_model_ps(filepath, dicname='PARAMETERS'):
-    """Set the model parameters given the parameter set in `filepath`."""
+    """Set the model parameters given the parameter set.
+
+    Parameters
+    ----------
+    filepath : str
+        File with the parameter set
+    dicname : str, optional
+        Variable in :attr:`filepath` that is the dictionnary of parameters
+    """
     psmod = importlib.import_module(path_to_modline(filepath))
     model.PARAMETERS = getattr(psmod, dicname)
 
 
 def intrapop_connections(n_mitral, n_granule, n_subpop, n_mitral_per_subpop):
-    """Connection matrix for intra sub-population connections."""
+    """Build a connection matrix for intra sub-population connections.
+
+    Parameters
+    ----------
+    n_mitral : int
+        Number of mitral cells in the network
+    n_granule : int
+        Number of granule cells in the network
+    n_subpop : int
+        Number of sub-population in the network
+    n_mitral_per_subpop : int
+        Number of mitral cells per sub-population in the network
+
+    Returns
+    -------
+    np.ndarray
+        Connection matrix between mitral cells (rows) and granule cells (cols)
+    """
     resmat = np.zeros((n_mitral, n_granule))
     for i_subpop in xrange(n_subpop):
         start = i_subpop*n_mitral_per_subpop
@@ -32,6 +57,28 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
     """
     Adds inter sub-population connections.
 
+    Parameters
+    ----------
+    mat_connections : np.ndarray
+        Connection matrix between mitral cells and granule cells
+    n_mitral : int
+        Number of mitral cells in the network
+    n_subpop : int
+        Number of sub-population in the network
+    n_mitral_per_subpop : int
+        Number of mitral cells per sub-population in the network
+    inter_conn_rate : float
+        Interconnection rate [0, 1]
+    inter_conn_strength : float
+        Interconnection strength [0, 1]
+    homeostasy : bool, optional
+        True to set homeostatic connections.
+        Default is False.
+
+    Returns
+    -------
+    np.ndarray
+        Connection matrix between mitral cells (rows) and granule cells (cols)
     """
     if homeostasy:
         init_total = 1.*mat_connections.sum(axis=0)
@@ -77,7 +124,27 @@ def interpop_connections(mat_connections, n_mitral, n_subpop, n_mitral_per_subpo
 
 
 def monit(pop, params, timestep, reclist=True, spikes=False):
-    """Returns a dictionnary of monitors for the population."""
+    """Returns a dictionnary of monitors for a population.
+
+    Parameters
+    ----------
+    pop : brian.NeuronGroup
+        Neuron population to record
+    params : list
+        List of parameters to record
+    timestep : int
+        Timestep of the simulatoin
+    reclist : bool or list, optional
+        List of neurons to record, or True to record them all.
+        Default is True
+    spikes : bool
+        True to put a brian.SpikeMonitor to record, instead of a StateMonitor
+
+    Returns
+    -------
+    dict
+        Dictionnary of parameter name (keys) and monitors (values)
+    """
     res = {}
     for pname in params:
         res[pname] = StateMonitor(pop, pname, record=reclist, timestep=timestep)

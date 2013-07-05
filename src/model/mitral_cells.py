@@ -51,7 +51,9 @@ class MitralCells:
 
         Examples
         --------
-        >>> # Supplementary equations are added through supp_eqs this way:
+        
+        Supplementary equations are added through supp_eqs this way:
+        
         >>> from brian import Equations
         >>> supp_eqs = {'var': ['-I_input', '+I_electrode'],
         ...             'eqs': [Equations('I_input = g_Ein*(V - 0*mvolt) : amp*meter**-2'),
