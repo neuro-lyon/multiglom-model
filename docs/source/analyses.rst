@@ -24,6 +24,11 @@ Analyse ring simulations
 .. automodule:: analysis_ps_ring_simus
    :members:
 
+Plot :math:`g_{Ein0}` against FFTMAX
+------------------------------------
+.. automodule:: script_fig_netw_freq
+   :members:
+
 Plot oscillation vs rate
 ------------------------
 .. automodule:: plot_multiple_osc_vs_rates

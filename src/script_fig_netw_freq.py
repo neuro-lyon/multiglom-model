@@ -1,5 +1,18 @@
 # -*- coding:utf-8 -*-
 
+"""
+Script to see if the model is like the model of [1]_ by plotting the network
+frequency against the oscillation rate.
+
+References
+----------
+.. [1] Fourcaud-Trocmé, N., Courtiol, E., Buonviso, N., & Voegtlin, T. (2011).
+   Stability of fast oscillations in the mammalian olfactory bulb: experiments
+   and modeling. Journal of physiology, Paris, 105(1-3), 59–70.
+   doi:10.1016/j.jphysparis.2011.07.009
+
+"""
+
 import tables
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +21,7 @@ from h5manager import get_all_attrs
 
 
 def plot_netw_freq(db_filename, point_color, label):
-    """Plot `g_Ein0` against `FFTMAX` for the given DB."""
+    """Plot g_Ein0 against FFTMAX for the given DB."""
     db = tables.openFile(db_filename)  # Open the HDF5 database-like
     
     # Get the interesting values
