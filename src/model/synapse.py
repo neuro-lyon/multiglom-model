@@ -27,9 +27,30 @@ if ps != None:
 
 
 class Synapse:
-    """Synapse, from mitral cells to granule cells."""
+    """A Synapse is a connection between a mitral cell and a granule cell.
+
+    Synapses are modeled with a set of ordinary differential equations (ODE).
+    There are two kind of synapses: inhibitory and excitatory. Each kind of
+    synapse has its set of ODE, but they share common features.
+
+    Attributes
+    ----------
+    is_exc : bool
+        True if the synapse is excitatory, False if inhibitory
+    is_inhib : bool
+        True if the synapse is inhibitory, False if excitatory
+    eqs_model : brian.Equations
+        Set of equations that define the model
+
+    """
 
     def __init__(self, synapse_type):
+        """Initialize a Synapse.
+
+        At this point, the equation model is empty. The user must define the
+        equation model after the initialization by using the
+        :meth:`set_eqs_model`.
+        """
         if synapse_type[:3] == 'exc':
             self.is_exc = True
         elif synapse_type[:3] == 'inh':
@@ -38,12 +59,25 @@ class Synapse:
         self.eqs_model = Equations()
 
     def get_eqs_model(self):
-        """Get the model of equations"""
+        """Get the model of equations of this synapse"""
         return self.eqs_model
 
     def set_eqs_model(self, eqs=None):
         """Sets the model of equations.
-        If no model if specified, uses the standard model.
+
+        A standard model is used if no model is specified with :attr:`eqs`.
+        If no model if specified, uses the standard model (according to the
+        synapse type).
+
+        Parameters
+        ----------
+        eqs : brian.Equations
+            Set of equations that define the model
+
+        Notes
+        -----
+        This method must be called after creating a :class:`Synapse`, otherwise
+        the equation model is empty.
         """
         if eqs:
             self.eqs_model = eqs

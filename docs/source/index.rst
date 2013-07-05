@@ -13,11 +13,11 @@ Contents:
 
    model
 
+   scripts
+
    analyses
 
    utilities
-
-   scripts
 
 
 Indices and tables

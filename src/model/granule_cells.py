@@ -16,20 +16,43 @@ if ps != None:
     g_DS = PSGR['g_DS']
 
 class GranuleCells:
-    """Population of granule cells."""
+    """A single entity acting as a population of granule cells.
+
+    This class represents a population of granule cells combined into a single
+    :class:`Granule`. Each glomerular column has its own granule.
+
+    The granule dynamics are defined according to a set of equations.
+
+    Attributes
+    ----------
+    eqs_model : Brian.Equations
+        Equations that define the granule model
+    pop : Brian.NeuronGroup
+        Object that represents a set of neurons
+    """
 
     def __init__(self):
-        """Create an empty population of granule cells."""
+        """Create an empty population of granule cells.
+
+        Notes
+        -----
+        :meth:`add_eqs` and :meth:`make_pop` must be called after initializing
+        the granule.
+        """
         self.eqs_model = Equations()
         self.pop = None
 
     def add_eqs(self, supp_eqs=None):
-        """Add the standard equations of granule model.
+        """Add the standard equations of the granule model.
 
-        Supplementary equations are added to `V_D`through `supp_eqs` this way:
-        supp_eqs = {'var': ['-I_input', '+I_electrode'],
-                    'eqs': [Equations('I_input = g_Ein*(V - 0*mvolt) : amp*meter**-2'),
-                            Equations('I_electrode : amp*meter**-2')]}
+        Parameters
+        ----------
+        supp_eqs : Brian.Equations, optional
+            Supplementary equations to the model
+
+        See Also
+        --------
+        MitralCells.add_eqs
         """
         t = ''
         # Add the extra variable into the LIF equation
@@ -43,8 +66,15 @@ class GranuleCells:
         self.eqs_model += std_eqs
 
     def make_pop(self, N):
-        """Makes the NeuronGroup for a population of `N` granule cells.
+        """Makes the NeuronGroup for a population of N granule cells.
 
+        Parameters
+        ----------
+        N : int
+            Number of granule in the whole simulation.
+
+        Notes
+        -----
         This must be called after all the other construction methods.
         """
         self.pop = NeuronGroup(N, model=self.eqs_model, implicit=True)
