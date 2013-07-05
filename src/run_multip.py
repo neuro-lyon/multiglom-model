@@ -2,6 +2,22 @@
 """
 Script for running multiple simulation with different parameter set.
 
+Usage
+-----
+``python run_multip.py <N_PROC> <PARAMETERSETS_DIRECTORY>`` with ``N_RPOC`` the
+number of processors to run the simulations on, and ``PARAMETERSETS_DIRECTORY``
+the directory containing the parameter set files.
+The HDF5 output files are in the same directory as the parameter set files.
+
+See ``python run_multip.py --help`` for more options.
+
+Summary
+-------
+
+1. Get the input parameters n_proc and psfiles
+2. Initialize a multiprocessing pool
+3. Run simulations in parallel
+
 """
 from multiprocessing import Pool
 from os import path

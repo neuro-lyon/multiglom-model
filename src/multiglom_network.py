@@ -1,9 +1,6 @@
 #!/usr/bin/env python2.7
 # -*- coding:utf-8 -*-
 """
-Multi-glomerular Network Simulation
-===================================
-
 This is a script that runs a simulation of a small OB model.
 It consists of an input signal and some OB columns. A column is a set of one
 glomerule, its connected mitral cells, and the granule cells.
