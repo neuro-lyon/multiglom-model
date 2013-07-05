@@ -33,7 +33,9 @@ def gen_parameters(template_file, params, output_dir):
     template_file : filename
         File with a dictionnary of parameters in it
     params : dict
-        Dictionnary of parameters with start, stop, step and unit
+        Dictionnary of parameters with start, stop, step and unit.
+        Keys are list that represent path into the parameter dictionnary,
+        values are dicionnary {'range': a list of values, 'unit': unit of those}
     output_dir : str
         Directory to put the created parameter sets in
 
@@ -200,4 +202,11 @@ def gen_conn_strengthes(template_file, intra_strength=[1.],inter_strength=[0.], 
 
 from brian import *
 if __name__ == '__main__':
-    gen_conn_strengthes('paramsets/std_beta_21glom_ring.py', intra_strength=[1.], inter_strength=linspace(0.005, 1., 50), output_dir='runs/21glom_ring_strength_beta')
+    d = {('Common', 'inter_conn_strength', '*', '*'):
+            {'range': linspace(start=0., stop=1., num=10),
+             'unit': 1},
+         ('Common', 'inter_conn_rate', '*', '*'):
+            {'range': linspace(start=0., stop=1, num=10),
+             'unit': 1}
+    }
+    gen_parameters('paramsets/std_beta.py', d, 'runs/interco10x10/beta')
