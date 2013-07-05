@@ -1,6 +1,22 @@
 """
 Analyse simulation with ring topology.
-Plot syncrhony variables against interconnection strength.
+
+Plot synchrony variables against interconnection strength.
+Also plot single simulation details.
+
+Usage
+-----
+``python analysis_ps_ring_simus.py <DATA_FILE>`` where ``<DATA_FILE>`` is a HDF5
+file with the simulation set to analyse.
+
+Summary
+-------
+
+1. Open the HDF5 file to get all simulations
+2. Define some functions that will get the indexes we need for analysis
+3. Plot each index against the inter-connection strength on one figure
+4. Ask for simulation number if we want to have an insight for a specific
+   simulation
 
 """
 
@@ -13,6 +29,7 @@ import numpy as np
 
 
 def main(dbfile):
+    """Run the script given the HDF5 filename"""
     # Get the simulations
     db = tables.openFile(dbfile)
     simus = hm.get_first_level_groups(db.root)

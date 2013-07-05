@@ -1,7 +1,15 @@
 """
-Analyse the distribution of peak distances to make appear the bistability.
+Analyse the distribution of peak distances to see if there is bistability.
+To be used for two glomeruli simulations (aka *bigrun*).
 
-To be used for two glomeruli simulations.
+You are asked by script the simulation number (x, y) as (rate, strength).
+If the plot shows one peak there is no bistability, if the plot shows two peaks
+then there is bistability.
+
+Usage
+-----
+``python analysis_bigrun <DATA_FILE>`` where ``<DATA_FILE>`` is a HDF5 file
+with the simulation set to analyse.
 
 """
 
@@ -14,12 +22,14 @@ import h5manager as hm
 
 
 def histogram_peaks(simulation):
+    """Plot the histogram of peak disances for one simulation"""
     dists = get_peak_dists(simulation)
     plt.figure()
     plt.hist(dists)
 
 
 def get_peak_dists(simulation):
+    """Get the peak distances (not the peak distance index) for a simulation"""
     # First, check that this is two glomeruli simulation
     n_glom = simulation.paramset._v_attrs['Common']['N_subpop']
     assert n_glom == 2, "Number of glomeruli must be 2."
@@ -49,6 +59,7 @@ def get_1d_ind_simu(ind, width):
 
 
 def main(dbfile):
+    """Run the script given a bigrun file"""
     # Get the db
     db = tables.openFile(dbfile)
     simulations = hm.get_first_level_groups(db.root)
