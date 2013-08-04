@@ -64,7 +64,7 @@ def sts(netw_act, spikes, neur_start, neur_stop, sig_start, time_start):
 def autocorr_zero(signal):
     """Returns the autocorrelation of the signal at zero time."""
     mean_sig = np.mean(signal)
-    return np.sqrt(np.mean((signal - mean_sig)*(signal - mean_sig)))
+    return np.mean((signal - mean_sig)*(signal - mean_sig))
 
 
 def get_nspikes(spikes, time_treshold, start, stop):
