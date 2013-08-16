@@ -17,6 +17,7 @@ import tables
 import numpy as np
 import matplotlib.pyplot as plt
 
+from sys import argv
 from h5manager import get_all_attrs
 
 
@@ -74,28 +75,28 @@ def get_spiking_rate(spike_times, n_mitral, simu_length, burnin):
     return 1.*time_mask.sum()/(n_mitral*(simu_length - burnin))
 
 
-def main():
+def main(data_prefix):
     # Get the data
-    filename_beta = "data/db40_beta_1pop_fig_netw_freq_multiproc.h5"
-    filename_gamma = "data/db40_gamma_1pop_fig_netw_freq.h5"
+    filename_beta = data_prefix + "db40_beta_1pop_fig_netw_freq_multiproc.h5"
+    filename_gamma = data_prefix + "db40_gamma_1pop_fig_netw_freq.h5"
 
     # Build network frequency figure
     plt.figure()
-    plot_netw_freq(filename_beta, 'blue', "beta")
-    plot_netw_freq(filename_gamma, 'red', "gamma")
+    axes = plt.subplot(1, 2, 1)
+    plot_netw_freq(filename_beta, 'blue', u"beta (nouv. modèle)")
+    plot_netw_freq(filename_gamma, 'red', u"gamma (nouv. modèle)")
 
-    plt.xlabel("Input excitatory conductance $g_{Ein0}$ (S $m^{-2}$)")
+    plt.xlabel("Input excitatory conductance $g_{Ein0}$ ($S m^{-2}$)")
     plt.ylabel("Network frequency $f$ (Hz)")
 
     # Build freq vs. freq figure
-    plt.figure()
-    plot_freqs(filename_beta, 'blue', "beta")
-    plot_freqs(filename_gamma, 'red', "gamma")
+    plt.subplot(1, 2, 2, sharey=axes)
+    plot_freqs(filename_beta, 'blue', u"beta (nouv. modèle)")
+    plot_freqs(filename_gamma, 'red', u"gamma (nouv. modèle)")
 
     plt.xlabel("Mitral firing rate $\\nu_0$")
-    plt.ylabel("Network frequency $f$ (Hz)")
     plt.show()
 
 
 if __name__ == '__main__':
-    res = main()
+    res = main(argv[1])
