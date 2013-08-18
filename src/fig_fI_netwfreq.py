@@ -94,11 +94,11 @@ def main(data_prefix):
 
     # fI curve
     plt.figure()
-    plt.subplot(2, 1, 1)
+    plt.subplot(1, 3, 1)
     plot_fI_curve("data/fI_curve_data.txt")
 
     # Build network frequency figure
-    netwfreq_axes = plt.subplot(2, 2, 3)
+    netwfreq_axes = plt.subplot(1, 3, 2)
     plot_netw_freq(filename_beta, 'blue', u"beta (nouv. modèle)")
     plot_netw_freq(filename_gamma, 'red', u"gamma (nouv. modèle)")
 
@@ -106,7 +106,7 @@ def main(data_prefix):
     plt.ylabel("Network frequency $f$ (Hz)")
 
     # Build freq vs. freq figure
-    plt.subplot(2, 2, 4, sharey=netwfreq_axes)
+    plt.subplot(1, 3, 3, sharey=netwfreq_axes)
     plot_freqs(filename_beta, 'blue', u"beta (nouv. modèle)")
     plot_freqs(filename_gamma, 'red', u"gamma (nouv. modèle)")
 
