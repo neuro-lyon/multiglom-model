@@ -28,6 +28,7 @@ def plot_fI_curve(filename_data):
     mean = freqs.mean(axis=0)
     err = freqs.std(axis=0)
     plt.errorbar(currents, mean, yerr=err, label=u"nouv. modèle")
+    plt.legend()
     plt.xlabel("Input current ($A m^{-2}$)")
     plt.ylabel("Mitral firing rate (Hz)")
 
@@ -109,7 +110,7 @@ def main(data_prefix):
     plot_freqs(filename_beta, 'blue', u"beta (nouv. modèle)")
     plot_freqs(filename_gamma, 'red', u"gamma (nouv. modèle)")
 
-    plt.xlabel("Mitral firing rate $\\nu_0$")
+    plt.xlabel("Mitral firing rate $\\nu_0$ (Hz)")
     plt.show()
 
 
