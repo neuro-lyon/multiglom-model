@@ -22,6 +22,7 @@ from h5manager import get_all_attrs
 
 
 def plot_fI_curve(filename_data):
+    """Plot the fI curve given the specified simulation data"""
     data = np.loadtxt(filename_data)
     currents = data[0]
     freqs = data[1:]
