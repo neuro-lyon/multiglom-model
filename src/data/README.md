@@ -1,3 +1,8 @@
+-   `fI_curve_data.txt`
+    Data for the fI curve.
+    Array of shape (11, 100). First line : currents, each other line is one simu
+    with different currents.
+
 -   `db30x30_gamma_homeostasis.h5` (2013-06-28)
     Gamma simulation with homeostasis, with 2 glomeruli.
 

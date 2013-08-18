@@ -21,6 +21,15 @@ from sys import argv
 from h5manager import get_all_attrs
 
 
+def plot_fI_curve(filename_data):
+    data = np.loadtxt(filename_data)
+    currents = data[0]
+    freqs = data[1:]
+    mean = freqs.mean(axis=0)
+    err = freqs.std(axis=0)
+    plt.errorbar(currents, mean, yerr=err)
+
+
 def plot_netw_freq(db_filename, point_color, label):
     """Plot g_Ein0 against FFTMAX for the given DB."""
     db = tables.openFile(db_filename)  # Open the HDF5 database-like
@@ -80,9 +89,13 @@ def main(data_prefix):
     filename_beta = data_prefix + "db40_beta_1pop_fig_netw_freq_multiproc.h5"
     filename_gamma = data_prefix + "db40_gamma_1pop_fig_netw_freq.h5"
 
-    # Build network frequency figure
+    # fI curve
     plt.figure()
-    axes = plt.subplot(1, 2, 1)
+    plt.subplot(2, 1, 1)
+    plot_fI_curve("data/fI_curve_data.txt")
+
+    # Build network frequency figure
+    netwfreq_axes = plt.subplot(2, 2, 1)
     plot_netw_freq(filename_beta, 'blue', u"beta (nouv. modèle)")
     plot_netw_freq(filename_gamma, 'red', u"gamma (nouv. modèle)")
 
@@ -90,7 +103,7 @@ def main(data_prefix):
     plt.ylabel("Network frequency $f$ (Hz)")
 
     # Build freq vs. freq figure
-    plt.subplot(1, 2, 2, sharey=axes)
+    plt.subplot(2, 2, 2, sharey=netwfreq_axes)
     plot_freqs(filename_beta, 'blue', u"beta (nouv. modèle)")
     plot_freqs(filename_gamma, 'red', u"gamma (nouv. modèle)")
 
