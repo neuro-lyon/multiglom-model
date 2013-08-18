@@ -27,7 +27,9 @@ def plot_fI_curve(filename_data):
     freqs = data[1:]
     mean = freqs.mean(axis=0)
     err = freqs.std(axis=0)
-    plt.errorbar(currents, mean, yerr=err)
+    plt.errorbar(currents, mean, yerr=err, label=u"nouv. modèle")
+    plt.xlabel("Input current ($A m^{-2}$)")
+    plt.ylabel("Mitral firing rate (Hz)")
 
 
 def plot_netw_freq(db_filename, point_color, label):
