@@ -156,7 +156,6 @@ if __name__ == '__main__':
                 print "selecting the first one."
             simu = filtered_simu[0]
 
-            import ipdb; ipdb.set_trace()
             # Granule plot
             gr_s = simu[4].read()
             gr_s_syn_self = simu[5].read()
