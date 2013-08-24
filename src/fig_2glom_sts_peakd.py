@@ -67,10 +67,10 @@ if __name__ == '__main__':
                                          extent=axes_extent,
                                          aspect="auto")
             if ind_subplot == 0:
-                axs[ind_subplot].set_ylabel("interconnection rate")
-            axs[ind_subplot].set_xlabel("interconnection strength")
-        cb_axs = fig.add_axes([0.125, 0.1, 0.9 - 0.125, 0.03])
-        cbar = fig.colorbar(cs, cax=cb_axs, orientation="horizontal")
+                axs[ind_subplot].set_ylabel("interconnection strength")
+            axs[ind_subplot].set_xlabel("interconnection rate")
+        # cb_axs = fig.add_axes([0.125, 0.1, 0.9 - 0.125, 0.03])
+        cbar = fig.colorbar(cs, ax=axs[ind_subplot], orientation="horizontal")
         cbar.set_label("STS value")
 
 
@@ -126,13 +126,13 @@ if __name__ == '__main__':
     # plot_run(MPS_FIG, "MPS", MPS_AXS, Z_IDX, range(3), MPS_NORM, IMSHOW_EXTENT)
 
     # STS plotting
-    STS_FIG, STS_AXS = plt.subplots(1, 3, figsize=(9, 3))
-    STS_AXS[0].set_title("Population 1")
-    STS_AXS[1].set_title("Population 2")
-    STS_AXS[2].set_title("Whole population")
-    STS_MIN_MAX = get_all_min_max([Z_IDX[i] for i in xrange(3, 6)])
+    PD_FIG, PD_AXS = plt.subplots(1, 3, figsize=(9, 3))
+    # STS_AXS[0].set_title("Population 1")
+    # STS_AXS[1].set_title("Population 2")
+    PD_AXS[0].set_title("Whole population")
+    STS_MIN_MAX = get_all_min_max(Z_IDX[5])
     STS_NORM = colors.normalize(STS_MIN_MAX[0], STS_MIN_MAX[1])
-    plot_run(STS_FIG, "STS", STS_AXS, Z_IDX, range(3, 6), STS_NORM, IMSHOW_EXTENT)
+    plot_run(PD_FIG, "STS", [PD_AXS[0]], Z_IDX, [5], STS_NORM, IMSHOW_EXTENT)
 
 
     # """
@@ -301,7 +301,6 @@ if __name__ == '__main__':
             Z_PD[1][ind_rate][ind_strength] = tmp_pd['disp']
 
     # Plotting
-    PD_FIG, PD_AXS = plt.subplots(1, 2, figsize=(6, 3))
     for ind_subplot, ind_data in enumerate(range(2)):
         if ind_subplot == 0:  # if it's the mean, which is circular
             color = "hsv"  # use the hsv colormap, which is circular
@@ -309,7 +308,7 @@ if __name__ == '__main__':
         else:
             color = None
             pd_norm = colors.normalize(np.amin(Z_PD[1]), np.amax(Z_PD[1]))
-        cs = PD_AXS[ind_subplot].imshow(Z_PD[ind_data],
+        cs = PD_AXS[ind_subplot+1].imshow(Z_PD[ind_data],
                                      origin="lower",
                                      interpolation="nearest",
                                      extent=IMSHOW_EXTENT,
@@ -320,15 +319,14 @@ if __name__ == '__main__':
             index_type = "mean"
         elif ind_subplot == 1:
             index_type = "disp"
-        PD_AXS[ind_subplot].set_title("Peak Distances index (%s)" % index_type )
-        plt.xlabel("interconnection strength")
-        if ind_subplot == 1:
-            plt.ylabel("interconnection rate")
-        cbar = PD_FIG.colorbar(cs, ax=PD_AXS[ind_subplot], orientation="horizontal")
+        PD_AXS[ind_subplot+1].set_title("Peak Distances index (%s)" % index_type )
+        cbar = PD_FIG.colorbar(cs, ax=PD_AXS[ind_subplot+1], orientation="horizontal")
         if ind_subplot == 0:
             cbar.set_label("peak distance mean value")
         elif ind_subplot == 1:
             cbar.set_label("peak distance dispersion value")
+    PD_AXS[1].set_xlabel("interconnection rate")
+    PD_AXS[2].set_xlabel("interconnection rate")
 
     """
     Closing DB and finally plotting
