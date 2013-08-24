@@ -16,7 +16,7 @@ import h5manager as h5m
 from analysis import fftmax
 from arg_parsers import ANACOMP_PARSER
 
-def raster_plot(spikes_i, spikes_t, connection_matrix, sss):
+def raster_plot(spikes_i, spikes_t, connection_matrix, sss, simu_length):
     """Raster plot with focus on interconnection neurons.
 
     Parameters
@@ -45,6 +45,7 @@ def raster_plot(spikes_i, spikes_t, connection_matrix, sss):
 
     # Plotting
     colors = get_colorlist(n_subpop)
+    dark_colors = []
     for ind_subpop in xrange(n_subpop):
         subpop_start = ind_subpop*n_mitral_per_subpop
         subpop_stop  = subpop_start + n_mitral_per_subpop
@@ -61,6 +62,7 @@ def raster_plot(spikes_i, spikes_t, connection_matrix, sss):
             # Plotting the spikes for that neuron
             if neur_connections.sum() > 1:  # if the neuron is connected to more than one granule
                 dark_color = [i/1.5 for i in subpop_color[:-1]]
+                dark_colors.append(dark_color)
                 rasterp.plot(spikes, [upline]*len(spikes), ' .',
                          color=dark_color, mew=0)
                 upline -= 1
@@ -84,12 +86,13 @@ def raster_plot(spikes_i, spikes_t, connection_matrix, sss):
     # Raster histogram
     rasterhisto = plt.subplot2grid((5, 1), (3, 0), sharex=rasterp)
     nbins = spikes_t[-1] // 5e-3  # make bins of 5 ms
-    rasterhisto.hist(spikes_t, bins=nbins)
+    rasterhisto.hist(spikes_t, bins=nbins, color="black")
     rasterhisto.set_ylabel("Nombre de spikes")
 
     # S syn self
     raster_sss = plt.subplot2grid((5, 1), (4, 0), sharex=rasterp)
-    plt.plot(linspace(spikes_t[0], spikes_t[-1], sss.T.shape[0]), sss.T)
+    for ind_sig, color in enumerate(["blue", "red"]):
+        plt.plot(linspace(0, simu_length, sss.T.shape[0]), sss.T[:, ind_sig], color=color)
     raster_sss.set_xlabel("Temps (s)")
     raster_sss.set_ylabel("s_syn_self")
 
@@ -168,7 +171,7 @@ if __name__ == '__main__':
 
             # Raster plot
             spikes_it = simu[7].read()
-            raster_plot(spikes_it[0], spikes_it[1], mtgr_connections, gr_s_syn_self)
+            raster_plot(spikes_it[0], spikes_it[1], mtgr_connections, gr_s_syn_self, simu_length)
 
             # # Membrane potential
             # if PLOT_MEMB_POT:
